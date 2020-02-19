@@ -1,0 +1,26 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="Peers" parent="android:Theme">
+        <item name="android:background">@color/colorPeers</item>
+        <item name="android:textViewStyle">@style/PeersTextView</item>
+        <item name="android:buttonStyle">@style/PeersButton</item>
+    </style>
+
+    <style name="PeersTextView" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
+
+    <style name="PeersButton" parent="android:Widget.Holo.Button">
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:background">@drawable/front_button</item>
+    </style>
+
+</resources>

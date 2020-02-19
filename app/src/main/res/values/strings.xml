@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Peers</string>
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="prompt_birth_date">Birth Date</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_in_link"><u>Sign In</u></string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="submit">Submit</string>
+    <string name="birth_date_text">Birth Date</string>
+    <string name="forgot_password"><u>Forgot Password</u></string>
+    <string name="forgot_password_title">Forgot Password</string>
+    <string name="member_acquisition">Member\nAcquisition</string>
+</resources>
