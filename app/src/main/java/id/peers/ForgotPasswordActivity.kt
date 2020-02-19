@@ -30,7 +30,12 @@ class ForgotPasswordActivity : AppCompatActivity() {
         val submit = findViewById<Button>(R.id.submit)
 
         signIn.setOnClickListener { signIn(it) }
-        birthDate.setOnFocusChangeListener { v, hasFocus ->  if(hasFocus) showDatePickerDialog(v) }
+        birthDate.setOnFocusChangeListener { v, hasFocus ->  if(hasFocus) { showDatePickerDialog(v) } else { val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(v.windowToken, 0)  } }
+
+        username.setOnFocusChangeListener { v, hasFocus ->  if(!hasFocus) {val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(v.windowToken, 0) } }
+
 //        findViewById<EditText>(R.id.birth_date).setOnClickListener { showDatePickerDialog(it) }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             birthDate.showSoftInputOnFocus = false
