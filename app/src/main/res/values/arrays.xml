@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="status">
+        <item>Personal Information</item>
+        <item>Address</item>
+        <item>Occupation</item>
+        <item>Emergency Contact</item>
+    </string-array>
+    <string-array name="identity">
+        <item>KTP</item>
+        <item>SIM</item>
+        <item>Paspor</item>
+    </string-array>
+    <string-array name="sex">
+        <item>Pria</item>
+        <item>Wanita</item>
+    </string-array>
+    <string-array name="marital_status">
+        <item>Kawin</item>
+        <item>Belum Kawin</item>
+        <item>Cerai</item>
+    </string-array>
+    <string-array name="last_education">
+        <item>SD</item>
+        <item>SMP</item>
+        <item>SMA</item>
+        <item>D3</item>
+        <item>S1</item>
+        <item>Lainnya</item>
+    </string-array>
+    <string-array name="address_status">
+        <item>Milik Sendiri</item>
+        <item>Milik Keluarga</item>
+        <item>Rumah Dinas</item>
+        <item>Sewa/Kontrak</item>
+        <item>Kost</item>
+    </string-array>
+    <string-array name="how_long_month">
+        <item>Bulan</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+    </string-array>
+    <string-array name="how_long_year">
+        <item>Tahun</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+    </string-array>
+    <string-array name="npwp_exist">
+        <item>Ada</item>
+        <item>Tidak Ada</item>
+    </string-array>
+    <string-array name="occupation_status">
+        <item>Pelajar/Mahasiswa</item>
+        <item>Pegawai Swasta</item>
+        <item>Pegawai Negri</item>
+        <item>Guru/Dosen</item>
+        <item>TNI/POLRI</item>
+        <item>Pensiunan</item>
+        <item>Wiraswasta</item>
+        <item>Profesional Lainnya</item>
+        <item>Ibu Rumah Tangga</item>
+    </string-array>
+    <string-array name="relationship">
+        <item>Suami/Istri</item>
+        <item>Saudara Kandung</item>
+        <item>Anak</item>
+        <item>Orang Tua</item>
+        <item>Lainnya</item>
+    </string-array>
+</resources>
