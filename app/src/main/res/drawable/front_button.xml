@@ -4,5 +4,5 @@
     <item android:state_enabled="true" android:drawable="@color/colorEnabled" />
     <item android:state_enabled="false" android:drawable="@color/colorDisabled" />
     <!-- default state-->
-    <item android:drawable="@color/colorDisabled" />
+    <item android:drawable="@color/colorEnabled" />
 </selector>

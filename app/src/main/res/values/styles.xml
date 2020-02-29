@@ -8,6 +8,10 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="NoActionBarTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorControlNormal">#c5c5c5</item>
+    </style>
+
     <style name="Peers" parent="android:Theme">
         <item name="android:background">@color/colorPeers</item>
         <item name="android:textViewStyle">@style/PeersTextView</item>
@@ -19,8 +23,9 @@
     </style>
 
     <style name="PeersButton" parent="android:Widget.Holo.Button">
-        <item name="android:textColor">@color/colorWhite</item>
-        <item name="android:background">@drawable/front_button</item>
+        <item name="android:textColor">@color/colorEnabled</item>
+<!--        <item name="android:background">@drawable/front_button</item>-->
+        <item name="android:background">@color/colorPeers</item>
     </style>
 
 </resources>
