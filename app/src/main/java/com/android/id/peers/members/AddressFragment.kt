@@ -3,24 +3,31 @@ package com.android.id.peers.members
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.Spinner
-import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+
 import com.android.id.peers.R
+import com.android.id.peers.members.communication.MemberViewModel
+import com.android.id.peers.members.model.Member
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import fr.ganfra.materialspinner.MaterialSpinner
-import params.com.stepview.StatusViewScroller
+import com.shuhart.stepview.StepView
+import com.tiper.MaterialSpinner
+import kotlinx.android.synthetic.main.fragment_personal_information.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
-
+private var memberViewModel = MemberViewModel()
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
@@ -41,6 +48,7 @@ class AddressFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+        memberViewModel = ViewModelProvider(activity!!).get(MemberViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -53,6 +61,71 @@ class AddressFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val addressStatus = view.findViewById<MaterialSpinner>(R.id.address_status)
+        var addressStatusAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, resources.getStringArray(R.array.address_status))
+        addressStatusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        addressStatus.adapter = addressStatusAdapter
+
+        val addressStatusDomisili = view.findViewById<MaterialSpinner>(R.id.address_status_domisili)
+        var addressStatusDomisiliAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, resources.getStringArray(R.array.address_status))
+        addressStatusDomisiliAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        addressStatusDomisili.adapter = addressStatusDomisiliAdapter
+
+        val addressStreet = view.findViewById<TextInputEditText>(R.id.address_street)
+        val addressNo = view.findViewById<TextInputEditText>(R.id.address_no)
+        val addressRT = view.findViewById<TextInputEditText>(R.id.address_rt)
+        val addressRW = view.findViewById<TextInputEditText>(R.id.address_rw)
+        val addressKelurahan = view.findViewById<TextInputEditText>(R.id.address_kelurahan)
+        val addressKecamatan = view.findViewById<TextInputEditText>(R.id.address_kecamatan)
+        val addressCity = view.findViewById<TextInputEditText>(R.id.address_city)
+
+//        val addressStatus = view.findViewById<MaterialSpinner>(R.id.address_status)
+        val addressHowLongMonth = view.findViewById<Spinner>(R.id.address_how_long_month)
+        val addressHowLongYear = view.findViewById<Spinner>(R.id.address_how_long_year)
+
+        val addressStreetDomisili = view.findViewById<TextInputEditText>(R.id.address_street_domisili)
+        val addressNoDomisili = view.findViewById<TextInputEditText>(R.id.address_no_domisili)
+        val addressRTDomisili = view.findViewById<TextInputEditText>(R.id.address_rt_domisili)
+        val addressRWDomisili = view.findViewById<TextInputEditText>(R.id.address_rw_domisili)
+        val addressKelurahanDomisili = view.findViewById<TextInputEditText>(R.id.address_kelurahan_domisili)
+        val addressKecamatanDomisili = view.findViewById<TextInputEditText>(R.id.address_kecamatan_domisili)
+        val addressCityDomisili = view.findViewById<TextInputEditText>(R.id.address_city_domisili)
+
+//        val addressStatusDomisili = view.findViewById<MaterialSpinner>(R.id.address_status_domisili)
+        val addressHowLongMonthDomisili = view.findViewById<Spinner>(R.id.address_how_long_domisili_month)
+        val addressHowLongYearDomisili = view.findViewById<Spinner>(R.id.address_how_long_domisili_year)
+
+        val addressDomisiliEqualKtp = view.findViewById<CheckBox>(R.id.address_domisili_equal_ktp)
+
+        /* Member View Model */
+        memberViewModel.member.observe(viewLifecycleOwner, Observer<Member> {
+                member ->
+
+            addressStreet.setText(member.jalanSesuaiKtp)
+            addressNo.setText(member.nomorSesuaiKtp)
+            addressRT.setText(member.rtSesuaiKtp)
+            addressRW.setText(member.rwSesuaiKtp)
+            addressKelurahan.setText(member.kelurahanSesuaiKtp)
+            addressKecamatan.setText(member.kecamatanSesuaiKtp)
+            addressCity.setText(member.kotaSesuaiKtp)
+            addressStatus.selection = member.statusTempatTinggalSesuaiKtp
+            addressHowLongMonth.setSelection(member.lamaBulanTinggalSesuaiKtp)
+            addressHowLongYear.setSelection(member.lamaTahunTinggalSesuaiKtp)
+            addressDomisiliEqualKtp.isChecked = member.domisiliSesuaiKtp
+            addressStreetDomisili.setText(member.jalanDomisili)
+            addressNoDomisili.setText(member.nomorDomisili)
+            addressRTDomisili.setText(member.rtDomisili)
+            addressRWDomisili.setText(member.rwDomisili)
+            addressKelurahanDomisili.setText(member.kelurahanDomisili)
+            addressKecamatanDomisili.setText(member.kecamatanDomisili)
+            addressCityDomisili.setText(member.kotaDomisili)
+            addressStatusDomisili.selection = member.statusTempatTinggalDomisili
+            addressHowLongMonthDomisili.setSelection(member.lamaBulanTinggalDomisili)
+            addressHowLongYearDomisili.setSelection(member.lamaTahunTinggalDomisili)
+
+        })
+
         val nextButton = view.findViewById<Button>(R.id.next)
         nextButton.setOnClickListener { onNextButtonClicked(view) }
         val backButton = view.findViewById<Button>(R.id.back)
@@ -62,10 +135,65 @@ class AddressFragment : Fragment() {
     }
 
     private fun onBackButtonClicked(view: View) {
-        val memberStatusView = activity!!.findViewById<StatusViewScroller>(R.id.status_view_member_acquisition)
-        memberStatusView.statusView.run {
-            currentCount -= 1
+//        val memberStatusView = activity!!.findViewById<StatusViewScroller>(R.id.status_view_member_acquisition)
+//        memberStatusView.statusView.run {
+//            currentCount -= 1
+//        }
+        val stepView = activity!!.findViewById<StepView>(R.id.step_view)
+        stepView.go(0, true)
+
+        var member = memberViewModel.member.value
+        if(member == null) {
+            member = Member()
         }
+
+        val addressStreet = view.findViewById<TextInputEditText>(R.id.address_street)
+        val addressNo = view.findViewById<TextInputEditText>(R.id.address_no)
+        val addressRT = view.findViewById<TextInputEditText>(R.id.address_rt)
+        val addressRW = view.findViewById<TextInputEditText>(R.id.address_rw)
+        val addressKelurahan = view.findViewById<TextInputEditText>(R.id.address_kelurahan)
+        val addressKecamatan = view.findViewById<TextInputEditText>(R.id.address_kecamatan)
+        val addressCity = view.findViewById<TextInputEditText>(R.id.address_city)
+
+        val addressStatus = view.findViewById<MaterialSpinner>(R.id.address_status)
+        val addressHowLongMonth = view.findViewById<Spinner>(R.id.address_how_long_month)
+        val addressHowLongYear = view.findViewById<Spinner>(R.id.address_how_long_year)
+
+        val addressStreetDomisili = view.findViewById<TextInputEditText>(R.id.address_street_domisili)
+        val addressNoDomisili = view.findViewById<TextInputEditText>(R.id.address_no_domisili)
+        val addressRTDomisili = view.findViewById<TextInputEditText>(R.id.address_rt_domisili)
+        val addressRWDomisili = view.findViewById<TextInputEditText>(R.id.address_rw_domisili)
+        val addressKelurahanDomisili = view.findViewById<TextInputEditText>(R.id.address_kelurahan_domisili)
+        val addressKecamatanDomisili = view.findViewById<TextInputEditText>(R.id.address_kecamatan_domisili)
+        val addressCityDomisili = view.findViewById<TextInputEditText>(R.id.address_city_domisili)
+
+        val addressStatusDomisili = view.findViewById<MaterialSpinner>(R.id.address_status_domisili)
+        val addressHowLongMonthDomisili = view.findViewById<Spinner>(R.id.address_how_long_domisili_month)
+        val addressHowLongYearDomisili = view.findViewById<Spinner>(R.id.address_how_long_domisili_year)
+
+        val addressDomisiliEqualKtp = view.findViewById<CheckBox>(R.id.address_domisili_equal_ktp)
+
+        member.jalanSesuaiKtp = addressStreet.text.toString()
+        member.nomorSesuaiKtp = addressNo.text.toString()
+        member.rtSesuaiKtp = addressRT.text.toString()
+        member.rwSesuaiKtp = addressRW.text.toString()
+        member.kelurahanSesuaiKtp = addressKelurahan.text.toString()
+        member.kecamatanSesuaiKtp = addressKecamatan.text.toString()
+        member.kotaSesuaiKtp = addressCity.text.toString()
+        member.statusTempatTinggalSesuaiKtp = addressStatus.selection
+        member.lamaBulanTinggalSesuaiKtp = addressHowLongMonth.selectedItemPosition
+        member.lamaTahunTinggalSesuaiKtp = addressHowLongYear.selectedItemPosition
+        member.domisiliSesuaiKtp = addressDomisiliEqualKtp.isChecked
+        member.jalanDomisili = addressStreetDomisili.text.toString()
+        member.nomorDomisili = addressNoDomisili.text.toString()
+        member.rtDomisili = addressRTDomisili.text.toString()
+        member.rwDomisili = addressRWDomisili.text.toString()
+        member.kelurahanDomisili = addressKelurahanDomisili.text.toString()
+        member.kecamatanDomisili = addressKecamatanDomisili.text.toString()
+        member.kotaDomisili = addressCityDomisili.text.toString()
+        member.statusTempatTinggalDomisili = addressStatusDomisili.selection
+        member.lamaBulanTinggalDomisili = addressHowLongMonthDomisili.selectedItemPosition
+        member.lamaTahunTinggalDomisili = addressHowLongYearDomisili.selectedItemPosition
 
         val fragment = PersonalInformationFragment()
         val transaction = activity!!.supportFragmentManager.beginTransaction()
@@ -141,7 +269,7 @@ class AddressFragment : Fragment() {
             addressCityC.error = "Alamat sesuai KTP : Kota/Provinsi tidak boleh kosong"
             allTrue = false
         }
-        if(addressStatus.selectedItemPosition == 0) {
+        if(addressStatus.selectedItemId < 0) {
             addressStatus.error = "Alamat sesuai KTP : Status Tempat Tinggal tidak boleh kosong"
             allTrue = false
         }
@@ -173,15 +301,48 @@ class AddressFragment : Fragment() {
             addressCityDomisiliC.error = "Alamat domisili : Kota/Provinsi tidak boleh kosong"
             allTrue = false
         }
-        if(addressStatusDomisili.selectedItemPosition == 0) {
+        if(addressStatusDomisili.selectedItemId < 0) {
             addressStatusDomisili.error = "Alamat domisili : Status Tempat Tinggal tidak boleh kosong"
             allTrue = false
         }
         if(allTrue) {
-            val memberStatusView = activity!!.findViewById<StatusViewScroller>(R.id.status_view_member_acquisition)
-            memberStatusView.statusView.run {
-                currentCount += 1
+//            val memberStatusView = activity!!.findViewById<StatusViewScroller>(R.id.status_view_member_acquisition)
+//            memberStatusView.statusView.run {
+//                currentCount += 1
+//            }
+            val stepView = activity!!.findViewById<StepView>(R.id.step_view)
+            stepView.go(2, true)
+
+            var member = memberViewModel.member.value
+            if(member == null) {
+                member = Member()
             }
+
+            val addressDomisiliEqualKtp = view.findViewById<CheckBox>(R.id.address_domisili_equal_ktp)
+
+            member.jalanSesuaiKtp = addressStreet.text.toString()
+            member.nomorSesuaiKtp = addressNo.text.toString()
+            member.rtSesuaiKtp = addressRT.text.toString()
+            member.rwSesuaiKtp = addressRW.text.toString()
+            member.kelurahanSesuaiKtp = addressKelurahan.text.toString()
+            member.kecamatanSesuaiKtp = addressKecamatan.text.toString()
+            member.kotaSesuaiKtp = addressCity.text.toString()
+            member.statusTempatTinggalSesuaiKtp = addressStatus.selection
+            member.lamaBulanTinggalSesuaiKtp = addressHowLongMonth.selectedItemPosition
+            member.lamaTahunTinggalSesuaiKtp = addressHowLongYear.selectedItemPosition
+            member.domisiliSesuaiKtp = addressDomisiliEqualKtp.isChecked
+            member.jalanDomisili = addressStreetDomisili.text.toString()
+            member.nomorDomisili = addressNoDomisili.text.toString()
+            member.rtDomisili = addressRTDomisili.text.toString()
+            member.rwDomisili = addressRWDomisili.text.toString()
+            member.kelurahanDomisili = addressKelurahanDomisili.text.toString()
+            member.kecamatanDomisili = addressKecamatanDomisili.text.toString()
+            member.kotaDomisili = addressCityDomisili.text.toString()
+            member.statusTempatTinggalDomisili = addressStatusDomisili.selection
+            member.lamaBulanTinggalDomisili = addressHowLongMonthDomisili.selectedItemPosition
+            member.lamaTahunTinggalDomisili = addressHowLongYearDomisili.selectedItemPosition
+
+            memberViewModel.setMember(member)
 
             val fragment = OccupationFragment()
             val transaction = activity!!.supportFragmentManager.beginTransaction()
@@ -222,7 +383,7 @@ class AddressFragment : Fragment() {
             addressKelurahanDomisili.setText(addressKelurahan.text.toString())
             addressKecamatanDomisili.setText(addressKecamatan.text.toString())
             addressCityDomisili.setText(addressCity.text.toString())
-            addressStatusDomisili.setSelection(addressStatus.selectedItemPosition)
+            addressStatusDomisili.selection = addressStatus.selection
             addressHowLongMonthDomisili.setSelection(addressHowLongMonth.selectedItemPosition)
             addressHowLongYearDomisili.setSelection(addressHowLongYear.selectedItemPosition)
         }else{
@@ -233,7 +394,7 @@ class AddressFragment : Fragment() {
             addressKelurahanDomisili.setText("")
             addressKecamatanDomisili.setText("")
             addressCityDomisili.setText("")
-            addressStatusDomisili.setSelection(0)
+            addressStatusDomisili.selection = 0
             addressHowLongMonthDomisili.setSelection(0)
             addressHowLongYearDomisili.setSelection(0)
         }

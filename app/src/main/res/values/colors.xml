@@ -12,7 +12,8 @@
     <color name="colorCircleCurrent">#CC4BF531</color>
     <color name="colorLineCurrent">#9041DB2a</color>
     <color name="colorWhite">#FFFFFF</color>
-    <color name="colorGrey">#666666</color>
+    <color name="colorGrey">#AA666666</color>
+    <color name="colorGreyText">#FF666666</color>
     <color name="colorEnabled">#609B07A8</color>
     <color name="colorDisabled">#909B07A8</color>
 </resources>

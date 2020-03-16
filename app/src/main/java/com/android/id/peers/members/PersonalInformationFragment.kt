@@ -3,21 +3,33 @@ package com.android.id.peers.members
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Button
-import androidx.fragment.app.Fragment
+import android.widget.TextView
+import android.widget.Toast
+import androidx.core.view.get
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+
 import com.android.id.peers.R
+import com.android.id.peers.members.communication.MemberViewModel
+import com.android.id.peers.members.model.Member
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import fr.ganfra.materialspinner.MaterialSpinner
-import params.com.stepview.StatusViewScroller
+import com.shuhart.stepview.StepView
+import com.tiper.MaterialSpinner
+import org.w3c.dom.Text
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
+private var memberViewModel = MemberViewModel()
 
 /**
  * A simple [Fragment] subclass.
@@ -39,6 +51,7 @@ class PersonalInformationFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+        memberViewModel = ViewModelProvider(activity!!).get(MemberViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -53,6 +66,45 @@ class PersonalInformationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val identityType = view.findViewById<MaterialSpinner>(R.id.identity_type)
+        val identityNo = view.findViewById<TextView>(R.id.identity_no)
+        val fullName = view.findViewById<TextView>(R.id.full_name)
+        val birthDate = view.findViewById<TextView>(R.id.birth_date)
+        val birthPlace = view.findViewById<TextView>(R.id.birth_place)
+        val sex = view.findViewById<MaterialSpinner>(R.id.sex)
+        val motherName = view.findViewById<TextView>(R.id.mother_name)
+        val maritalStatus = view.findViewById<MaterialSpinner>(R.id.marital_status)
+        val lastEducation = view.findViewById<MaterialSpinner>(R.id.last_education)
+
+        /* MaterialSpinner Adapters */
+        val identityAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, resources.getStringArray(R.array.identity))
+        identityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        identityType.adapter = identityAdapter
+        val sexAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, resources.getStringArray(R.array.sex))
+        sexAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        sex.adapter = sexAdapter
+        val maritalStatusAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, resources.getStringArray(R.array.marital_status))
+        maritalStatusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        maritalStatus.adapter = maritalStatusAdapter
+        val lastEducationAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, resources.getStringArray(R.array.last_education))
+        lastEducationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        lastEducation.adapter = lastEducationAdapter
+
+        /* Member View Model */
+        memberViewModel.member.observe(viewLifecycleOwner, Observer<Member> {
+            member ->
+            identityType.selection = member.jenisIdentitas
+            identityNo.text = member.noIdentitas
+            fullName.text = member.namaLengkap
+            birthDate.text = member.tanggalLahir
+            birthPlace.text = member.tempatLahir
+            sex.selection = member.jenisKelamin
+            motherName.text = member.namaGadisIbuKandung
+            maritalStatus.selection = member.statusPernikahan
+            lastEducation.selection = member.pendidikanTerakhir
+        })
+
         val nextButton = view.findViewById<Button>(R.id.next)
         nextButton.setOnClickListener { onNextButtonClicked(view) }
     }
@@ -72,46 +124,68 @@ class PersonalInformationFragment : Fragment() {
         val sex = view.findViewById<MaterialSpinner>(R.id.sex)
         val maritalStatus = view.findViewById<MaterialSpinner>(R.id.marital_status)
         val lastEducation = view.findViewById<MaterialSpinner>(R.id.last_education)
-        if(identityType.selectedItemPosition == 0) {
+
+        var allTrue = true
+
+        if(identityType.selectedItemId < 0) {
             identityType.error = "Jenis Identitas tidak boleh kosong"
+            allTrue = false
         }
         if(identityNo.text.toString().isEmpty()) {
             identityNoC.error = "No Identitas tidak boleh kosong"
+            allTrue = false
         }
         if(fullName.text.toString().isEmpty()) {
             fullNameC.error = "Nama Lengkap tidak boleh kosong"
+            allTrue = false
         }
         if(birthDate.text.toString().isEmpty()) {
             birthDateC.error = "Tanggal Lahir tidak boleh kosong"
+            allTrue = false
         }
         if(birthPlace.text.toString().isEmpty()) {
             birthPlaceC.error = "Tempat Lahir tidak boleh kosong"
+            allTrue = false
         }
-        if(sex.selectedItemPosition == 0) {
+        if(sex.selectedItemId < 0) {
             sex.error = "Jenis Kelamin tidak boleh kosong"
+            allTrue = false
         }
         if(motherName.text.toString().isEmpty()) {
             motherNameC.error = "Nama Gadis Ibu Kandung tidak boleh kosong"
+            allTrue = false
         }
-        if(maritalStatus.selectedItemPosition == 0) {
+        if(maritalStatus.selectedItemId < 0) {
             maritalStatus.error = "Status Pernikahan tidak boleh kosong"
+            allTrue = false
         }
-        if(lastEducation.selectedItemPosition == 0) {
+        if(lastEducation.selectedItemId < 0) {
             lastEducation.error = "Pendidikan Terakhir tidak boleh kosong"
+            allTrue = false
         }
-        if(identityType.selectedItemPosition > 0 &&
-            !identityNo.text.toString().isEmpty() &&
-            !fullName.text.toString().isEmpty() &&
-            !birthDate.text.toString().isEmpty() &&
-            !birthPlace.text.toString().isEmpty() &&
-            sex.selectedItemPosition > 0 &&
-            !motherName.text.toString().isEmpty() &&
-            maritalStatus.selectedItemPosition > 0 &&
-            lastEducation.selectedItemPosition > 0) {
-            val memberStatusView = activity!!.findViewById<StatusViewScroller>(R.id.status_view_member_acquisition)
-            memberStatusView.statusView.run {
-                currentCount += 1
+        if(allTrue) {
+//            val memberStatusView = activity!!.findViewById<StatusViewScroller>(R.id.status_view_member_acquisition)
+//            memberStatusView.statusView.run {
+//                currentCount += 1
+//            }
+            val stepView = activity!!.findViewById<StepView>(R.id.step_view)
+            stepView.go(1, true)
+
+            var member = memberViewModel.member.value
+            if(member == null) {
+                member = Member()
             }
+            member.jenisIdentitas = identityType.selection
+            member.noIdentitas = identityNo.text.toString()
+            member.namaLengkap = fullName.text.toString()
+            member.tanggalLahir = birthDate.text.toString()
+            member.tempatLahir = birthPlace.text.toString()
+            member.jenisKelamin = sex.selection
+            member.namaGadisIbuKandung = motherName.text.toString()
+            member.statusPernikahan = maritalStatus.selection
+            member.pendidikanTerakhir = lastEducation.selection
+
+            memberViewModel.setMember(member)
 
             val fragment = AddressFragment()
             val transaction = activity?.supportFragmentManager?.beginTransaction()

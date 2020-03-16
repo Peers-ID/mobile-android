@@ -40,21 +40,16 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <fr.ganfra.materialspinner.MaterialSpinner
+    <com.tiper.MaterialSpinner
         android:id="@+id/relationship"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:entries="@array/relationship"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        app:ms_multiline="false"
-        app:ms_hint="@string/relationship"
-        app:ms_enableFloatingLabel="true"
-        app:ms_enableErrorLabel="true"
-        app:ms_errorColor="#FF5F2D"
-        app:ms_floatingLabelText="@string/relationship"
-        app:ms_thickness="0.5dp"
-        app:ms_alignLabels="false" />
+        android:hint="@string/relationship"
+        android:prompt="@string/relationship"
+        app:errorEnabled="true" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"

@@ -3,22 +3,29 @@ package com.android.id.peers.members
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
-import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+
 import com.android.id.peers.R
+import com.android.id.peers.members.communication.MemberViewModel
+import com.android.id.peers.members.model.Member
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import fr.ganfra.materialspinner.MaterialSpinner
-import params.com.stepview.StatusViewScroller
+import com.shuhart.stepview.StepView
+import com.tiper.MaterialSpinner
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
+private var memberViewModel = MemberViewModel()
 
 /**
  * A simple [Fragment] subclass.
@@ -40,6 +47,7 @@ class OccupationFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+        memberViewModel = ViewModelProvider(activity!!).get(MemberViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -56,13 +64,107 @@ class OccupationFragment : Fragment() {
         nextButton.setOnClickListener { onNextButtonClicked(view) }
         val backButton = view.findViewById<Button>(R.id.back)
         backButton.setOnClickListener { onBackButtonClicked(view) }
+
+        val npwpExist = view.findViewById<MaterialSpinner>(R.id.npwp_exist)
+        var npwpExistAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, resources.getStringArray(R.array.npwp_exist))
+        npwpExistAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        npwpExist.adapter = npwpExistAdapter
+
+        val occupationStatus = view.findViewById<MaterialSpinner>(R.id.occupation_status)
+        var occupationStatusAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, resources.getStringArray(R.array.occupation_status))
+        occupationStatusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        occupationStatus.adapter = occupationStatusAdapter
+
+//        val npwpExist = view.findViewById<MaterialSpinner>(R.id.npwp_exist)
+        val npwpNo = view.findViewById<TextInputEditText>(R.id.npwp_no)
+//        val occupationStatus = view.findViewById<MaterialSpinner>(R.id.occupation_status)
+        val occupationField = view.findViewById<TextInputEditText>(R.id.occupation_field)
+        val occupationPosition = view.findViewById<TextInputEditText>(R.id.occupation_position)
+        val companyName = view.findViewById<TextInputEditText>(R.id.company_name)
+        val occupationHowLongMonth = view.findViewById<Spinner>(R.id.work_how_long_month)
+        val occupationHowLongYear = view.findViewById<Spinner>(R.id.work_how_long_year)
+        val occupationRevenue = view.findViewById<TextInputEditText>(R.id.occupation_revenue)
+        val addressStreet = view.findViewById<TextInputEditText>(R.id.address_street)
+        val addressNo = view.findViewById<TextInputEditText>(R.id.address_no)
+        val addressRT = view.findViewById<TextInputEditText>(R.id.address_rt)
+        val addressRW = view.findViewById<TextInputEditText>(R.id.address_rw)
+        val addressKelurahan = view.findViewById<TextInputEditText>(R.id.address_kelurahan)
+        val addressKecamatan = view.findViewById<TextInputEditText>(R.id.address_kecamatan)
+        val addressCity = view.findViewById<TextInputEditText>(R.id.address_city)
+
+        /* Member View Model */
+        memberViewModel.member.observe(viewLifecycleOwner, Observer<Member> {
+                member ->
+
+            npwpExist.selection = member.memilikiNpwp
+            npwpNo.setText(member.nomorNpwp)
+            occupationStatus.selection = member.pekerjaan
+            occupationField.setText(member.bidangPekerjaan)
+            occupationPosition.setText(member.posisiPekerjaan)
+            companyName.setText(member.namaPerusahaan)
+            occupationHowLongMonth.setSelection(member.lamaBulanBekerja)
+            occupationHowLongYear.setSelection(member.lamaTahunBekerja)
+            occupationRevenue.setText(member.penghasilan)
+            addressStreet.setText(member.jalanKantor)
+            addressNo.setText(member.nomorKantor)
+            addressRT.setText(member.rtKantor)
+            addressRW.setText(member.rwKantor)
+            addressKelurahan.setText(member.kelurahanKantor)
+            addressKecamatan.setText(member.kecamatanKantor)
+            addressCity.setText(member.kotaKantor)
+
+        })
+
     }
 
     private fun onBackButtonClicked(view: View) {
-        val memberStatusView = activity!!.findViewById<StatusViewScroller>(R.id.status_view_member_acquisition)
-        memberStatusView.statusView.run {
-            currentCount -= 1
+        val npwpExist = view.findViewById<MaterialSpinner>(R.id.npwp_exist)
+        val npwpNo = view.findViewById<TextInputEditText>(R.id.npwp_no)
+        val occupationStatus = view.findViewById<MaterialSpinner>(R.id.occupation_status)
+        val occupationField = view.findViewById<TextInputEditText>(R.id.occupation_field)
+        val occupationPosition = view.findViewById<TextInputEditText>(R.id.occupation_position)
+        val companyName = view.findViewById<TextInputEditText>(R.id.company_name)
+        val occupationHowLongMonth = view.findViewById<Spinner>(R.id.work_how_long_month)
+        val occupationHowLongYear = view.findViewById<Spinner>(R.id.work_how_long_year)
+        val occupationRevenue = view.findViewById<TextInputEditText>(R.id.occupation_revenue)
+        val addressStreet = view.findViewById<TextInputEditText>(R.id.address_street)
+        val addressNo = view.findViewById<TextInputEditText>(R.id.address_no)
+        val addressRT = view.findViewById<TextInputEditText>(R.id.address_rt)
+        val addressRW = view.findViewById<TextInputEditText>(R.id.address_rw)
+        val addressKelurahan = view.findViewById<TextInputEditText>(R.id.address_kelurahan)
+        val addressKecamatan = view.findViewById<TextInputEditText>(R.id.address_kecamatan)
+        val addressCity = view.findViewById<TextInputEditText>(R.id.address_city)
+
+//        val memberStatusView = activity!!.findViewById<StatusViewScroller>(R.id.status_view_member_acquisition)
+//        memberStatusView.statusView.run {
+//            currentCount -= 1
+//        }
+        val stepView = activity!!.findViewById<StepView>(R.id.step_view)
+        stepView.go(1, true)
+
+        var member = memberViewModel.member.value
+        if(member == null) {
+            member = Member()
         }
+
+        member.memilikiNpwp = npwpExist.selection
+        member.nomorNpwp = npwpNo.text.toString()
+        member.pekerjaan = occupationStatus.selection
+        member.bidangPekerjaan = occupationField.text.toString()
+        member.posisiPekerjaan = occupationPosition.text.toString()
+        member.namaPerusahaan = companyName.text.toString()
+        member.lamaBulanBekerja = occupationHowLongMonth.selectedItemPosition
+        member.lamaTahunBekerja = occupationHowLongYear.selectedItemPosition
+        member.penghasilan = occupationRevenue.text.toString()
+        member.jalanKantor = addressStreet.text.toString()
+        member.nomorKantor = addressNo.text.toString()
+        member.rtKantor = addressRT.text.toString()
+        member.rwKantor = addressRW.text.toString()
+        member.kelurahanKantor = addressKelurahan.text.toString()
+        member.kecamatanKantor = addressKecamatan.text.toString()
+        member.kotaKantor = addressCity.text.toString()
+
+        memberViewModel.setMember(member)
 
         val fragment = AddressFragment()
         val transaction = activity!!.supportFragmentManager.beginTransaction()
@@ -101,17 +203,17 @@ class OccupationFragment : Fragment() {
 
         var allTrue = true
 
-        if(npwpExist.selectedItemPosition == 0) {
+        if(npwpExist.selectedItemId < 0) {
             npwpExist.error = "Memiliki NPWP harus dipilih"
             allTrue = false
         }
-        if(npwpExist.selectedItemPosition == 1 && npwpNo.text.toString().isEmpty()) {
+        if(npwpExist.selectedItemId < 1 && npwpNo.text.toString().isEmpty()) {
             npwpNoC.error = "Nomor NPWP tidak boleh kosong"
             allTrue = false
         }else{
             npwpNoC.error = ""
         }
-        if(occupationStatus.selectedItemPosition == 0) {
+        if(occupationStatus.selectedItemId < 0) {
             occupationStatus.error = "Pekerjaan/Usaha tidak boleh kosong"
             allTrue = false
         }
@@ -164,10 +266,36 @@ class OccupationFragment : Fragment() {
             allTrue = false
         }
         if(allTrue) {
-            val memberStatusView = activity!!.findViewById<StatusViewScroller>(R.id.status_view_member_acquisition)
-            memberStatusView.statusView.run {
-                currentCount += 1
+//            val memberStatusView = activity!!.findViewById<StatusViewScroller>(R.id.status_view_member_acquisition)
+//            memberStatusView.statusView.run {
+//                currentCount += 1
+//            }
+            val stepView = activity!!.findViewById<StepView>(R.id.step_view)
+            stepView.go(3, true)
+
+            var member = memberViewModel.member.value
+            if(member == null) {
+                member = Member()
             }
+
+            member.memilikiNpwp = npwpExist.selection
+            member.nomorNpwp = npwpNo.text.toString()
+            member.pekerjaan = occupationStatus.selection
+            member.bidangPekerjaan = occupationField.text.toString()
+            member.posisiPekerjaan = occupationPosition.text.toString()
+            member.namaPerusahaan = companyName.text.toString()
+            member.lamaBulanBekerja = occupationHowLongMonth.selectedItemPosition
+            member.lamaTahunBekerja = occupationHowLongYear.selectedItemPosition
+            member.penghasilan = occupationRevenue.text.toString()
+            member.jalanKantor = addressStreet.text.toString()
+            member.nomorKantor = addressNo.text.toString()
+            member.rtKantor = addressRT.text.toString()
+            member.rwKantor = addressRW.text.toString()
+            member.kelurahanKantor = addressKelurahan.text.toString()
+            member.kecamatanKantor = addressKecamatan.text.toString()
+            member.kotaKantor = addressCity.text.toString()
+
+            memberViewModel.setMember(member)
 
             val fragment = EmergencyContactFragment()
             val transaction = activity!!.supportFragmentManager.beginTransaction()

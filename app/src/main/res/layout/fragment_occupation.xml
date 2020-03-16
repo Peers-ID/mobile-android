@@ -12,21 +12,16 @@
         android:layout_margin="@dimen/activity_horizontal_margin"
         android:orientation="vertical">
 
-        <fr.ganfra.materialspinner.MaterialSpinner
+        <com.tiper.MaterialSpinner
             android:id="@+id/npwp_exist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:entries="@array/npwp_exist"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            app:ms_multiline="false"
-            app:ms_hint="@string/npwp_exist"
-            app:ms_enableFloatingLabel="true"
-            app:ms_enableErrorLabel="true"
-            app:ms_errorColor="#FF5F2D"
-            app:ms_floatingLabelText="@string/npwp_exist"
-            app:ms_thickness="0.5dp"
-            app:ms_alignLabels="false" />
+            android:hint="@string/npwp_exist"
+            android:prompt="@string/npwp_exist"
+            app:errorEnabled="true" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/npwp_no_container"
@@ -45,21 +40,16 @@
         </com.google.android.material.textfield.TextInputLayout>
 
 
-        <fr.ganfra.materialspinner.MaterialSpinner
+        <com.tiper.MaterialSpinner
             android:id="@+id/occupation_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:entries="@array/occupation_status"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            app:ms_multiline="false"
-            app:ms_hint="@string/occupation_status"
-            app:ms_enableFloatingLabel="true"
-            app:ms_enableErrorLabel="true"
-            app:ms_errorColor="#FF5F2D"
-            app:ms_floatingLabelText="@string/occupation_status"
-            app:ms_thickness="0.5dp"
-            app:ms_alignLabels="false" />
+            android:hint="@string/occupation_status"
+            android:prompt="@string/occupation_status"
+            app:errorEnabled="true" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/occupation_field_container"
@@ -112,7 +102,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/address_how_long_text" />
+            android:text="@string/occupation_how_long" />
 
         <LinearLayout
             android:layout_width="match_parent"

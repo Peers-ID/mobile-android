@@ -19,21 +19,15 @@
 <!--            android:layout_marginTop="8dp"-->
 <!--            android:entries="@array/identity" />-->
 
-        <fr.ganfra.materialspinner.MaterialSpinner
+        <com.tiper.MaterialSpinner
             android:id="@+id/identity_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:entries="@array/identity"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            app:ms_multiline="false"
-            app:ms_hint="@string/identity"
-            app:ms_enableFloatingLabel="true"
-            app:ms_enableErrorLabel="true"
-            app:ms_errorColor="#FF5F2D"
-            app:ms_floatingLabelText="@string/identity"
-            app:ms_thickness="0.5dp"
-            app:ms_alignLabels="false" />
+            android:hint="@string/identity"
+            android:prompt="@string/identity"
+            app:errorEnabled="true" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/identity_no_container"
@@ -106,21 +100,16 @@
 <!--            android:layout_marginTop="8dp"-->
 <!--            android:entries="@array/sex" />-->
 
-        <fr.ganfra.materialspinner.MaterialSpinner
+        <com.tiper.MaterialSpinner
             android:id="@+id/sex"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:entries="@array/sex"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            app:ms_multiline="false"
-            app:ms_hint="@string/sex"
-            app:ms_enableFloatingLabel="true"
-            app:ms_enableErrorLabel="true"
-            app:ms_errorColor="#FF5F2D"
-            app:ms_floatingLabelText="@string/sex"
-            app:ms_thickness="0.5dp"
-            app:ms_alignLabels="false" />
+            android:hint="@string/sex"
+            android:prompt="@string/sex"
+            app:errorEnabled="true" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/mother_name_container"
@@ -145,37 +134,27 @@
 <!--            android:layout_marginTop="8dp"-->
 <!--            android:entries="@array/marital_status" />-->
 
-        <fr.ganfra.materialspinner.MaterialSpinner
+        <com.tiper.MaterialSpinner
             android:id="@+id/marital_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:entries="@array/marital_status"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            app:ms_multiline="false"
-            app:ms_hint="@string/marital_status"
-            app:ms_enableFloatingLabel="true"
-            app:ms_enableErrorLabel="true"
-            app:ms_errorColor="#FF5F2D"
-            app:ms_floatingLabelText="@string/marital_status"
-            app:ms_thickness="0.5dp"
-            app:ms_alignLabels="false" />
+            android:hint="@string/marital_status"
+            android:prompt="@string/marital_status"
+            app:errorEnabled="true" />
 
-        <fr.ganfra.materialspinner.MaterialSpinner
+        <com.tiper.MaterialSpinner
             android:id="@+id/last_education"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:entries="@array/last_education"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="32dp"
-            app:ms_multiline="false"
-            app:ms_hint="@string/last_education"
-            app:ms_enableFloatingLabel="true"
-            app:ms_enableErrorLabel="true"
-            app:ms_errorColor="#FF5F2D"
-            app:ms_floatingLabelText="@string/last_education"
-            app:ms_thickness="0.5dp"
-            app:ms_alignLabels="false" />
+            android:hint="@string/last_education"
+            android:prompt="@string/last_education"
+            app:errorEnabled="true" />
 
         <!--    <Spinner-->
         <!--        android:id="@+id/last_education"-->

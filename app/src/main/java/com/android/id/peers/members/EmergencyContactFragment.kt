@@ -4,21 +4,29 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Button
-import androidx.fragment.app.Fragment
+import android.widget.Spinner
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+
 import com.android.id.peers.R
+import com.android.id.peers.members.communication.MemberViewModel
+import com.android.id.peers.members.model.Member
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import fr.ganfra.materialspinner.MaterialSpinner
-import params.com.stepview.StatusViewScroller
+import com.shuhart.stepview.StepView
+import com.tiper.MaterialSpinner
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
+private var memberViewModel = MemberViewModel()
 
 /**
  * A simple [Fragment] subclass.
@@ -40,6 +48,7 @@ class EmergencyContactFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+        memberViewModel = ViewModelProvider(activity!!).get(MemberViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -56,13 +65,49 @@ class EmergencyContactFragment : Fragment() {
         nextButton.setOnClickListener { onNextButtonClicked(view) }
         val backButton = view.findViewById<Button>(R.id.back)
         backButton.setOnClickListener { onBackButtonClicked(view) }
+
+        val relationship = view.findViewById<MaterialSpinner>(R.id.relationship)
+        var relationshipAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, resources.getStringArray(R.array.relationship))
+        relationshipAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        relationship.adapter = relationshipAdapter
+
+        val emergencyName = view.findViewById<TextInputEditText>(R.id.emergency_name)
+        val handphoneNo = view.findViewById<TextInputEditText>(R.id.handphone_no)
+//        val relationship = view.findViewById<MaterialSpinner>(R.id.relationship)
+
+        /* Member View Model */
+        memberViewModel.member.observe(viewLifecycleOwner, Observer<Member> {
+                member ->
+
+            emergencyName.setText(member.namaEmergency)
+            handphoneNo.setText(member.noHpEmergency)
+            relationship.selection = member.hubunganEmergeny
+
+        })
     }
 
     private fun onBackButtonClicked(view: View) {
-        val memberStatusView = activity!!.findViewById<StatusViewScroller>(R.id.status_view_member_acquisition)
-        memberStatusView.statusView.run {
-            currentCount -= 1
+//        val memberStatusView = activity!!.findViewById<StatusViewScroller>(R.id.status_view_member_acquisition)
+//        memberStatusView.statusView.run {
+//            currentCount -= 1
+//        }
+        val stepView = activity!!.findViewById<StepView>(R.id.step_view)
+        stepView.go(2, true)
+
+        var member = memberViewModel.member.value
+        if(member == null) {
+            member = Member()
         }
+
+        val emergencyName = view.findViewById<TextInputEditText>(R.id.emergency_name)
+        val handphoneNo = view.findViewById<TextInputEditText>(R.id.handphone_no)
+        val relationship = view.findViewById<MaterialSpinner>(R.id.relationship)
+
+        member.namaEmergency = emergencyName.text.toString()
+        member.noHpEmergency = handphoneNo.text.toString()
+        member.hubunganEmergeny = relationship.selection
+
+        memberViewModel.setMember(member)
 
         val fragment = OccupationFragment()
         val transaction = activity!!.supportFragmentManager.beginTransaction()
@@ -86,7 +131,7 @@ class EmergencyContactFragment : Fragment() {
             handphoneNoC.error = "Bidang Pekerjaan/Usaha tidak boleh kosong"
             allTrue = false
         }
-        if(relationship.selectedItemPosition == 0) {
+        if(relationship.selectedItemId < 0) {
             relationship.error = "Pekerjaan/Usaha tidak boleh kosong"
             allTrue = false
         }
@@ -96,7 +141,20 @@ class EmergencyContactFragment : Fragment() {
 //                currentCount += 1
 //            }
 
+            var member = memberViewModel.member.value
+            if(member == null) {
+                member = Member()
+            }
+
+            member.namaEmergency = emergencyName.text.toString()
+            member.noHpEmergency = handphoneNo.text.toString()
+            member.hubunganEmergeny = relationship.selection
+
+            memberViewModel.setMember(member)
+
+
             val intent = Intent(activity, MemberAcquisitionConfirmationActivity::class.java)
+            intent.putExtra("member", memberViewModel.member.value)
             startActivity(intent)
         }
     }

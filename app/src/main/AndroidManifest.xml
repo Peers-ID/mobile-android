@@ -9,17 +9,28 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".members.MemberAcquisitionConfirmationActivity"></activity>
-        <activity android:name=".members.MemberAcquisitionActivity">
-
-        </activity>
+        <activity android:name=".loans.RepaymentCollectionActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name=".loans.LoanDisbursementActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".loans.LoanApplicationActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".members.TermsActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".members.MemberAcquisitionConfirmationActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".members.MemberAcquisitionActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".forgot.ForgotPasswordActivity"
-            android:theme="@style/NoActionBarTheme" />
+            android:theme="@style/NoActionBarTheme"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".login.LoginActivity"
-            android:theme="@style/NoActionBarTheme"></activity>
-        <activity android:name=".MainActivity">
+            android:theme="@style/NoActionBarTheme"
+            android:screenOrientation="portrait" />
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

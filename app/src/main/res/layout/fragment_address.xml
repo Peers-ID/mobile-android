@@ -124,21 +124,16 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <fr.ganfra.materialspinner.MaterialSpinner
+        <com.tiper.MaterialSpinner
             android:id="@+id/address_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:entries="@array/address_status"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            app:ms_multiline="false"
-            app:ms_hint="@string/address_status"
-            app:ms_enableFloatingLabel="true"
-            app:ms_enableErrorLabel="true"
-            app:ms_errorColor="#FF5F2D"
-            app:ms_floatingLabelText="@string/address_status"
-            app:ms_thickness="0.5dp"
-            app:ms_alignLabels="false" />
+            android:hint="@string/address_status"
+            android:prompt="@string/address_status"
+            app:errorEnabled="true" />
 
         <TextView
             android:layout_width="match_parent"
@@ -284,21 +279,16 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <fr.ganfra.materialspinner.MaterialSpinner
+        <com.tiper.MaterialSpinner
             android:id="@+id/address_status_domisili"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:entries="@array/address_status"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            app:ms_multiline="false"
-            app:ms_hint="@string/address_status_domisili"
-            app:ms_enableFloatingLabel="true"
-            app:ms_enableErrorLabel="true"
-            app:ms_errorColor="#FF5F2D"
-            app:ms_floatingLabelText="@string/address_status_domisili"
-            app:ms_thickness="0.5dp"
-            app:ms_alignLabels="false" />
+            android:hint="@string/address_status_domisili"
+            android:prompt="@string/address_status_domisili"
+            app:errorEnabled="true" />
 
         <TextView
             android:layout_width="match_parent"

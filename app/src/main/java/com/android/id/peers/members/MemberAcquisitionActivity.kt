@@ -1,8 +1,8 @@
 package com.android.id.peers.members
 
 import android.net.Uri
-import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
 import com.android.id.peers.R
 
 class MemberAcquisitionActivity : AppCompatActivity(), PersonalInformationFragment.OnFragmentInteractionListener,
@@ -15,5 +15,6 @@ class MemberAcquisitionActivity : AppCompatActivity(), PersonalInformationFragme
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_member_acquisition)
+        title = "Member Acquisition"
     }
 }

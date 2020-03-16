@@ -1,11 +1,11 @@
 package com.android.id.peers.forgot
 
 import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import com.android.id.peers.R
 import com.android.id.peers.login.LoginActivity
 import com.google.android.material.textfield.TextInputEditText
