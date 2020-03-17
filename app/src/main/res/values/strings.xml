@@ -107,4 +107,6 @@
     <string name="loan_application">Loan\nApplication</string>
     <string name="repayment_collection">Repayment\nCollection</string>
     <string name="loan_disbursement">Loan\nDisbursement</string>
+    <string name="service_fee">Service Fee</string>
+    <string name="ajukan">Ajukan</string>
 </resources>
