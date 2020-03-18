@@ -1,13 +1,11 @@
 package com.android.id.peers.loans
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.LinearLayout
-import android.widget.SeekBar
+import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
-import android.widget.TextView
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.constraintlayout.widget.ConstraintSet.*
@@ -98,47 +96,61 @@ class LoanApplicationActivity : AppCompatActivity() {
         var serviceFee = findViewById<TextView>(R.id.service_fee)
         serviceFee.text = String.format("%d", fee)
 
-        val linearLayoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-        linearLayoutParams.marginStart = (resources. getDimension(R.dimen.activity_horizontal_margin)).toInt()
-        linearLayoutParams.marginEnd = (resources. getDimension(R.dimen.activity_horizontal_margin)).toInt()
-        linearLayoutParams.topMargin = (resources. getDimension(R.dimen.activity_vertical_margin)).toInt()
-        linearLayoutParams.bottomMargin = (resources. getDimension(R.dimen.margin_between)).toInt()
-        val feeContainer1 = ConstraintLayout(this)
-        feeContainer1.id = ConstraintLayout.generateViewId()
-        feeContainer1.layoutParams = linearLayoutParams
-        this.loan_container.addView(feeContainer1)
-        val constraintSet = ConstraintSet()
-        val constraintLayoutParams = ConstraintLayout.LayoutParams(
-            ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT
-        )
-        val otherFeeText = TextView(this)
-        otherFeeText.id = TextView.generateViewId()
-        Log.d("Loan Activitiy", "other Fee Text ID : " + String.format("%d", otherFeeText.id))
-        otherFeeText.text = "Other Fee"
-        otherFeeText.layoutParams = constraintLayoutParams
+        for(i in 1..5) {
+            val linearLayoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            linearLayoutParams.marginStart = (resources. getDimension(R.dimen.activity_horizontal_margin)).toInt()
+            linearLayoutParams.marginEnd = (resources. getDimension(R.dimen.activity_horizontal_margin)).toInt()
+            linearLayoutParams.topMargin = (resources. getDimension(R.dimen.activity_vertical_margin)).toInt()
+            linearLayoutParams.bottomMargin = (resources. getDimension(R.dimen.margin_between)).toInt()
+            val feeContainer1 = ConstraintLayout(this)
+            feeContainer1.id = ConstraintLayout.generateViewId()
+            feeContainer1.layoutParams = linearLayoutParams
+            this.loan_container.addView(feeContainer1)
+            val otherFeeText = TextView(this)
+            otherFeeText.id = TextView.generateViewId()
+            otherFeeText.text = "Other Fee"
 
-        val otherFee = TextView(this)
-        otherFee.id = TextView.generateViewId()
-        Log.d("Loan Activitiy", "other Fee ID : " + String.format("%d", otherFee.id))
-        otherFee.text = "2000000"
-        otherFee.layoutParams = constraintLayoutParams
+            val otherFee = TextView(this)
+            otherFee.id = TextView.generateViewId()
+            otherFee.text = "2000000"
 
-        feeContainer1.addView(otherFeeText)
-        feeContainer1.addView(otherFee)
-        constraintSet.clone(feeContainer1)
+            feeContainer1.addView(otherFeeText)
+            feeContainer1.addView(otherFee)
 
-        constraintSet.connect(otherFeeText.id, TOP, PARENT_ID, TOP)
-        constraintSet.connect(otherFeeText.id, START, PARENT_ID, START)
-        constraintSet.connect(otherFeeText.id, BOTTOM, PARENT_ID, BOTTOM)
+            val constraintSet = ConstraintSet()
+            constraintSet.clone(feeContainer1)
+            constraintSet.constrainHeight(otherFeeText.id, WRAP_CONTENT)
+            constraintSet.constrainWidth(otherFeeText.id, WRAP_CONTENT)
+            constraintSet.setHorizontalBias(otherFeeText.id, 0F)
 
-        constraintSet.connect(otherFee.id, TOP, PARENT_ID, TOP)
-        constraintSet.connect(otherFee.id, BOTTOM, PARENT_ID, BOTTOM)
-        constraintSet.connect(otherFee.id, END, PARENT_ID, END)
+            constraintSet.constrainHeight(otherFee.id, WRAP_CONTENT)
+            constraintSet.constrainWidth(otherFee.id, WRAP_CONTENT)
+            constraintSet.setHorizontalBias(otherFee.id, 0.5F)
 
-        constraintSet.applyTo(feeContainer1)
+            constraintSet.connect(otherFeeText.id, TOP, PARENT_ID, TOP)
+            constraintSet.connect(otherFeeText.id, START, PARENT_ID, START)
+            constraintSet.connect(otherFeeText.id, BOTTOM, PARENT_ID, BOTTOM)
+            constraintSet.connect(otherFeeText.id, END, PARENT_ID, END)
 
+            constraintSet.connect(otherFee.id, TOP, PARENT_ID, TOP)
+            constraintSet.connect(otherFee.id, START, PARENT_ID, START)
+            constraintSet.connect(otherFee.id, BOTTOM, PARENT_ID, BOTTOM)
+            constraintSet.connect(otherFee.id, END, PARENT_ID, END)
+
+            constraintSet.applyTo(feeContainer1)
+        }
+
+//        this.loan_container.addView(feeContainer1)
+        var ajukan = findViewById<Button>(R.id.ajukan)
+        ajukan.setOnClickListener { ajukanPinjaman() }
+    }
+
+    fun ajukanPinjaman() {
+//        val intent = Intent(this, LoanApplicationConfirmationActivity::class.java)
+//        intent.putExtra("member", memberViewModel.member.value)
+//        startActivity(intent)
 
     }
 }
