@@ -3,14 +3,15 @@ package com.android.id.peers.loans
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.constraintlayout.widget.ConstraintSet.*
 import com.android.id.peers.R
+import com.android.id.peers.loans.model.Loan
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.activity_loan_application.*
 
 class LoanApplicationActivity : AppCompatActivity() {
@@ -22,6 +23,8 @@ class LoanApplicationActivity : AppCompatActivity() {
 
         val minLoanText = findViewById<TextView>(R.id.min_loan_text)
         val maxLoanText = findViewById<TextView>(R.id.max_loan_text)
+        val handphoneNoC = findViewById<TextInputLayout>(R.id.handphone_no_container)
+        val handphoneNo = findViewById<TextInputEditText>(R.id.emergency_handphone_no)
         val numberOfLoanText = findViewById<TextInputEditText>(R.id.number_of_loan)
         val numberOfLoan = findViewById<SeekBar>(R.id.number_of_loan_seek_bar)
         var minLoan = 500000
@@ -143,14 +146,29 @@ class LoanApplicationActivity : AppCompatActivity() {
         }
 
 //        this.loan_container.addView(feeContainer1)
-        var ajukan = findViewById<Button>(R.id.ajukan)
-        ajukan.setOnClickListener { ajukanPinjaman() }
-    }
+        val ajukan = findViewById<Button>(R.id.ajukan)
+        ajukan.setOnClickListener {
+            var allTrue = true
 
-    fun ajukanPinjaman() {
-//        val intent = Intent(this, LoanApplicationConfirmationActivity::class.java)
-//        intent.putExtra("member", memberViewModel.member.value)
-//        startActivity(intent)
+            if(handphoneNo.text.toString().isEmpty()) {
+                handphoneNoC.error = "Nomor HP tidak boleh kosong"
+                allTrue = false
+            }
+            if(allTrue) {
+                val intent = Intent(this, LoanApplicationConfirmationActivity::class.java)
+                val otherFees = ArrayList<Pair<String, Long>>()
+                otherFees.add(Pair("Unexpected Fees", 2500000))
+                otherFees.add(Pair("Additional Fees", 2500000))
+                otherFees.add(Pair("Other Fees", 5000000))
+                val loan = Loan(otherFees = otherFees)
+                loan.noHp = handphoneNo.text.toString()
+                loan.numberOfLoan = numberOfLoanText.text.toString().toLong()
+                loan.tenor = tenorText.text.toString().toLong()
+                loan.serviceFee = tenorText.text.toString().toLong()
+                intent.putExtra("numberOfLoan", loan)
+                startActivity(intent)
+            }
+        }
 
     }
 }

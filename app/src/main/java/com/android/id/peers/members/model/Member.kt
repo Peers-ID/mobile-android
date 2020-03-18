@@ -6,11 +6,12 @@ import kotlinx.android.parcel.Parceler
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class Member(
+data class Member (
     /* personal */
     var jenisIdentitas: Int = -1,
     var noIdentitas : String = "",
     var namaLengkap : String = "",
+    var noHp : String = "",
     var tanggalLahir : String = "",
     var tempatLahir : String = "",
     var jenisKelamin: Int = -1,

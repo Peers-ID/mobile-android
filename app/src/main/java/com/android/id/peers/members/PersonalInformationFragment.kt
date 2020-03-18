@@ -3,16 +3,12 @@ package com.android.id.peers.members
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
-import androidx.core.view.get
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 
@@ -23,7 +19,6 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.shuhart.stepview.StepView
 import com.tiper.MaterialSpinner
-import org.w3c.dom.Text
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -68,12 +63,13 @@ class PersonalInformationFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val identityType = view.findViewById<MaterialSpinner>(R.id.identity_type)
-        val identityNo = view.findViewById<TextView>(R.id.identity_no)
-        val fullName = view.findViewById<TextView>(R.id.full_name)
-        val birthDate = view.findViewById<TextView>(R.id.birth_date)
-        val birthPlace = view.findViewById<TextView>(R.id.birth_place)
+        val identityNo = view.findViewById<TextInputEditText>(R.id.identity_no)
+        val fullName = view.findViewById<TextInputEditText>(R.id.full_name)
+        val handphoneNo = view.findViewById<TextInputEditText>(R.id.emergency_handphone_no)
+        val birthDate = view.findViewById<TextInputEditText>(R.id.birth_date)
+        val birthPlace = view.findViewById<TextInputEditText>(R.id.birth_place)
         val sex = view.findViewById<MaterialSpinner>(R.id.sex)
-        val motherName = view.findViewById<TextView>(R.id.mother_name)
+        val motherName = view.findViewById<TextInputEditText>(R.id.mother_name)
         val maritalStatus = view.findViewById<MaterialSpinner>(R.id.marital_status)
         val lastEducation = view.findViewById<MaterialSpinner>(R.id.last_education)
 
@@ -95,12 +91,13 @@ class PersonalInformationFragment : Fragment() {
         memberViewModel.member.observe(viewLifecycleOwner, Observer<Member> {
             member ->
             identityType.selection = member.jenisIdentitas
-            identityNo.text = member.noIdentitas
-            fullName.text = member.namaLengkap
-            birthDate.text = member.tanggalLahir
-            birthPlace.text = member.tempatLahir
+            identityNo.setText(member.noIdentitas)
+            fullName.setText(member.namaLengkap)
+            handphoneNo.setText(member.noHp)
+            birthDate.setText(member.tanggalLahir)
+            birthPlace.setText(member.tempatLahir)
             sex.selection = member.jenisKelamin
-            motherName.text = member.namaGadisIbuKandung
+            motherName.setText(member.namaGadisIbuKandung)
             maritalStatus.selection = member.statusPernikahan
             lastEducation.selection = member.pendidikanTerakhir
         })
@@ -117,6 +114,8 @@ class PersonalInformationFragment : Fragment() {
         val identityNo = view.findViewById<TextInputEditText>(R.id.identity_no)
         val fullNameC = view.findViewById<TextInputLayout>(R.id.full_name_container)
         val fullName = view.findViewById<TextInputEditText>(R.id.full_name)
+        val handphoneNoC = view.findViewById<TextInputEditText>(R.id.handphone_no_container)
+        val handphoneNo = view.findViewById<TextInputEditText>(R.id.emergency_handphone_no)
         val birthDateC = view.findViewById<TextInputLayout>(R.id.birth_date_container)
         val birthDate = view.findViewById<TextInputEditText>(R.id.birth_date)
         val birthPlaceC = view.findViewById<TextInputLayout>(R.id.birth_place_container)
@@ -137,6 +136,10 @@ class PersonalInformationFragment : Fragment() {
         }
         if(fullName.text.toString().isEmpty()) {
             fullNameC.error = "Nama Lengkap tidak boleh kosong"
+            allTrue = false
+        }
+        if(handphoneNo.text.toString().isEmpty()) {
+            handphoneNoC.error = "No Handphone tidak boleh kosong"
             allTrue = false
         }
         if(birthDate.text.toString().isEmpty()) {
@@ -178,6 +181,7 @@ class PersonalInformationFragment : Fragment() {
             member.jenisIdentitas = identityType.selection
             member.noIdentitas = identityNo.text.toString()
             member.namaLengkap = fullName.text.toString()
+            member.noHp = handphoneNo.text.toString()
             member.tanggalLahir = birthDate.text.toString()
             member.tempatLahir = birthPlace.text.toString()
             member.jenisKelamin = sex.selection

@@ -7,12 +7,10 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.android.id.peers.R
 import com.android.id.peers.loans.LoanApplicationActivity
 import com.android.id.peers.members.model.Member
-import org.w3c.dom.Text
 
 class MemberAcquisitionConfirmationActivity : AppCompatActivity() {
 
@@ -23,6 +21,7 @@ class MemberAcquisitionConfirmationActivity : AppCompatActivity() {
         val identityType = findViewById<TextView>(R.id.identity_type)
         val identityNo = findViewById<TextView>(R.id.identity_no)
         val fullName = findViewById<TextView>(R.id.full_name)
+        val handphoneNo = findViewById<TextView>(R.id.handphone_no)
         val birthDate = findViewById<TextView>(R.id.birth_date)
         val birthPlace = findViewById<TextView>(R.id.birth_place)
         val sex = findViewById<TextView>(R.id.sex)
@@ -67,7 +66,7 @@ class MemberAcquisitionConfirmationActivity : AppCompatActivity() {
         val officeAddressCity = findViewById<TextView>(R.id.office_address_city)
 
         val emergencyName = findViewById<TextView>(R.id.emergency_name)
-        val handphoneNo = findViewById<TextView>(R.id.handphone_no)
+        val emergencyHandphoneNo = findViewById<TextView>(R.id.emergency_handphone_no)
         val relationship = findViewById<TextView>(R.id.relationship)
 
         val submitButton = findViewById<Button>(R.id.submit_button)
@@ -82,6 +81,7 @@ class MemberAcquisitionConfirmationActivity : AppCompatActivity() {
             }
             identityNo.text = member.noIdentitas
             fullName.text = member.namaLengkap
+            handphoneNo.text = member.noHp
             birthDate.text = member.tanggalLahir
             birthPlace.text = member.tempatLahir
             when(member.jenisKelamin) {
@@ -168,7 +168,7 @@ class MemberAcquisitionConfirmationActivity : AppCompatActivity() {
             officeAddressCity.text = member.kotaKantor
 
             emergencyName.text = member.namaEmergency
-            handphoneNo.text = member.noHpEmergency
+            emergencyHandphoneNo.text = member.noHpEmergency
             when(member.hubunganEmergeny) {
                 0 -> relationship.text = "Suami/Istri"
                 1 -> relationship.text = "Saudara Kandung"

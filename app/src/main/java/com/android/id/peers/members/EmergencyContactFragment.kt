@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
-import android.widget.Spinner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 
@@ -72,7 +71,7 @@ class EmergencyContactFragment : Fragment() {
         relationship.adapter = relationshipAdapter
 
         val emergencyName = view.findViewById<TextInputEditText>(R.id.emergency_name)
-        val handphoneNo = view.findViewById<TextInputEditText>(R.id.handphone_no)
+        val handphoneNo = view.findViewById<TextInputEditText>(R.id.emergency_handphone_no)
 //        val relationship = view.findViewById<MaterialSpinner>(R.id.relationship)
 
         /* Member View Model */
@@ -100,7 +99,7 @@ class EmergencyContactFragment : Fragment() {
         }
 
         val emergencyName = view.findViewById<TextInputEditText>(R.id.emergency_name)
-        val handphoneNo = view.findViewById<TextInputEditText>(R.id.handphone_no)
+        val handphoneNo = view.findViewById<TextInputEditText>(R.id.emergency_handphone_no)
         val relationship = view.findViewById<MaterialSpinner>(R.id.relationship)
 
         member.namaEmergency = emergencyName.text.toString()
@@ -117,7 +116,7 @@ class EmergencyContactFragment : Fragment() {
     private fun onNextButtonClicked(view: View) {
         val emergencyName = view.findViewById<TextInputEditText>(R.id.emergency_name)
         val emergencyNameC = view.findViewById<TextInputLayout>(R.id.emergency_name_container)
-        val handphoneNo = view.findViewById<TextInputEditText>(R.id.handphone_no)
+        val handphoneNo = view.findViewById<TextInputEditText>(R.id.emergency_handphone_no)
         val handphoneNoC = view.findViewById<TextInputLayout>(R.id.handphone_no_container)
         val relationship = view.findViewById<MaterialSpinner>(R.id.relationship)
 
