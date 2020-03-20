@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.android.id.peers.R
+import com.android.id.peers.TermsActivity
 import com.android.id.peers.loans.LoanApplicationActivity
 import com.android.id.peers.members.model.Member
 

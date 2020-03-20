@@ -10,7 +10,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import com.android.id.peers.R
 import com.android.id.peers.loans.model.Loan
-import com.android.id.peers.members.TermsActivity
+import com.android.id.peers.TermsActivity
 import kotlinx.android.synthetic.main.activity_loan_application.*
 
 class LoanApplicationConfirmationActivity : AppCompatActivity() {

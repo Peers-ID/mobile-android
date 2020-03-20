@@ -9,9 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".loans.LoanApplicationConfirmationActivity"
-            android:screenOrientation="portrait">
-        </activity>
+        <activity android:name=".VerificationActivity"></activity>
+        <activity
+            android:name=".loans.LoanApplicationConfirmationActivity"
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".loans.RepaymentCollectionActivity"
             android:screenOrientation="portrait" />
@@ -22,7 +23,7 @@
             android:name=".loans.LoanApplicationActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".members.TermsActivity"
+            android:name=".TermsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBarTheme" />
         <activity
