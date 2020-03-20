@@ -21,6 +21,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
+//        supportActionBar!!.setLogo()
+
         val preferences = getSharedPreferences("loginData", Context.MODE_PRIVATE)
 
         val username = preferences.getString("username", "")

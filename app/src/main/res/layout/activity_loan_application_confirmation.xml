@@ -164,6 +164,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            android:paddingStart="@dimen/activity_vertical_margin"
+            android:paddingEnd="@dimen/activity_vertical_margin"
             android:background="@color/colorWhite"
             android:textColor="@color/colorDarkButton"
             android:theme="@style/PeersButton"

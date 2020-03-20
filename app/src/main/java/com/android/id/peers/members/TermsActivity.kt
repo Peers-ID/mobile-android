@@ -1,14 +1,15 @@
 package com.android.id.peers.members
 
+import android.content.res.ColorStateList
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.util.DisplayMetrics
 import android.util.Log
-import android.view.ViewTreeObserver
 import android.view.ViewTreeObserver.*
 import android.widget.Button
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatCheckBox
 import com.android.id.peers.R
 
 class TermsActivity : AppCompatActivity() {
@@ -23,6 +24,7 @@ class TermsActivity : AppCompatActivity() {
 
         val termsText = findViewById<TextView>(R.id.terms_text)
         val termsTextArea = findViewById<TextView>(R.id.terms_text_area)
+        val agree = findViewById<AppCompatCheckBox>(R.id.agree)
         val lanjutkan = findViewById<Button>(R.id.lanjutkan)
         Log.d("TermsActivity", String.format("%d", termsTextArea.layoutParams.height))
 
@@ -34,11 +36,18 @@ class TermsActivity : AppCompatActivity() {
             override fun onGlobalLayout() {
                 lanjutkan.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 Log.d("TermsActivity", "HAHAHA" + String.format("%d", termsText.height))
-                val temp = height - termsText.height - lanjutkan.height - 6 * resources.getDimension(R.dimen.activity_vertical_margin).toInt()
+                val temp = height - termsText.height - agree.height - lanjutkan.height - 7 * resources.getDimension(R.dimen.activity_vertical_margin).toInt() - resources.getDimension(R.dimen.margin_between).toInt()
                 termsTextArea.layoutParams.height = temp
                 termsTextArea.requestLayout()
                 Log.d("TermsActivity", "WKWKWK" + String.format("%d", termsTextArea.layoutParams.height))
             }
         })
+
+        lanjutkan.setOnClickListener {
+            if(!agree.isChecked) {
+                agree.supportButtonTintList = ColorStateList.valueOf(resources.getColor(android.R.color.holo_red_dark))
+                agree.setTextColor(resources.getColor(android.R.color.holo_red_dark))
+            }
+        }
     }
 }
