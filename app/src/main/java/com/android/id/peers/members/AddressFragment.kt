@@ -16,12 +16,11 @@ import androidx.lifecycle.ViewModelProvider
 
 import com.android.id.peers.R
 import com.android.id.peers.members.communication.MemberViewModel
-import com.android.id.peers.members.model.Member
+import com.android.id.peers.members.models.Member
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.shuhart.stepview.StepView
 import com.tiper.MaterialSpinner
-import kotlinx.android.synthetic.main.fragment_personal_information.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER

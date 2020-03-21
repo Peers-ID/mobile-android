@@ -11,7 +11,7 @@ import androidx.appcompat.app.AlertDialog
 import com.android.id.peers.R
 import com.android.id.peers.TermsActivity
 import com.android.id.peers.loans.LoanApplicationActivity
-import com.android.id.peers.members.model.Member
+import com.android.id.peers.members.models.Member
 
 class MemberAcquisitionConfirmationActivity : AppCompatActivity() {
 
@@ -204,6 +204,8 @@ class MemberAcquisitionConfirmationActivity : AppCompatActivity() {
 
     val negativeButtonClick = { dialog: DialogInterface, which: Int ->
         val intent = Intent(this, TermsActivity::class.java)
+        val handphoneNo = findViewById<TextView>(R.id.handphone_no)
+        intent.putExtra("hand_phone", handphoneNo.text.toString())
         startActivity(intent)
     }
 }

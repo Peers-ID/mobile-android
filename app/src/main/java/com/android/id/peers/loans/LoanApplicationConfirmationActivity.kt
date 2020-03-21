@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import com.android.id.peers.R
-import com.android.id.peers.loans.model.Loan
+import com.android.id.peers.loans.models.Loan
 import com.android.id.peers.TermsActivity
 import kotlinx.android.synthetic.main.activity_loan_application.*
 
@@ -120,6 +120,7 @@ class LoanApplicationConfirmationActivity : AppCompatActivity() {
 
         lanjutkan.setOnClickListener {
             val intent = Intent(this, TermsActivity::class.java)
+            intent.putExtra("hand_phone", handphoneNo.text.toString())
             startActivity(intent)
         }
     }

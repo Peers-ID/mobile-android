@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 
 import com.android.id.peers.R
 import com.android.id.peers.members.communication.MemberViewModel
-import com.android.id.peers.members.model.Member
+import com.android.id.peers.members.models.Member
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.shuhart.stepview.StepView

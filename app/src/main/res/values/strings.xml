@@ -133,4 +133,11 @@ Donec sodales mollis porta. Donec interdum, lacus ac imperdiet placerat, velit n
 
 Ut at nulla turpis. Maecenas scelerisque felis ut gravida ornare. Integer urna libero, laoreet eu erat nec, aliquam sagittis diam. Cras vehicula egestas neque id fringilla. Nulla in elit venenatis enim venenatis porttitor eget ac mi. Ut suscipit dignissim mi. Aenean at orci at libero bibendum rutrum vel sed elit. Cras pulvinar viverra libero ut pellentesque. Integer non imperdiet dolor, eu consectetur arcu. Cras laoreet ac neque a blandit. Proin vestibulum semper tortor ut vulputate. </string>
     <string name="agree">Saya memahami dan menyetujui</string>
+    <string name="loan_no_text">No : </string>
+    <string name="member_name_text">Member Name :</string>
+    <string name="total_disburse_text">Total Disburse :</string>
+    <string name="notice">Sistem akan menelpon ke nomor</string>
+    <string name="lengkapi">Lengkapi 4 digit-nya</string>
+    <string name="tidak">Tidak menerima telpon? <u>ulangi</u></string>
+    <string name="verifikasi">Verifikasi</string>
 </resources>

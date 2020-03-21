@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayShowHomeEnabled(true)
 //        supportActionBar!!.setLogo(R.drawable.peers_logo_dark)
         supportActionBar!!.setDisplayUseLogoEnabled(true)
+        title = ""
 
         val preferences = getSharedPreferences("loginData", Context.MODE_PRIVATE)
 

@@ -1,5 +1,6 @@
 package com.android.id.peers
 
+import android.content.Intent
 import android.content.res.ColorStateList
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -13,9 +14,13 @@ import androidx.appcompat.widget.AppCompatCheckBox
 
 class TermsActivity : AppCompatActivity() {
 
+    var noHP = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_terms)
+
+        noHP = (intent.getStringExtra("hand_phone"))!!
 
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
@@ -46,6 +51,10 @@ class TermsActivity : AppCompatActivity() {
             if(!agree.isChecked) {
                 agree.supportButtonTintList = ColorStateList.valueOf(resources.getColor(android.R.color.holo_red_dark))
                 agree.setTextColor(resources.getColor(android.R.color.holo_red_dark))
+            }else {
+                val intent = Intent(this, VerificationActivity::class.java)
+                intent.putExtra("hand_phone", noHP)
+                startActivity(intent)
             }
         }
     }
