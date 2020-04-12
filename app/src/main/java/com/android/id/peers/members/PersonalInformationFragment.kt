@@ -1,6 +1,8 @@
 package com.android.id.peers.members
 
+import android.app.DatePickerDialog
 import android.content.Context
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -8,17 +10,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.Button
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 
 import com.android.id.peers.R
-import com.android.id.peers.members.communication.MemberViewModel
+import com.android.id.peers.util.communication.MemberViewModel
 import com.android.id.peers.members.models.Member
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
 import com.shuhart.stepview.StepView
-import com.tiper.MaterialSpinner
+import kotlinx.android.synthetic.main.fragment_personal_information.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -62,108 +63,96 @@ class PersonalInformationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val identityType = view.findViewById<MaterialSpinner>(R.id.identity_type)
-        val identityNo = view.findViewById<TextInputEditText>(R.id.identity_no)
-        val fullName = view.findViewById<TextInputEditText>(R.id.full_name)
-        val handphoneNo = view.findViewById<TextInputEditText>(R.id.emergency_handphone_no)
-        val birthDate = view.findViewById<TextInputEditText>(R.id.birth_date)
-        val birthPlace = view.findViewById<TextInputEditText>(R.id.birth_place)
-        val sex = view.findViewById<MaterialSpinner>(R.id.sex)
-        val motherName = view.findViewById<TextInputEditText>(R.id.mother_name)
-        val maritalStatus = view.findViewById<MaterialSpinner>(R.id.marital_status)
-        val lastEducation = view.findViewById<MaterialSpinner>(R.id.last_education)
+        val configPreferences: SharedPreferences = activity!!.getSharedPreferences("member_config", Context.MODE_PRIVATE)
+
+        if (configPreferences.getInt("jenis_identitas", 1) == 0) identity_type.visibility = View.GONE
+        if (configPreferences.getInt("no_identitas", 1) == 0) identity_no.visibility = View.GONE
+        if (configPreferences.getInt("nama_lengkap", 1) == 0) full_name.visibility = View.GONE
+        if (configPreferences.getInt("no_hp", 1) == 0) handphone_no.visibility = View.GONE
+        if (configPreferences.getInt("tanggal_lahir", 1) == 0) birth_date.visibility = View.GONE
+        if (configPreferences.getInt("tempat_lahir", 1) == 0) birth_place.visibility = View.GONE
+        if (configPreferences.getInt("jenis_kelamin", 1) == 0) sex.visibility = View.GONE
+        if (configPreferences.getInt("nama_gadis_ibu", 1) == 0) mother_name.visibility = View.GONE
+        if (configPreferences.getInt("status_perkawinan", 1) == 0) marital_status.visibility = View.GONE
+        if (configPreferences.getInt("pendidikan_terakhir", 1) == 0) last_education.visibility = View.GONE
+
+        birth_date.keyListener = null
+        birth_date.setOnClickListener { showDialog(view) }
 
         /* MaterialSpinner Adapters */
         val identityAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, resources.getStringArray(R.array.identity))
         identityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        identityType.adapter = identityAdapter
+        identity_type.adapter = identityAdapter
         val sexAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, resources.getStringArray(R.array.sex))
         sexAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         sex.adapter = sexAdapter
         val maritalStatusAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, resources.getStringArray(R.array.marital_status))
         maritalStatusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        maritalStatus.adapter = maritalStatusAdapter
+        marital_status.adapter = maritalStatusAdapter
         val lastEducationAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, resources.getStringArray(R.array.last_education))
         lastEducationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        lastEducation.adapter = lastEducationAdapter
+        last_education.adapter = lastEducationAdapter
 
         /* Member View Model */
         memberViewModel.member.observe(viewLifecycleOwner, Observer<Member> {
             member ->
-            identityType.selection = member.jenisIdentitas
-            identityNo.setText(member.noIdentitas)
-            fullName.setText(member.namaLengkap)
-            handphoneNo.setText(member.noHp)
-            birthDate.setText(member.tanggalLahir)
-            birthPlace.setText(member.tempatLahir)
+            identity_type.selection = member.jenisIdentitas
+            identity_no.setText(member.noIdentitas)
+            full_name.setText(member.namaLengkap)
+            handphone_no.setText(member.noHp)
+            birth_date.setText(member.tanggalLahir)
+            birth_place.setText(member.tempatLahir)
             sex.selection = member.jenisKelamin
-            motherName.setText(member.namaGadisIbuKandung)
-            maritalStatus.selection = member.statusPernikahan
-            lastEducation.selection = member.pendidikanTerakhir
+            mother_name.setText(member.namaGadisIbuKandung)
+            marital_status.selection = member.statusPerkawinan
+            last_education.selection = member.pendidikanTerakhir
         })
-
-        val nextButton = view.findViewById<Button>(R.id.next)
-        nextButton.setOnClickListener { onNextButtonClicked(view) }
+        next.setOnClickListener { onNextButtonClicked(view) }
     }
 
     private fun onNextButtonClicked(view: View) {
-        val identityType = view.findViewById<MaterialSpinner>(R.id.identity_type)
-        val motherNameC = view.findViewById<TextInputLayout>(R.id.mother_name_container)
-        val motherName = view.findViewById<TextInputEditText>(R.id.mother_name)
-        val identityNoC = view.findViewById<TextInputLayout>(R.id.identity_no_container)
-        val identityNo = view.findViewById<TextInputEditText>(R.id.identity_no)
-        val fullNameC = view.findViewById<TextInputLayout>(R.id.full_name_container)
-        val fullName = view.findViewById<TextInputEditText>(R.id.full_name)
-        val handphoneNoC = view.findViewById<TextInputEditText>(R.id.handphone_no_container)
-        val handphoneNo = view.findViewById<TextInputEditText>(R.id.emergency_handphone_no)
-        val birthDateC = view.findViewById<TextInputLayout>(R.id.birth_date_container)
-        val birthDate = view.findViewById<TextInputEditText>(R.id.birth_date)
-        val birthPlaceC = view.findViewById<TextInputLayout>(R.id.birth_place_container)
-        val birthPlace = view.findViewById<TextInputEditText>(R.id.birth_place)
-        val sex = view.findViewById<MaterialSpinner>(R.id.sex)
-        val maritalStatus = view.findViewById<MaterialSpinner>(R.id.marital_status)
-        val lastEducation = view.findViewById<MaterialSpinner>(R.id.last_education)
-
         var allTrue = true
 
-        if(identityType.selectedItemId < 0) {
-            identityType.error = "Jenis Identitas tidak boleh kosong"
+        val configPreferences: SharedPreferences = activity!!.getSharedPreferences("member_config", Context.MODE_PRIVATE)
+
+        if(configPreferences.getInt("jenis_identitas", 1) == 1 && identity_type.selectedItemId < 0) {
+            identity_type.error = "Jenis Identitas tidak boleh kosong"
             allTrue = false
         }
-        if(identityNo.text.toString().isEmpty()) {
-            identityNoC.error = "No Identitas tidak boleh kosong"
+        if(configPreferences.getInt("no_identitas", 1) == 1 && identity_no.text.toString().isEmpty()) {
+            identity_no_container.error = "No Identitas tidak boleh kosong"
             allTrue = false
         }
-        if(fullName.text.toString().isEmpty()) {
-            fullNameC.error = "Nama Lengkap tidak boleh kosong"
+        if(configPreferences.getInt("nama_lengkap", 1) == 1 && full_name.text.toString().isEmpty()) {
+            full_name_container.error = "Nama Lengkap tidak boleh kosong"
             allTrue = false
         }
-        if(handphoneNo.text.toString().isEmpty()) {
-            handphoneNoC.error = "No Handphone tidak boleh kosong"
+        if(configPreferences.getInt("no_hp", 1) == 1 && handphone_no.text.toString().isEmpty()) {
+            handphone_no_container.error = "No Handphone tidak boleh kosong"
             allTrue = false
         }
-        if(birthDate.text.toString().isEmpty()) {
-            birthDateC.error = "Tanggal Lahir tidak boleh kosong"
+        if(configPreferences.getInt("tanggal_lahir", 1) == 1 && birth_date.text.toString().isEmpty()) {
+            birth_date_container.error = "Tanggal Lahir tidak boleh kosong"
             allTrue = false
         }
-        if(birthPlace.text.toString().isEmpty()) {
-            birthPlaceC.error = "Tempat Lahir tidak boleh kosong"
+        if(configPreferences.getInt("tempat_lahir", 1) == 1 && birth_place.text.toString().isEmpty()) {
+            birth_place_container.error = "Tempat Lahir tidak boleh kosong"
             allTrue = false
         }
-        if(sex.selectedItemId < 0) {
+        if(configPreferences.getInt("jenis_kelamin", 1) == 1 && sex.selectedItemId < 0) {
             sex.error = "Jenis Kelamin tidak boleh kosong"
             allTrue = false
         }
-        if(motherName.text.toString().isEmpty()) {
-            motherNameC.error = "Nama Gadis Ibu Kandung tidak boleh kosong"
+        if(configPreferences.getInt("nama_gadis_ibu", 1) == 1 && mother_name.text.toString().isEmpty()) {
+            mother_name_container.error = "Nama Gadis Ibu Kandung tidak boleh kosong"
             allTrue = false
         }
-        if(maritalStatus.selectedItemId < 0) {
-            maritalStatus.error = "Status Pernikahan tidak boleh kosong"
+        if(configPreferences.getInt("status_perkawinan", 1) == 1 && marital_status.selectedItemId < 0) {
+            marital_status.error = "Status Pernikahan tidak boleh kosong"
             allTrue = false
         }
-        if(lastEducation.selectedItemId < 0) {
-            lastEducation.error = "Pendidikan Terakhir tidak boleh kosong"
+        if(configPreferences.getInt("pendidikan_terakhir", 1) == 1 && last_education.selectedItemId < 0) {
+            last_education.error = "Pendidikan Terakhir tidak boleh kosong"
             allTrue = false
         }
         if(allTrue) {
@@ -178,23 +167,48 @@ class PersonalInformationFragment : Fragment() {
             if(member == null) {
                 member = Member()
             }
-            member.jenisIdentitas = identityType.selection
-            member.noIdentitas = identityNo.text.toString()
-            member.namaLengkap = fullName.text.toString()
-            member.noHp = handphoneNo.text.toString()
-            member.tanggalLahir = birthDate.text.toString()
-            member.tempatLahir = birthPlace.text.toString()
-            member.jenisKelamin = sex.selection
-            member.namaGadisIbuKandung = motherName.text.toString()
-            member.statusPernikahan = maritalStatus.selection
-            member.pendidikanTerakhir = lastEducation.selection
-
-            memberViewModel.setMember(member)
+            setMember(member)
 
             val fragment = AddressFragment()
             val transaction = activity?.supportFragmentManager?.beginTransaction()
-            transaction?.replace(R.id.member_acquisition_fragment_container, fragment)?.commit()
+            transaction?.replace(R.id.member_acquisition_fragment_container, fragment)?.addToBackStack(null)?.commit()
         }
+    }
+
+    private fun setMember(member: Member) {
+        member.jenisIdentitas = identity_type.selection
+        member.noIdentitas = identity_no.text.toString()
+        member.namaLengkap = full_name.text.toString()
+        member.noHp = handphone_no.text.toString()
+        member.tanggalLahir = birth_date.text.toString()
+        member.tempatLahir = birth_place.text.toString()
+        member.jenisKelamin = sex.selection
+        member.namaGadisIbuKandung = mother_name.text.toString()
+        member.statusPerkawinan = marital_status.selection
+        member.pendidikanTerakhir = last_education.selection
+
+        memberViewModel.setMember(member)
+    }
+
+    fun showDialog(_view: View) {
+        val c = Calendar.getInstance()
+        val _year = c.get(Calendar.YEAR)
+        val month = c.get(Calendar.MONTH)
+        val day = c.get(Calendar.DAY_OF_MONTH)
+
+        val datePickerDialog = DatePickerDialog(_view.context, DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+
+            // Display Selected date in textbox
+            c.set(Calendar.YEAR, year)
+            c.set(Calendar.MONTH, monthOfYear)
+            c.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+            val dateFormat = "dd-MM-yyyy"
+            val sdf = SimpleDateFormat(dateFormat, Locale.US)
+            val placeholder = sdf.format(c.time)
+            birth_date.setText(placeholder)
+        }, _year, month, day)
+
+        datePickerDialog.show()
     }
 
     // TODO: Rename method, update argument and hook method into UI event

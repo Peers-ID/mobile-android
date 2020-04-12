@@ -17,17 +17,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:entries="@array/npwp_exist"
-            android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:hint="@string/npwp_exist"
             android:prompt="@string/npwp_exist"
-            app:errorEnabled="true" />
+			android:layout_marginTop="@dimen/margin_between"
+			app:errorEnabled="true" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/npwp_no_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:errorEnabled="true" >
+			android:layout_marginTop="@dimen/margin_between"
+			app:errorEnabled="true" >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/npwp_no"
@@ -55,7 +56,8 @@
             android:id="@+id/occupation_field_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:errorEnabled="true" >
+			android:layout_marginTop="@dimen/margin_between"
+			app:errorEnabled="true" >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/occupation_field"
@@ -71,7 +73,8 @@
             android:id="@+id/occupation_position_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:errorEnabled="true" >
+			android:layout_marginTop="@dimen/margin_between"
+			app:errorEnabled="true" >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/occupation_position"
@@ -87,7 +90,8 @@
             android:id="@+id/company_name_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:errorEnabled="true" >
+			android:layout_marginTop="@dimen/margin_between"
+			app:errorEnabled="true" >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/company_name"
@@ -100,6 +104,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
+            android:id="@+id/work_how_long_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/occupation_how_long" />
@@ -113,14 +118,16 @@
 
             <Spinner
                 android:id="@+id/work_how_long_month"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:entries="@array/how_long_month" />
 
             <Spinner
                 android:id="@+id/work_how_long_year"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:entries="@array/how_long_year" />
 
         </LinearLayout>
@@ -129,7 +136,8 @@
             android:id="@+id/occupation_revenue_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:errorEnabled="true" >
+			android:layout_marginTop="@dimen/margin_between"
+			app:errorEnabled="true" >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/occupation_revenue"
@@ -145,7 +153,8 @@
             android:id="@+id/address_street_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:errorEnabled="true" >
+			android:layout_marginTop="@dimen/margin_between"
+			app:errorEnabled="true" >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/address_street"
@@ -161,14 +170,15 @@
             android:id="@+id/address_no_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:errorEnabled="true" >
+			android:layout_marginTop="@dimen/margin_between"
+			app:errorEnabled="true" >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/address_no"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/office_address_no"
-                android:inputType="number"
+                android:inputType="textPostalAddress"
                 android:selectAllOnFocus="true" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -177,7 +187,8 @@
             android:id="@+id/address_rt_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:errorEnabled="true" >
+			android:layout_marginTop="@dimen/margin_between"
+			app:errorEnabled="true" >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/address_rt"
@@ -193,7 +204,8 @@
             android:id="@+id/address_rw_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:errorEnabled="true" >
+			android:layout_marginTop="@dimen/margin_between"
+			app:errorEnabled="true" >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/address_rw"
@@ -209,7 +221,8 @@
             android:id="@+id/address_kelurahan_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:errorEnabled="true" >
+			android:layout_marginTop="@dimen/margin_between"
+			app:errorEnabled="true" >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/address_kelurahan"
@@ -225,7 +238,8 @@
             android:id="@+id/address_kecamatan_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:errorEnabled="true" >
+			android:layout_marginTop="@dimen/margin_between"
+			app:errorEnabled="true" >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/address_kecamatan"
@@ -241,13 +255,31 @@
             android:id="@+id/address_city_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:errorEnabled="true" >
+			android:layout_marginTop="@dimen/margin_between"
+			app:errorEnabled="true" >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/address_city"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/office_address_city"
+                android:inputType="text"
+                android:selectAllOnFocus="true" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/address_province_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/margin_between"
+			app:errorEnabled="true" >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/address_province"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/office_address_province"
                 android:inputType="text"
                 android:selectAllOnFocus="true" />
 

@@ -34,11 +34,9 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_marginBottom="16dp"
-        android:background="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/peers_logo">
+        app:layout_constraintStart_toStartOf="parent">
 
         <TextView
             android:id="@+id/sign_in_text"
@@ -49,7 +47,6 @@
             android:layout_marginEnd="16dp"
             android:text="@string/sign_in"
             android:textSize="@dimen/title"
-            android:textColor="@color/colorWhite"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -61,7 +58,6 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="16dp"
-            android:textColorHint="@color/colorWhite"
             app:errorEnabled="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -72,9 +68,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/username"
-                android:inputType="text"
+                android:inputType="textEmailAddress"
                 android:selectAllOnFocus="true"
-                android:textColor="@color/colorWhite"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
@@ -87,13 +82,11 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="16dp"
-            android:textColorHint="@color/colorWhite"
             app:errorEnabled="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/username_container"
-            app:passwordToggleEnabled="true"
-            app:passwordToggleTint="@color/colorWhite">
+            app:passwordToggleEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/password"
@@ -103,7 +96,6 @@
                 android:imeActionLabel="@string/action_sign_in_short"
                 android:imeOptions="actionDone"
                 android:inputType="textPassword"
-                android:textColor="@color/colorWhite"
                 android:selectAllOnFocus="true" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -118,6 +110,7 @@
             android:layout_marginBottom="16dp"
             android:text="@string/action_sign_in_short"
             android:background="@color/colorWhite"
+            android:textColor="@color/colorDarkButton"
             android:theme="@style/PeersButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

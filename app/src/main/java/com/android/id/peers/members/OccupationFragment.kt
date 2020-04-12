@@ -1,6 +1,8 @@
 package com.android.id.peers.members
 
 import android.content.Context
+import android.content.SharedPreferences
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -8,18 +10,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.Spinner
+import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 
 import com.android.id.peers.R
-import com.android.id.peers.members.communication.MemberViewModel
+import com.android.id.peers.util.communication.MemberViewModel
 import com.android.id.peers.members.models.Member
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
 import com.shuhart.stepview.StepView
-import com.tiper.MaterialSpinner
+import kotlinx.android.synthetic.main.fragment_occupation.*
+import kotlinx.android.synthetic.main.fragment_occupation.company_name
+import kotlinx.android.synthetic.main.fragment_occupation.npwp_exist
+import kotlinx.android.synthetic.main.fragment_occupation.npwp_no
+import kotlinx.android.synthetic.main.fragment_occupation.occupation_field
+import kotlinx.android.synthetic.main.fragment_occupation.occupation_position
+import kotlinx.android.synthetic.main.fragment_occupation.occupation_revenue
+import kotlinx.android.synthetic.main.fragment_occupation.occupation_status
+import kotlinx.android.synthetic.main.layout_occupation.*
+import kotlinx.android.synthetic.main.layout_office_address.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -60,210 +68,169 @@ class OccupationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val nextButton = view.findViewById<Button>(R.id.next)
-        nextButton.setOnClickListener { onNextButtonClicked(view) }
-        val backButton = view.findViewById<Button>(R.id.back)
-        backButton.setOnClickListener { onBackButtonClicked(view) }
 
-        val npwpExist = view.findViewById<MaterialSpinner>(R.id.npwp_exist)
-        var npwpExistAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, resources.getStringArray(R.array.npwp_exist))
+        val configPreferences: SharedPreferences = activity!!.getSharedPreferences("member_config", Context.MODE_PRIVATE)
+
+        if (configPreferences.getInt("memiliki_npwp", 1) == 0) npwp_exist.visibility = View.GONE
+        if (configPreferences.getInt("nomer_npwp", 1) == 0) npwp_no.visibility = View.GONE
+        if (configPreferences.getInt("pekerja_usaha", 1) == 0) occupation.visibility = View.GONE
+        if (configPreferences.getInt("bidang_pekerja", 1) == 0) occupation_field.visibility = View.GONE
+        if (configPreferences.getInt("posisi_jabatan", 1) == 0) occupation_position.visibility = View.GONE
+        if (configPreferences.getInt("nama_perusahaan", 1) == 0) company_name.visibility = View.GONE
+        if (configPreferences.getInt("lama_bekerja", 1) == 0) {
+            work_how_long_text.visibility = View.GONE
+            work_how_long_month.visibility = View.GONE
+            work_how_long_year.visibility = View.GONE
+        }
+        if (configPreferences.getInt("penghasilan_omset", 1) == 0) occupation_revenue.visibility = View.GONE
+        if (configPreferences.getInt("alamat_kantor_jalan", 1) == 0) office_address_street.visibility = View.GONE
+        if (configPreferences.getInt("alamat_kantor_nomer", 1) == 0) office_address_no.visibility = View.GONE
+        if (configPreferences.getInt("alamat_kantor_rt", 1) == 0) office_address_rt.visibility = View.GONE
+        if (configPreferences.getInt("alamat_kantor_rw", 1) == 0) office_address_rw.visibility = View.GONE
+        if (configPreferences.getInt("alamat_kantor_kelurahan", 1) == 0) office_address_kelurahan.visibility = View.GONE
+        if (configPreferences.getInt("alamat_kantor_kecamatan", 1) == 0) office_address_kecamatan.visibility = View.GONE
+        if (configPreferences.getInt("alamat_kantor_kota_provinsi", 1) == 0) {
+            office_address_city.visibility = View.GONE
+            office_address_province.visibility = View.GONE
+        }
+
+        next.setOnClickListener { onNextButtonClicked(view) }
+        back.setOnClickListener { onBackButtonClicked(view) }
+
+        val npwpExistAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, resources.getStringArray(R.array.npwp_exist))
         npwpExistAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        npwpExist.adapter = npwpExistAdapter
+        npwp_exist.adapter = npwpExistAdapter
 
-        val occupationStatus = view.findViewById<MaterialSpinner>(R.id.occupation_status)
-        var occupationStatusAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, resources.getStringArray(R.array.occupation_status))
+        val occupationStatusAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, resources.getStringArray(R.array.occupation_status))
         occupationStatusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        occupationStatus.adapter = occupationStatusAdapter
-
-//        val npwpExist = view.findViewById<MaterialSpinner>(R.id.npwp_exist)
-        val npwpNo = view.findViewById<TextInputEditText>(R.id.npwp_no)
-//        val occupationStatus = view.findViewById<MaterialSpinner>(R.id.occupation_status)
-        val occupationField = view.findViewById<TextInputEditText>(R.id.occupation_field)
-        val occupationPosition = view.findViewById<TextInputEditText>(R.id.occupation_position)
-        val companyName = view.findViewById<TextInputEditText>(R.id.company_name)
-        val occupationHowLongMonth = view.findViewById<Spinner>(R.id.work_how_long_month)
-        val occupationHowLongYear = view.findViewById<Spinner>(R.id.work_how_long_year)
-        val occupationRevenue = view.findViewById<TextInputEditText>(R.id.occupation_revenue)
-        val addressStreet = view.findViewById<TextInputEditText>(R.id.address_street)
-        val addressNo = view.findViewById<TextInputEditText>(R.id.address_no)
-        val addressRT = view.findViewById<TextInputEditText>(R.id.address_rt)
-        val addressRW = view.findViewById<TextInputEditText>(R.id.address_rw)
-        val addressKelurahan = view.findViewById<TextInputEditText>(R.id.address_kelurahan)
-        val addressKecamatan = view.findViewById<TextInputEditText>(R.id.address_kecamatan)
-        val addressCity = view.findViewById<TextInputEditText>(R.id.address_city)
+        occupation_status.adapter = occupationStatusAdapter
 
         /* Member View Model */
         memberViewModel.member.observe(viewLifecycleOwner, Observer<Member> {
                 member ->
-
-            npwpExist.selection = member.memilikiNpwp
-            npwpNo.setText(member.nomorNpwp)
-            occupationStatus.selection = member.pekerjaan
-            occupationField.setText(member.bidangPekerjaan)
-            occupationPosition.setText(member.posisiPekerjaan)
-            companyName.setText(member.namaPerusahaan)
-            occupationHowLongMonth.setSelection(member.lamaBulanBekerja)
-            occupationHowLongYear.setSelection(member.lamaTahunBekerja)
-            occupationRevenue.setText(member.penghasilan)
-            addressStreet.setText(member.jalanKantor)
-            addressNo.setText(member.nomorKantor)
-            addressRT.setText(member.rtKantor)
-            addressRW.setText(member.rwKantor)
-            addressKelurahan.setText(member.kelurahanKantor)
-            addressKecamatan.setText(member.kecamatanKantor)
-            addressCity.setText(member.kotaKantor)
-
+            npwp_exist.selection = member.memilikiNpwp
+            npwp_no.setText(member.nomorNpwp)
+            occupation_status.selection = member.pekerjaan
+            occupation_field.setText(member.bidangPekerjaan)
+            occupation_position.setText(member.posisiPekerjaan)
+            company_name.setText(member.namaPerusahaan)
+            work_how_long_month.setSelection(member.lamaBulanBekerja)
+            work_how_long_year.setSelection(member.lamaTahunBekerja)
+            occupation_revenue.setText(member.penghasilan.toString())
+            address_street.setText(member.jalanKantor)
+            address_no.setText(member.nomorKantor)
+            address_rt.setText(member.rtKantor)
+            address_rw.setText(member.rwKantor)
+            address_kelurahan.setText(member.kelurahanKantor)
+            address_kecamatan.setText(member.kecamatanKantor)
+            address_city.setText(member.kotaKantor)
         })
 
     }
 
     private fun onBackButtonClicked(view: View) {
-        val npwpExist = view.findViewById<MaterialSpinner>(R.id.npwp_exist)
-        val npwpNo = view.findViewById<TextInputEditText>(R.id.npwp_no)
-        val occupationStatus = view.findViewById<MaterialSpinner>(R.id.occupation_status)
-        val occupationField = view.findViewById<TextInputEditText>(R.id.occupation_field)
-        val occupationPosition = view.findViewById<TextInputEditText>(R.id.occupation_position)
-        val companyName = view.findViewById<TextInputEditText>(R.id.company_name)
-        val occupationHowLongMonth = view.findViewById<Spinner>(R.id.work_how_long_month)
-        val occupationHowLongYear = view.findViewById<Spinner>(R.id.work_how_long_year)
-        val occupationRevenue = view.findViewById<TextInputEditText>(R.id.occupation_revenue)
-        val addressStreet = view.findViewById<TextInputEditText>(R.id.address_street)
-        val addressNo = view.findViewById<TextInputEditText>(R.id.address_no)
-        val addressRT = view.findViewById<TextInputEditText>(R.id.address_rt)
-        val addressRW = view.findViewById<TextInputEditText>(R.id.address_rw)
-        val addressKelurahan = view.findViewById<TextInputEditText>(R.id.address_kelurahan)
-        val addressKecamatan = view.findViewById<TextInputEditText>(R.id.address_kecamatan)
-        val addressCity = view.findViewById<TextInputEditText>(R.id.address_city)
-
 //        val memberStatusView = activity!!.findViewById<StatusViewScroller>(R.id.status_view_member_acquisition)
 //        memberStatusView.statusView.run {
 //            currentCount -= 1
 //        }
-        val stepView = activity!!.findViewById<StepView>(R.id.step_view)
-        stepView.go(1, true)
+//        val stepView = activity!!.findViewById<StepView>(R.id.step_view)
+//        stepView.go(1, true)
 
         var member = memberViewModel.member.value
         if(member == null) {
             member = Member()
         }
 
-        member.memilikiNpwp = npwpExist.selection
-        member.nomorNpwp = npwpNo.text.toString()
-        member.pekerjaan = occupationStatus.selection
-        member.bidangPekerjaan = occupationField.text.toString()
-        member.posisiPekerjaan = occupationPosition.text.toString()
-        member.namaPerusahaan = companyName.text.toString()
-        member.lamaBulanBekerja = occupationHowLongMonth.selectedItemPosition
-        member.lamaTahunBekerja = occupationHowLongYear.selectedItemPosition
-        member.penghasilan = occupationRevenue.text.toString()
-        member.jalanKantor = addressStreet.text.toString()
-        member.nomorKantor = addressNo.text.toString()
-        member.rtKantor = addressRT.text.toString()
-        member.rwKantor = addressRW.text.toString()
-        member.kelurahanKantor = addressKelurahan.text.toString()
-        member.kecamatanKantor = addressKecamatan.text.toString()
-        member.kotaKantor = addressCity.text.toString()
+        setMember(member)
 
-        memberViewModel.setMember(member)
-
-        val fragment = AddressFragment()
-        val transaction = activity!!.supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.member_acquisition_fragment_container, fragment).commit()
+//        val fragment = AddressFragment()
+//        val transaction = activity!!.supportFragmentManager.beginTransaction()
+//        transaction.replace(R.id.member_acquisition_fragment_container, fragment).commit()
+        activity?.onBackPressed()
     }
 
     private fun onNextButtonClicked(view: View) {
-        val npwpExist = view.findViewById<MaterialSpinner>(R.id.npwp_exist)
-        val npwpNo = view.findViewById<TextInputEditText>(R.id.npwp_no)
-        val npwpNoC = view.findViewById<TextInputLayout>(R.id.npwp_no_container)
-        val occupationStatus = view.findViewById<MaterialSpinner>(R.id.occupation_status)
-        val occupationField = view.findViewById<TextInputEditText>(R.id.occupation_field)
-        val occupationFieldC = view.findViewById<TextInputLayout>(R.id.occupation_field_container)
-        val occupationPosition = view.findViewById<TextInputEditText>(R.id.occupation_position)
-        val occupationPositionC = view.findViewById<TextInputLayout>(R.id.occupation_position_container)
-        val companyName = view.findViewById<TextInputEditText>(R.id.company_name)
-        val companyNameC = view.findViewById<TextInputLayout>(R.id.company_name_container)
-        val occupationHowLongMonth = view.findViewById<Spinner>(R.id.work_how_long_month)
-        val occupationHowLongYear = view.findViewById<Spinner>(R.id.work_how_long_year)
-        val occupationRevenue = view.findViewById<TextInputEditText>(R.id.occupation_revenue)
-        val occupationRevenueC = view.findViewById<TextInputLayout>(R.id.occupation_revenue_container)
-        val addressStreet = view.findViewById<TextInputEditText>(R.id.address_street)
-        val addressStreetC = view.findViewById<TextInputLayout>(R.id.address_street_container)
-        val addressNo = view.findViewById<TextInputEditText>(R.id.address_no)
-        val addressNoC = view.findViewById<TextInputLayout>(R.id.address_no_container)
-        val addressRT = view.findViewById<TextInputEditText>(R.id.address_rt)
-        val addressRTC = view.findViewById<TextInputLayout>(R.id.address_rt_container)
-        val addressRW = view.findViewById<TextInputEditText>(R.id.address_rw)
-        val addressRWC = view.findViewById<TextInputLayout>(R.id.address_rw_container)
-        val addressKelurahan = view.findViewById<TextInputEditText>(R.id.address_kelurahan)
-        val addressKelurahanC = view.findViewById<TextInputLayout>(R.id.address_kelurahan_container)
-        val addressKecamatan = view.findViewById<TextInputEditText>(R.id.address_kecamatan)
-        val addressKecamatanC = view.findViewById<TextInputLayout>(R.id.address_kecamatan_container)
-        val addressCity = view.findViewById<TextInputEditText>(R.id.address_city)
-        val addressCityC = view.findViewById<TextInputLayout>(R.id.address_city_container)
-
         var allTrue = true
 
-        if(npwpExist.selectedItemId < 0) {
-            npwpExist.error = "Memiliki NPWP harus dipilih"
+        val configPreferences: SharedPreferences = activity!!.getSharedPreferences("member_config", Context.MODE_PRIVATE)
+
+        if(configPreferences.getInt("memiliki_npwp", 1) == 1 && npwp_exist.selectedItemId < 0) {
+            npwp_exist.error = "Memiliki NPWP harus dipilih"
             allTrue = false
         }
-        if(npwpExist.selectedItemId < 1 && npwpNo.text.toString().isEmpty()) {
-            npwpNoC.error = "Nomor NPWP tidak boleh kosong"
+        if(configPreferences.getInt("nomer_npwp", 1) == 1 && npwp_exist.selectedItemId < 1 && npwp_no.text.toString().isEmpty()) {
+            npwp_no_container.error = "Nomor NPWP tidak boleh kosong"
             allTrue = false
         }else{
-            npwpNoC.error = ""
+            npwp_no_container.error = ""
         }
-        if(occupationStatus.selectedItemId < 0) {
-            occupationStatus.error = "Pekerjaan/Usaha tidak boleh kosong"
+        if(configPreferences.getInt("pekerja_usaha", 1) == 1 && occupation_status.selectedItemId < 0) {
+            occupation_status.error = "Pekerjaan/Usaha tidak boleh kosong"
             allTrue = false
         }
-        if(occupationField.text.toString().isEmpty()) {
-            occupationFieldC.error = "Bidang Pekerjaan/Usaha tidak boleh kosong"
+        if(configPreferences.getInt("bidang_pekerja", 1) == 1 && occupation_field.text.toString().isEmpty()) {
+            occupation_field_container.error = "Bidang Pekerjaan/Usaha tidak boleh kosong"
             allTrue = false
         }
-        if(occupationPosition.text.toString().isEmpty()) {
-            occupationPositionC.error = "Posisi/Jabatan tidak boleh kosong"
+        if(configPreferences.getInt("posisi_jabatan", 1) == 1 && occupation_position.text.toString().isEmpty()) {
+            occupation_position_container.error = "Posisi/Jabatan tidak boleh kosong"
             allTrue = false
         }
-        if(companyName.text.toString().isEmpty()) {
-            companyNameC.error = "Nama Perusahaan/Usaha tidak boleh kosong"
+        if(configPreferences.getInt("nama_perusahaan", 1) == 1 && company_name.text.toString().isEmpty()) {
+            company_name_container.error = "Nama Perusahaan/Usaha tidak boleh kosong"
             allTrue = false
         }
-        if(occupationRevenue.text.toString().isEmpty()) {
-            occupationRevenueC.error = "Penghasilan/Omset usaha tidak boleh kosong"
+        if(configPreferences.getInt("bidang_pekerja", 1) == 1) {
+            if(work_how_long_month.selectedItemPosition == 0) {
+                val errorText = work_how_long_month.selectedView as TextView
+                errorText.setTextColor(Color.RED)
+                errorText.error = "Bulan/Tahun harus dipilih"
+                allTrue = false
+            }
+            if(work_how_long_year.selectedItemPosition == 0) {
+                val errorText = work_how_long_year.selectedView as TextView
+                errorText.setTextColor(Color.RED)
+                errorText.error = "Bulan/Tahun harus dipilih"
+                allTrue = false
+            }
+        }
+        if(configPreferences.getInt("penghasilan_omset", 1) == 1 && occupation_revenue.text.toString().isEmpty()) {
+            occupation_revenue_container.error = "Penghasilan/Omset usaha tidak boleh kosong"
             allTrue = false
         }
-        if(addressStreet.text.toString().isEmpty()) {
-            addressStreetC.error = "Alamat sesuai KTP : Jalan tidak boleh kosong"
+        if(configPreferences.getInt("alamat_kantor_jalan", 1) == 1 && address_street.text.toString().isEmpty()) {
+            address_street_container.error = "Alamat Kantor : Jalan tidak boleh kosong"
             allTrue = false
         }
-        if(addressStreet.text.toString().isEmpty()) {
-            addressStreetC.error = "Alamat sesuai KTP : Jalan tidak boleh kosong"
+        if(configPreferences.getInt("alamat_kantor_nomer", 1) == 1 && address_no.text.toString().isEmpty()) {
+            address_no_container.error = "Alamat Kantor : No tidak boleh kosong"
             allTrue = false
         }
-        if(addressNo.text.toString().isEmpty()) {
-            addressNoC.error = "Alamat sesuai KTP : No tidak boleh kosong"
+        if(configPreferences.getInt("alamat_kantor_rt", 1) == 1 && address_rt.text.toString().isEmpty()) {
+            address_rt_container.error = "Alamat Kantor : RT tidak boleh kosong"
             allTrue = false
         }
-        if(addressRT.text.toString().isEmpty()) {
-            addressRTC.error = "Alamat sesuai KTP : RT tidak boleh kosong"
+        if(configPreferences.getInt("alamat_kantor_rw", 1) == 1 && address_rw.text.toString().isEmpty()) {
+            address_rw_container.error = "Alamat Kantor : RW tidak boleh kosong"
             allTrue = false
         }
-        if(addressRW.text.toString().isEmpty()) {
-            addressRWC.error = "Alamat sesuai KTP : RW tidak boleh kosong"
+        if(configPreferences.getInt("alamat_kantor_kelurahan", 1) == 1 && address_kelurahan.text.toString().isEmpty()) {
+            address_kelurahan_container.error = "Alamat Kantor : Kelurahan tidak boleh kosong"
             allTrue = false
         }
-        if(addressKelurahan.text.toString().isEmpty()) {
-            addressKelurahanC.error = "Alamat sesuai KTP : Kelurahan tidak boleh kosong"
+        if(configPreferences.getInt("alamat_kantor_kecamatan", 1) == 1 && address_kecamatan.text.toString().isEmpty()) {
+            address_kecamatan_container.error = "Alamat Kantor : Kecamatan tidak boleh kosong"
             allTrue = false
         }
-        if(addressKecamatan.text.toString().isEmpty()) {
-            addressKecamatanC.error = "Alamat sesuai KTP : Kecamatan tidak boleh kosong"
-            allTrue = false
-        }
-        if(addressCity.text.toString().isEmpty()) {
-            addressCityC.error = "Alamat sesuai KTP : Kota/Provinsi tidak boleh kosong"
-            allTrue = false
+        if(configPreferences.getInt("alamat_kantor_kota_provinsi", 1) == 1) {
+            if(address_city.text.toString().isEmpty()) {
+                address_city_container.error = "Alamat Kantor : Kota tidak boleh kosong"
+                allTrue = false
+            }
+            if(address_province.text.toString().isEmpty()) {
+                address_province_container.error = "Alamat Kantor : Provinsi tidak boleh kosong"
+                allTrue = false
+            }
         }
         if(allTrue) {
 //            val memberStatusView = activity!!.findViewById<StatusViewScroller>(R.id.status_view_member_acquisition)
@@ -278,29 +245,33 @@ class OccupationFragment : Fragment() {
                 member = Member()
             }
 
-            member.memilikiNpwp = npwpExist.selection
-            member.nomorNpwp = npwpNo.text.toString()
-            member.pekerjaan = occupationStatus.selection
-            member.bidangPekerjaan = occupationField.text.toString()
-            member.posisiPekerjaan = occupationPosition.text.toString()
-            member.namaPerusahaan = companyName.text.toString()
-            member.lamaBulanBekerja = occupationHowLongMonth.selectedItemPosition
-            member.lamaTahunBekerja = occupationHowLongYear.selectedItemPosition
-            member.penghasilan = occupationRevenue.text.toString()
-            member.jalanKantor = addressStreet.text.toString()
-            member.nomorKantor = addressNo.text.toString()
-            member.rtKantor = addressRT.text.toString()
-            member.rwKantor = addressRW.text.toString()
-            member.kelurahanKantor = addressKelurahan.text.toString()
-            member.kecamatanKantor = addressKecamatan.text.toString()
-            member.kotaKantor = addressCity.text.toString()
-
-            memberViewModel.setMember(member)
-
+            setMember(member)
             val fragment = EmergencyContactFragment()
             val transaction = activity!!.supportFragmentManager.beginTransaction()
-            transaction.replace(R.id.member_acquisition_fragment_container, fragment).commit()
+            transaction.replace(R.id.member_acquisition_fragment_container, fragment).addToBackStack(null).commit()
         }
+    }
+
+    private fun setMember(member: Member) {
+        member.memilikiNpwp = npwp_exist.selection
+        member.nomorNpwp = npwp_no.text.toString()
+        member.pekerjaan = occupation_status.selection
+        member.bidangPekerjaan = occupation_field.text.toString()
+        member.posisiPekerjaan = occupation_position.text.toString()
+        member.namaPerusahaan = company_name.text.toString()
+        member.lamaBulanBekerja = work_how_long_month.selectedItemPosition
+        member.lamaTahunBekerja = work_how_long_year.selectedItemPosition
+        member.penghasilan = occupation_revenue.text.toString().toLong()
+        member.jalanKantor = address_street.text.toString()
+        member.nomorKantor = address_no.text.toString()
+        member.rtKantor = address_rt.text.toString()
+        member.rwKantor = address_rw.text.toString()
+        member.kelurahanKantor = address_kelurahan.text.toString()
+        member.kecamatanKantor = address_kecamatan.text.toString()
+        member.kotaKantor = address_city.text.toString()
+        member.provinsiKantor = address_province.text.toString()
+
+        memberViewModel.setMember(member)
     }
 
     // TODO: Rename method, update argument and hook method into UI event

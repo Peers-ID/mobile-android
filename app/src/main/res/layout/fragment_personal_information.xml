@@ -33,7 +33,8 @@
             android:id="@+id/identity_no_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:errorEnabled="true" >
+			android:layout_marginTop="@dimen/margin_between"
+			app:errorEnabled="true" >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/identity_no"
@@ -49,7 +50,8 @@
             android:id="@+id/full_name_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:errorEnabled="true" >
+			android:layout_marginTop="@dimen/margin_between"
+			app:errorEnabled="true" >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/full_name"
@@ -65,10 +67,11 @@
             android:id="@+id/handphone_no_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:errorEnabled="true" >
+			android:layout_marginTop="@dimen/margin_between"
+			app:errorEnabled="true" >
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/emergency_handphone_no"
+                android:id="@+id/handphone_no"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/handphone_no"
@@ -81,13 +84,16 @@
             android:id="@+id/birth_date_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:errorEnabled="true" >
+			android:layout_marginTop="@dimen/margin_between"
+			app:errorEnabled="true" >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/birth_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/birth_date_text_indo"
+
+                android:focusable="false"
                 android:inputType="date"
                 android:selectAllOnFocus="true" />
 
@@ -97,7 +103,8 @@
             android:id="@+id/birth_place_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:errorEnabled="true" >
+			android:layout_marginTop="@dimen/margin_between"
+			app:errorEnabled="true" >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/birth_place"
@@ -131,7 +138,8 @@
             android:id="@+id/mother_name_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:errorEnabled="true" >
+			android:layout_marginTop="@dimen/margin_between"
+			app:errorEnabled="true" >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/mother_name"

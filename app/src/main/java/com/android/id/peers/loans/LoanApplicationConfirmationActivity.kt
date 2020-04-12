@@ -1,17 +1,18 @@
 package com.android.id.peers.loans
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import com.android.id.peers.R
 import com.android.id.peers.loans.models.Loan
 import com.android.id.peers.TermsActivity
-import kotlinx.android.synthetic.main.activity_loan_application.*
+import com.android.id.peers.VerificationActivity
+import com.android.id.peers.util.connection.ApiConnections
+import kotlinx.android.synthetic.main.activity_loan_application_confirmation.*
 
 class LoanApplicationConfirmationActivity : AppCompatActivity() {
 
@@ -20,107 +21,53 @@ class LoanApplicationConfirmationActivity : AppCompatActivity() {
         setContentView(R.layout.activity_loan_application_confirmation)
         title = "Loan Application"
 
-        val loan = intent.getParcelableExtra<Loan>("numberOfLoan")
-
-        val handphoneNo = findViewById<TextView>(R.id.emergency_handphone_no)
-        val numberOfLoan = findViewById<TextView>(R.id.number_of_loan)
-        val tenor = findViewById<TextView>(R.id.tenor)
-        val serviceFee = findViewById<TextView>(R.id.service_fee)
-        val lanjutkan = findViewById<Button>(R.id.lanjutkan)
+        val loan = intent.getParcelableExtra<Loan>("number_of_loan")
+        val noHp = intent.extras!!.getString("member_handphone")
+        val memberName = intent.getStringExtra("member_name")
 
         if(loan != null) {
-            handphoneNo.text = loan.noHp
-            numberOfLoan.text = String.format("%d", loan.numberOfLoan)
+            handphone_no.text = loan.noHp
+            number_of_loan.text = String.format("%d", loan.numberOfLoan)
             tenor.text = String.format("%d", loan.tenor)
-            serviceFee.text = String.format("%d", loan.serviceFee)
+            service_fee.text = String.format("%d", loan.serviceFee)
+            loan_disbursement.text = loan.totalDisbursed.toString()
+            cicilan.text = loan.cicilanPerBulan.toString()
+
+            var index = 4
 
             for(fee in loan.otherFees) {
-                val linearLayoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+                val tableRowParams = TableLayout.LayoutParams(
+                    TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT
                 )
-                linearLayoutParams.marginStart = (resources. getDimension(R.dimen.activity_horizontal_margin)).toInt()
-                linearLayoutParams.marginEnd = (resources. getDimension(R.dimen.activity_horizontal_margin)).toInt()
-                val topMargin = R.dimen.margin_between
-                linearLayoutParams.topMargin = (resources. getDimension(topMargin)).toInt()
-                var bottomMargin = R.dimen.margin_between
-                if(fee == loan.otherFees.last()) {
-                    bottomMargin = R.dimen.activity_vertical_margin
-                }
-                linearLayoutParams.bottomMargin = (resources. getDimension(bottomMargin)).toInt()
-                val feeContainer1 = ConstraintLayout(this)
-                feeContainer1.id = ConstraintLayout.generateViewId()
-                feeContainer1.layoutParams = linearLayoutParams
-                this.loan_container.addView(feeContainer1)
+                tableRowParams.marginStart = (resources.getDimension(R.dimen.activity_horizontal_margin)).toInt()
+                tableRowParams.marginEnd = (resources.getDimension(R.dimen.activity_horizontal_margin)).toInt()
+                tableRowParams.topMargin = (resources.getDimension(R.dimen.margin_between)).toInt()
+                tableRowParams.bottomMargin = (resources.getDimension(R.dimen.margin_between)).toInt()
+                val tableRow = TableRow(this)
+                tableRow.layoutParams = tableRowParams
                 val otherFeeText = TextView(this)
+                otherFeeText.layoutParams = TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f)
                 otherFeeText.id = TextView.generateViewId()
                 otherFeeText.text = fee.first
 
                 val otherFee = TextView(this)
+                otherFee.layoutParams = TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f)
                 otherFee.id = TextView.generateViewId()
-                otherFee.text = String.format("%d", fee.second)
+                otherFee.text = fee.second.toString()
 
-                feeContainer1.addView(otherFeeText)
-                feeContainer1.addView(otherFee)
-
-                val constraintSet = ConstraintSet()
-                constraintSet.clone(feeContainer1)
-                constraintSet.constrainHeight(otherFeeText.id, ConstraintSet.WRAP_CONTENT)
-                constraintSet.constrainWidth(otherFeeText.id, ConstraintSet.WRAP_CONTENT)
-                constraintSet.setHorizontalBias(otherFeeText.id, 0F)
-
-                constraintSet.constrainHeight(otherFee.id, ConstraintSet.WRAP_CONTENT)
-                constraintSet.constrainWidth(otherFee.id, ConstraintSet.WRAP_CONTENT)
-                constraintSet.setHorizontalBias(otherFee.id, 0.5F)
-
-                constraintSet.connect(otherFeeText.id,
-                    ConstraintSet.TOP,
-                    ConstraintSet.PARENT_ID,
-                    ConstraintSet.TOP
-                )
-                constraintSet.connect(otherFeeText.id,
-                    ConstraintSet.START,
-                    ConstraintSet.PARENT_ID,
-                    ConstraintSet.START
-                )
-                constraintSet.connect(otherFeeText.id,
-                    ConstraintSet.BOTTOM,
-                    ConstraintSet.PARENT_ID,
-                    ConstraintSet.BOTTOM
-                )
-                constraintSet.connect(otherFeeText.id,
-                    ConstraintSet.END,
-                    ConstraintSet.PARENT_ID,
-                    ConstraintSet.END
-                )
-
-                constraintSet.connect(otherFee.id,
-                    ConstraintSet.TOP,
-                    ConstraintSet.PARENT_ID,
-                    ConstraintSet.TOP
-                )
-                constraintSet.connect(otherFee.id,
-                    ConstraintSet.START,
-                    ConstraintSet.PARENT_ID,
-                    ConstraintSet.START
-                )
-                constraintSet.connect(otherFee.id,
-                    ConstraintSet.BOTTOM,
-                    ConstraintSet.PARENT_ID,
-                    ConstraintSet.BOTTOM
-                )
-                constraintSet.connect(otherFee.id,
-                    ConstraintSet.END,
-                    ConstraintSet.PARENT_ID,
-                    ConstraintSet.END
-                )
-
-                constraintSet.applyTo(feeContainer1)
+                tableRow.addView(otherFeeText)
+                tableRow.addView(otherFee)
+                loan_container.addView(tableRow, index)
+                index += 1
             }
         }
 
         lanjutkan.setOnClickListener {
-            val intent = Intent(this, TermsActivity::class.java)
-            intent.putExtra("hand_phone", handphoneNo.text.toString())
+            val intent = Intent(this, VerificationActivity::class.java)
+            val apiConnections = ApiConnections()
+            apiConnections.authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
+                this, ApiConnections.REQUEST_TYPE_POST_LOAN, loan)
+            intent.putExtra("hand_phone", handphone_no.text.toString())
             startActivity(intent)
         }
     }

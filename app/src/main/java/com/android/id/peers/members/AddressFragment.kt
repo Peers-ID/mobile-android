@@ -1,26 +1,23 @@
 package com.android.id.peers.members
 
 import android.content.Context
+import android.content.SharedPreferences
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.Spinner
+import android.widget.*
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 
 import com.android.id.peers.R
-import com.android.id.peers.members.communication.MemberViewModel
+import com.android.id.peers.util.communication.MemberViewModel
 import com.android.id.peers.members.models.Member
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
 import com.shuhart.stepview.StepView
-import com.tiper.MaterialSpinner
+import kotlinx.android.synthetic.main.fragment_address.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -61,68 +58,72 @@ class AddressFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val addressStatus = view.findViewById<MaterialSpinner>(R.id.address_status)
-        var addressStatusAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, resources.getStringArray(R.array.address_status))
+        val configPreferences: SharedPreferences = activity!!.getSharedPreferences("member_config", Context.MODE_PRIVATE)
+
+        if (configPreferences.getInt("alamat_ktp_jalan", 1) == 0) address_street.visibility = View.GONE
+        if (configPreferences.getInt("alamat_ktp_nomer", 1) == 0) address_no.visibility = View.GONE
+        if (configPreferences.getInt("alamat_ktp_rt", 1) == 0) address_rt.visibility = View.GONE
+        if (configPreferences.getInt("alamat_ktp_rw", 1) == 0) address_rw.visibility = View.GONE
+        if (configPreferences.getInt("alamat_ktp_kelurahan", 1) == 0) address_kelurahan.visibility = View.GONE
+        if (configPreferences.getInt("alamat_ktp_kecamatan", 1) == 0) address_kecamatan.visibility = View.GONE
+        if (configPreferences.getInt("alamat_ktp_status_tempat_tinggal", 1) == 0) address_status.visibility = View.GONE
+        if (configPreferences.getInt("alamat_ktp_lama_tinggal", 1) == 0) {
+            how_long_text.visibility = View.GONE
+            address_how_long_month.visibility = View.GONE
+            address_how_long_year.visibility = View.GONE
+        }
+        if (configPreferences.getInt("domisili_sesuai_ktp", 1) == 0) address_domisili_equal_ktp.visibility = View.GONE
+        if (configPreferences.getInt("alamat_domisili_jalan", 1) == 0) address_street_domisili.visibility = View.GONE
+        if (configPreferences.getInt("alamat_domisili_nomer", 1) == 0) address_no_domisili.visibility = View.GONE
+        if (configPreferences.getInt("alamat_domisili_rt", 1) == 0) address_rt_domisili.visibility = View.GONE
+        if (configPreferences.getInt("alamat_domisili_rw", 1) == 0) address_rw_domisili.visibility = View.GONE
+        if (configPreferences.getInt("alamat_domisili_kelurahan", 1) == 0) address_kelurahan_domisili.visibility = View.GONE
+        if (configPreferences.getInt("alamat_domisili_kecamatan", 1) == 0) address_kecamatan_domisili.visibility = View.GONE
+        if (configPreferences.getInt("alamat_domisili_kota_provinsi", 1) == 0) {
+            address_city_domisili.visibility = View.GONE
+            address_province_domisili.visibility = View.GONE
+        }
+        if (configPreferences.getInt("alamat_domisili_status_tempat_tinggal", 1) == 0) address_status_domisili.visibility = View.GONE
+        if (configPreferences.getInt("alamat_domisili_lama_tempat_tinggal", 1) == 0) {
+            how_long_domisili_text.visibility = View.GONE
+            address_how_long_domisili_month.visibility = View.GONE
+            address_how_long_domisili_year.visibility = View.GONE
+        }
+
+        val addressStatusAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, resources.getStringArray(R.array.address_status))
         addressStatusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        addressStatus.adapter = addressStatusAdapter
+        address_status.adapter = addressStatusAdapter
 
-        val addressStatusDomisili = view.findViewById<MaterialSpinner>(R.id.address_status_domisili)
-        var addressStatusDomisiliAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, resources.getStringArray(R.array.address_status))
+        val addressStatusDomisiliAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, resources.getStringArray(R.array.address_status))
         addressStatusDomisiliAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        addressStatusDomisili.adapter = addressStatusDomisiliAdapter
-
-        val addressStreet = view.findViewById<TextInputEditText>(R.id.address_street)
-        val addressNo = view.findViewById<TextInputEditText>(R.id.address_no)
-        val addressRT = view.findViewById<TextInputEditText>(R.id.address_rt)
-        val addressRW = view.findViewById<TextInputEditText>(R.id.address_rw)
-        val addressKelurahan = view.findViewById<TextInputEditText>(R.id.address_kelurahan)
-        val addressKecamatan = view.findViewById<TextInputEditText>(R.id.address_kecamatan)
-        val addressCity = view.findViewById<TextInputEditText>(R.id.address_city)
-
-//        val addressStatus = view.findViewById<MaterialSpinner>(R.id.address_status)
-        val addressHowLongMonth = view.findViewById<Spinner>(R.id.address_how_long_month)
-        val addressHowLongYear = view.findViewById<Spinner>(R.id.address_how_long_year)
-
-        val addressStreetDomisili = view.findViewById<TextInputEditText>(R.id.address_street_domisili)
-        val addressNoDomisili = view.findViewById<TextInputEditText>(R.id.address_no_domisili)
-        val addressRTDomisili = view.findViewById<TextInputEditText>(R.id.address_rt_domisili)
-        val addressRWDomisili = view.findViewById<TextInputEditText>(R.id.address_rw_domisili)
-        val addressKelurahanDomisili = view.findViewById<TextInputEditText>(R.id.address_kelurahan_domisili)
-        val addressKecamatanDomisili = view.findViewById<TextInputEditText>(R.id.address_kecamatan_domisili)
-        val addressCityDomisili = view.findViewById<TextInputEditText>(R.id.address_city_domisili)
-
-//        val addressStatusDomisili = view.findViewById<MaterialSpinner>(R.id.address_status_domisili)
-        val addressHowLongMonthDomisili = view.findViewById<Spinner>(R.id.address_how_long_domisili_month)
-        val addressHowLongYearDomisili = view.findViewById<Spinner>(R.id.address_how_long_domisili_year)
-
-        val addressDomisiliEqualKtp = view.findViewById<CheckBox>(R.id.address_domisili_equal_ktp)
-
+        address_status_domisili.adapter = addressStatusDomisiliAdapter
         /* Member View Model */
         memberViewModel.member.observe(viewLifecycleOwner, Observer<Member> {
                 member ->
+            address_street.setText(member.jalanSesuaiKtp)
+            address_no.setText(member.nomorSesuaiKtp)
+            address_rt.setText(member.rtSesuaiKtp)
+            address_rw.setText(member.rwSesuaiKtp)
+            address_kelurahan.setText(member.kelurahanSesuaiKtp)
+            address_kecamatan.setText(member.kecamatanSesuaiKtp)
+            address_city.setText(member.kotaSesuaiKtp)
+            address_province.setText(member.provinsiSesuaiKtp)
 
-            addressStreet.setText(member.jalanSesuaiKtp)
-            addressNo.setText(member.nomorSesuaiKtp)
-            addressRT.setText(member.rtSesuaiKtp)
-            addressRW.setText(member.rwSesuaiKtp)
-            addressKelurahan.setText(member.kelurahanSesuaiKtp)
-            addressKecamatan.setText(member.kecamatanSesuaiKtp)
-            addressCity.setText(member.kotaSesuaiKtp)
-            addressStatus.selection = member.statusTempatTinggalSesuaiKtp
-            addressHowLongMonth.setSelection(member.lamaBulanTinggalSesuaiKtp)
-            addressHowLongYear.setSelection(member.lamaTahunTinggalSesuaiKtp)
-            addressDomisiliEqualKtp.isChecked = member.domisiliSesuaiKtp
-            addressStreetDomisili.setText(member.jalanDomisili)
-            addressNoDomisili.setText(member.nomorDomisili)
-            addressRTDomisili.setText(member.rtDomisili)
-            addressRWDomisili.setText(member.rwDomisili)
-            addressKelurahanDomisili.setText(member.kelurahanDomisili)
-            addressKecamatanDomisili.setText(member.kecamatanDomisili)
-            addressCityDomisili.setText(member.kotaDomisili)
-            addressStatusDomisili.selection = member.statusTempatTinggalDomisili
-            addressHowLongMonthDomisili.setSelection(member.lamaBulanTinggalDomisili)
-            addressHowLongYearDomisili.setSelection(member.lamaTahunTinggalDomisili)
-
+            address_status.selection = member.statusTempatTinggalSesuaiKtp
+            address_how_long_month.setSelection(member.lamaBulanTinggalSesuaiKtp)
+            address_how_long_year.setSelection(member.lamaTahunTinggalSesuaiKtp)
+            address_domisili_equal_ktp.isChecked = member.domisiliSesuaiKtp
+            address_street_domisili.setText(member.jalanDomisili)
+            address_no_domisili.setText(member.nomorDomisili)
+            address_rt_domisili.setText(member.rtDomisili)
+            address_rw_domisili.setText(member.rwDomisili)
+            address_kelurahan_domisili.setText(member.kelurahanDomisili)
+            address_kecamatan_domisili.setText(member.kecamatanDomisili)
+            address_city_domisili.setText(member.kotaDomisili)
+            address_province.setText(member.provinsiDomisili)
+            address_status_domisili.selection = member.statusTempatTinggalDomisili
+            address_how_long_domisili_month.setSelection(member.lamaBulanTinggalDomisili)
+            address_how_long_domisili_year.setSelection(member.lamaTahunTinggalDomisili)
         })
 
         val nextButton = view.findViewById<Button>(R.id.next)
@@ -138,171 +139,152 @@ class AddressFragment : Fragment() {
 //        memberStatusView.statusView.run {
 //            currentCount -= 1
 //        }
-        val stepView = activity!!.findViewById<StepView>(R.id.step_view)
-        stepView.go(0, true)
+//        val stepView = activity!!.findViewById<StepView>(R.id.step_view)
+//        stepView.go(0, true)
 
         var member = memberViewModel.member.value
         if(member == null) {
             member = Member()
         }
+        setMember(member)
 
-        val addressStreet = view.findViewById<TextInputEditText>(R.id.address_street)
-        val addressNo = view.findViewById<TextInputEditText>(R.id.address_no)
-        val addressRT = view.findViewById<TextInputEditText>(R.id.address_rt)
-        val addressRW = view.findViewById<TextInputEditText>(R.id.address_rw)
-        val addressKelurahan = view.findViewById<TextInputEditText>(R.id.address_kelurahan)
-        val addressKecamatan = view.findViewById<TextInputEditText>(R.id.address_kecamatan)
-        val addressCity = view.findViewById<TextInputEditText>(R.id.address_city)
+//        val fragment = PersonalInformationFragment()
+//        val transaction = activity!!.supportFragmentManager.beginTransaction()
+//        transaction.replace(R.id.member_acquisition_fragment_container, fragment).commit()
+        activity!!.onBackPressed()
+    }
 
-        val addressStatus = view.findViewById<MaterialSpinner>(R.id.address_status)
-        val addressHowLongMonth = view.findViewById<Spinner>(R.id.address_how_long_month)
-        val addressHowLongYear = view.findViewById<Spinner>(R.id.address_how_long_year)
-
-        val addressStreetDomisili = view.findViewById<TextInputEditText>(R.id.address_street_domisili)
-        val addressNoDomisili = view.findViewById<TextInputEditText>(R.id.address_no_domisili)
-        val addressRTDomisili = view.findViewById<TextInputEditText>(R.id.address_rt_domisili)
-        val addressRWDomisili = view.findViewById<TextInputEditText>(R.id.address_rw_domisili)
-        val addressKelurahanDomisili = view.findViewById<TextInputEditText>(R.id.address_kelurahan_domisili)
-        val addressKecamatanDomisili = view.findViewById<TextInputEditText>(R.id.address_kecamatan_domisili)
-        val addressCityDomisili = view.findViewById<TextInputEditText>(R.id.address_city_domisili)
-
-        val addressStatusDomisili = view.findViewById<MaterialSpinner>(R.id.address_status_domisili)
-        val addressHowLongMonthDomisili = view.findViewById<Spinner>(R.id.address_how_long_domisili_month)
-        val addressHowLongYearDomisili = view.findViewById<Spinner>(R.id.address_how_long_domisili_year)
-
-        val addressDomisiliEqualKtp = view.findViewById<CheckBox>(R.id.address_domisili_equal_ktp)
-
-        member.jalanSesuaiKtp = addressStreet.text.toString()
-        member.nomorSesuaiKtp = addressNo.text.toString()
-        member.rtSesuaiKtp = addressRT.text.toString()
-        member.rwSesuaiKtp = addressRW.text.toString()
-        member.kelurahanSesuaiKtp = addressKelurahan.text.toString()
-        member.kecamatanSesuaiKtp = addressKecamatan.text.toString()
-        member.kotaSesuaiKtp = addressCity.text.toString()
-        member.statusTempatTinggalSesuaiKtp = addressStatus.selection
-        member.lamaBulanTinggalSesuaiKtp = addressHowLongMonth.selectedItemPosition
-        member.lamaTahunTinggalSesuaiKtp = addressHowLongYear.selectedItemPosition
-        member.domisiliSesuaiKtp = addressDomisiliEqualKtp.isChecked
-        member.jalanDomisili = addressStreetDomisili.text.toString()
-        member.nomorDomisili = addressNoDomisili.text.toString()
-        member.rtDomisili = addressRTDomisili.text.toString()
-        member.rwDomisili = addressRWDomisili.text.toString()
-        member.kelurahanDomisili = addressKelurahanDomisili.text.toString()
-        member.kecamatanDomisili = addressKecamatanDomisili.text.toString()
-        member.kotaDomisili = addressCityDomisili.text.toString()
-        member.statusTempatTinggalDomisili = addressStatusDomisili.selection
-        member.lamaBulanTinggalDomisili = addressHowLongMonthDomisili.selectedItemPosition
-        member.lamaTahunTinggalDomisili = addressHowLongYearDomisili.selectedItemPosition
-
-        val fragment = PersonalInformationFragment()
-        val transaction = activity!!.supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.member_acquisition_fragment_container, fragment).commit()
+    private fun setMember(member: Member) {
+        member.jalanSesuaiKtp = address_street.text.toString()
+        member.nomorSesuaiKtp = address_no.text.toString()
+        member.rtSesuaiKtp = address_rt.text.toString()
+        member.rwSesuaiKtp = address_rw.text.toString()
+        member.kelurahanSesuaiKtp = address_kelurahan.text.toString()
+        member.kecamatanSesuaiKtp = address_kecamatan.text.toString()
+        member.kotaSesuaiKtp = address_city.text.toString()
+        member.provinsiSesuaiKtp = address_province.text.toString()
+        member.statusTempatTinggalSesuaiKtp = address_status.selection
+        member.lamaBulanTinggalSesuaiKtp = address_how_long_month.selectedItemPosition
+        member.lamaTahunTinggalSesuaiKtp = address_how_long_year.selectedItemPosition
+        member.domisiliSesuaiKtp = address_domisili_equal_ktp.isChecked
+        member.jalanDomisili = address_street_domisili.text.toString()
+        member.nomorDomisili = address_no_domisili.text.toString()
+        member.rtDomisili = address_rt_domisili.text.toString()
+        member.rwDomisili = address_rw_domisili.text.toString()
+        member.kelurahanDomisili = address_kelurahan_domisili.text.toString()
+        member.kecamatanDomisili = address_kecamatan_domisili.text.toString()
+        member.kotaDomisili = address_city_domisili.text.toString()
+        member.provinsiDomisili = address_province_domisili.text.toString()
+        member.statusTempatTinggalDomisili = address_status_domisili.selection
+        member.lamaBulanTinggalDomisili = address_how_long_domisili_month.selectedItemPosition
+        member.lamaTahunTinggalDomisili = address_how_long_domisili_year.selectedItemPosition
+        memberViewModel.setMember(member)
     }
 
     private fun onNextButtonClicked(view: View) {
-        val addressStreet = view.findViewById<TextInputEditText>(R.id.address_street)
-        val addressStreetC = view.findViewById<TextInputLayout>(R.id.address_street_container)
-        val addressNo = view.findViewById<TextInputEditText>(R.id.address_no)
-        val addressNoC = view.findViewById<TextInputLayout>(R.id.address_no_container)
-        val addressRT = view.findViewById<TextInputEditText>(R.id.address_rt)
-        val addressRTC = view.findViewById<TextInputLayout>(R.id.address_rt_container)
-        val addressRW = view.findViewById<TextInputEditText>(R.id.address_rw)
-        val addressRWC = view.findViewById<TextInputLayout>(R.id.address_rw_container)
-        val addressKelurahan = view.findViewById<TextInputEditText>(R.id.address_kelurahan)
-        val addressKelurahanC = view.findViewById<TextInputLayout>(R.id.address_kelurahan_container)
-        val addressKecamatan = view.findViewById<TextInputEditText>(R.id.address_kecamatan)
-        val addressKecamatanC = view.findViewById<TextInputLayout>(R.id.address_kecamatan_container)
-        val addressCity = view.findViewById<TextInputEditText>(R.id.address_city)
-        val addressCityC = view.findViewById<TextInputLayout>(R.id.address_city_container)
-
-        val addressStatus = view.findViewById<MaterialSpinner>(R.id.address_status)
-        val addressHowLongMonth = view.findViewById<Spinner>(R.id.address_how_long_month)
-        val addressHowLongYear = view.findViewById<Spinner>(R.id.address_how_long_year)
-
-        val addressStreetDomisili = view.findViewById<TextInputEditText>(R.id.address_street_domisili)
-        val addressStreetDomisiliC = view.findViewById<TextInputLayout>(R.id.address_street_domisili_container)
-        val addressNoDomisili = view.findViewById<TextInputEditText>(R.id.address_no_domisili)
-        val addressNoDomisiliC = view.findViewById<TextInputLayout>(R.id.address_no_domisili_container)
-        val addressRTDomisili = view.findViewById<TextInputEditText>(R.id.address_rt_domisili)
-        val addressRTDomisiliC = view.findViewById<TextInputLayout>(R.id.address_rt_domisili_container)
-        val addressRWDomisili = view.findViewById<TextInputEditText>(R.id.address_rw_domisili)
-        val addressRWDomisiliC = view.findViewById<TextInputLayout>(R.id.address_rw_domisili_container)
-        val addressKelurahanDomisili = view.findViewById<TextInputEditText>(R.id.address_kelurahan_domisili)
-        val addressKelurahanDomisiliC = view.findViewById<TextInputLayout>(R.id.address_kelurahan_domisili_container)
-        val addressKecamatanDomisili = view.findViewById<TextInputEditText>(R.id.address_kecamatan_domisili)
-        val addressKecamatanDomisiliC = view.findViewById<TextInputLayout>(R.id.address_kecamatan_domisili_container)
-        val addressCityDomisili = view.findViewById<TextInputEditText>(R.id.address_city_domisili)
-        val addressCityDomisiliC = view.findViewById<TextInputLayout>(R.id.address_city_domisili_container)
-
-        val addressStatusDomisili = view.findViewById<MaterialSpinner>(R.id.address_status_domisili)
-        val addressHowLongMonthDomisili = view.findViewById<Spinner>(R.id.address_how_long_domisili_month)
-        val addressHowLongYearDomisili = view.findViewById<Spinner>(R.id.address_how_long_domisili_year)
-
         var allTrue = true
 
-        if(addressStreet.text.toString().isEmpty()) {
-            addressStreetC.error = "Alamat sesuai KTP : Jalan tidak boleh kosong"
+        val configPreferences: SharedPreferences = activity!!.getSharedPreferences("member_config", Context.MODE_PRIVATE)
+
+        if(configPreferences.getInt("alamat_ktp_jalan", 1) == 1 && address_street.text.toString().isEmpty()) {
+            address_street_container.error = "Alamat sesuai KTP : Jalan tidak boleh kosong"
             allTrue = false
         }
-        if(addressNo.text.toString().isEmpty()) {
-            addressNoC.error = "Alamat sesuai KTP : No tidak boleh kosong"
+        if(configPreferences.getInt("alamat_ktp_nomer", 1) == 1 && address_no.text.toString().isEmpty()) {
+            address_no_container.error = "Alamat sesuai KTP : No tidak boleh kosong"
             allTrue = false
         }
-        if(addressRT.text.toString().isEmpty()) {
-            addressRTC.error = "Alamat sesuai KTP : RT tidak boleh kosong"
+        if(configPreferences.getInt("alamat_ktp_rt", 1) == 1 && address_rt.text.toString().isEmpty()) {
+            address_rt_container.error = "Alamat sesuai KTP : RT tidak boleh kosong"
             allTrue = false
         }
-        if(addressRW.text.toString().isEmpty()) {
-            addressRWC.error = "Alamat sesuai KTP : RW tidak boleh kosong"
+        if(configPreferences.getInt("alamat_ktp_rw", 1) == 1 && address_rw.text.toString().isEmpty()) {
+            address_rw_container.error = "Alamat sesuai KTP : RW tidak boleh kosong"
             allTrue = false
         }
-        if(addressKelurahan.text.toString().isEmpty()) {
-            addressKelurahanC.error = "Alamat sesuai KTP : Kelurahan tidak boleh kosong"
+        if(configPreferences.getInt("alamat_ktp_kelurahan", 1) == 1 && address_kelurahan.text.toString().isEmpty()) {
+            address_kelurahan_container.error = "Alamat sesuai KTP : Kelurahan tidak boleh kosong"
             allTrue = false
         }
-        if(addressKecamatan.text.toString().isEmpty()) {
-            addressKecamatanC.error = "Alamat sesuai KTP : Kecamatan tidak boleh kosong"
+        if(configPreferences.getInt("alamat_ktp_kecamatan", 1) == 1 && address_kecamatan.text.toString().isEmpty()) {
+            address_kecamatan_container.error = "Alamat sesuai KTP : Kecamatan tidak boleh kosong"
             allTrue = false
         }
-        if(addressCity.text.toString().isEmpty()) {
-            addressCityC.error = "Alamat sesuai KTP : Kota/Provinsi tidak boleh kosong"
+
+        if(address_city.text.toString().isEmpty()) {
+            address_city_container.error = "Alamat sesuai KTP : Kota tidak boleh kosong"
             allTrue = false
         }
-        if(addressStatus.selectedItemId < 0) {
-            addressStatus.error = "Alamat sesuai KTP : Status Tempat Tinggal tidak boleh kosong"
+        if(address_province.text.toString().isEmpty()) {
+            address_province_container.error = "Alamat sesuai KTP : Provinsi tidak boleh kosong"
+        }
+        if(configPreferences.getInt("alamat_ktp_status_tempat_tinggal", 1) == 1 && address_status.selectedItemId < 0) {
+            address_status.error = "Alamat sesuai KTP : Status Tempat Tinggal tidak boleh kosong"
             allTrue = false
         }
-        if(addressStreetDomisili.text.toString().isEmpty()) {
-            addressStreetDomisiliC.error = "Alamat domisili : Jalan tidak boleh kosong"
+        if(configPreferences.getInt("alamat_ktp_lama_tinggal", 1) == 1) {
+            if(address_how_long_month.selectedItemPosition == 0) {
+                val errorText = address_how_long_month.selectedView as TextView
+                errorText.setTextColor(Color.RED)
+                errorText.error = "Bulan/Tahun harus dipilih"
+                allTrue = false
+            }
+            if(address_how_long_year.selectedItemPosition == 0) {
+                val errorText = address_how_long_year.selectedView as TextView
+                errorText.setTextColor(Color.RED)
+                errorText.error = "Bulan/Tahun harus dipilih"
+                allTrue = false
+            }
+        }
+        if(configPreferences.getInt("alamat_domisili_jalan", 1) == 1 && address_street_domisili.text.toString().isEmpty()) {
+            address_street_domisili_container.error = "Alamat domisili : Jalan tidak boleh kosong"
             allTrue = false
         }
-        if(addressNoDomisili.text.toString().isEmpty()) {
-            addressNoDomisiliC.error = "Alamat domisili : No tidak boleh kosong"
+        if(configPreferences.getInt("alamat_domisili_nomer", 1) == 1 && address_no_domisili.text.toString().isEmpty()) {
+            address_no_domisili_container.error = "Alamat domisili : No tidak boleh kosong"
             allTrue = false
         }
-        if(addressRTDomisili.text.toString().isEmpty()) {
-            addressRTDomisiliC.error = "Alamat domisili : RT tidak boleh kosong"
+        if(configPreferences.getInt("alamat_domisili_rt", 1) == 1 && address_rt_domisili.text.toString().isEmpty()) {
+            address_rt_domisili_container.error = "Alamat domisili : RT tidak boleh kosong"
             allTrue = false
         }
-        if(addressRWDomisili.text.toString().isEmpty()) {
-            addressRWDomisiliC.error = "Alamat domisili : RW tidak boleh kosong"
+        if(configPreferences.getInt("alamat_domisili_rw", 1) == 1 && address_rw_domisili.text.toString().isEmpty()) {
+            address_rw_domisili_container.error = "Alamat domisili : RW tidak boleh kosong"
             allTrue = false
         }
-        if(addressKelurahanDomisili.text.toString().isEmpty()) {
-            addressKelurahanDomisiliC.error = "Alamat domisili : Kelurahan tidak boleh kosong"
+        if(configPreferences.getInt("alamat_domisili_kelurahan", 1) == 1 && address_kelurahan_domisili.text.toString().isEmpty()) {
+            address_kecamatan_domisili_container.error = "Alamat domisili : Kelurahan tidak boleh kosong"
             allTrue = false
         }
-        if(addressKecamatanDomisili.text.toString().isEmpty()) {
-            addressKecamatanDomisiliC.error = "Alamat domisili : Kecamatan tidak boleh kosong"
+        if(configPreferences.getInt("alamat_domisili_kecamatan", 1) == 1 && address_kecamatan_domisili.text.toString().isEmpty()) {
+            address_kecamatan_domisili_container.error = "Alamat domisili : Kecamatan tidak boleh kosong"
             allTrue = false
         }
-        if(addressCityDomisili.text.toString().isEmpty()) {
-            addressCityDomisiliC.error = "Alamat domisili : Kota/Provinsi tidak boleh kosong"
+        if(configPreferences.getInt("alamat_domisili_kota_provinsi", 1) == 1 && address_city_domisili.text.toString().isEmpty()) {
+            address_city_domisili_container.error = "Alamat domisili : Kota tidak boleh kosong"
             allTrue = false
         }
-        if(addressStatusDomisili.selectedItemId < 0) {
-            addressStatusDomisili.error = "Alamat domisili : Status Tempat Tinggal tidak boleh kosong"
+        if(configPreferences.getInt("alamat_domisili_kota_provinsi", 1) == 1 && address_province_domisili.text.toString().isEmpty()) {
+            address_province_domisili_container.error = "Alamat domisili : Provinsi tidak boleh kosong"
             allTrue = false
+        }
+        if(configPreferences.getInt("alamat_domisili_status_tempat_tinggal", 1) == 1 && address_status_domisili.selectedItemId < 0) {
+            address_status_domisili.error = "Alamat domisili : Status Tempat Tinggal tidak boleh kosong"
+            allTrue = false
+        }
+        if(configPreferences.getInt("alamat_domisili_lama_tempat_tinggal", 1) == 1) {
+            if(address_how_long_domisili_month.selectedItemPosition == 0) {
+                val errorText = address_how_long_domisili_month.selectedView as TextView
+                errorText.setTextColor(Color.RED)
+                errorText.error = "Bulan/Tahun harus dipilih"
+                allTrue = false
+            }
+            if(address_how_long_domisili_year.selectedItemPosition == 0) {
+                val errorText = address_how_long_domisili_year.selectedView as TextView
+                errorText.setTextColor(Color.RED)
+                errorText.error = "Bulan/Tahun harus dipilih"
+                allTrue = false
+            }
         }
         if(allTrue) {
 //            val memberStatusView = activity!!.findViewById<StatusViewScroller>(R.id.status_view_member_acquisition)
@@ -317,85 +299,38 @@ class AddressFragment : Fragment() {
                 member = Member()
             }
 
-            val addressDomisiliEqualKtp = view.findViewById<CheckBox>(R.id.address_domisili_equal_ktp)
-
-            member.jalanSesuaiKtp = addressStreet.text.toString()
-            member.nomorSesuaiKtp = addressNo.text.toString()
-            member.rtSesuaiKtp = addressRT.text.toString()
-            member.rwSesuaiKtp = addressRW.text.toString()
-            member.kelurahanSesuaiKtp = addressKelurahan.text.toString()
-            member.kecamatanSesuaiKtp = addressKecamatan.text.toString()
-            member.kotaSesuaiKtp = addressCity.text.toString()
-            member.statusTempatTinggalSesuaiKtp = addressStatus.selection
-            member.lamaBulanTinggalSesuaiKtp = addressHowLongMonth.selectedItemPosition
-            member.lamaTahunTinggalSesuaiKtp = addressHowLongYear.selectedItemPosition
-            member.domisiliSesuaiKtp = addressDomisiliEqualKtp.isChecked
-            member.jalanDomisili = addressStreetDomisili.text.toString()
-            member.nomorDomisili = addressNoDomisili.text.toString()
-            member.rtDomisili = addressRTDomisili.text.toString()
-            member.rwDomisili = addressRWDomisili.text.toString()
-            member.kelurahanDomisili = addressKelurahanDomisili.text.toString()
-            member.kecamatanDomisili = addressKecamatanDomisili.text.toString()
-            member.kotaDomisili = addressCityDomisili.text.toString()
-            member.statusTempatTinggalDomisili = addressStatusDomisili.selection
-            member.lamaBulanTinggalDomisili = addressHowLongMonthDomisili.selectedItemPosition
-            member.lamaTahunTinggalDomisili = addressHowLongYearDomisili.selectedItemPosition
-
-            memberViewModel.setMember(member)
+            setMember(member)
 
             val fragment = OccupationFragment()
             val transaction = activity!!.supportFragmentManager.beginTransaction()
-            transaction.replace(R.id.member_acquisition_fragment_container, fragment).commit()
+            transaction.replace(R.id.member_acquisition_fragment_container, fragment).addToBackStack(null).commit()
         }
     }
 
     private fun onCheckBoxChecked(view: View, isChecked: Boolean) {
-        val addressStreet = view.findViewById<TextInputEditText>(R.id.address_street)
-        val addressNo = view.findViewById<TextInputEditText>(R.id.address_no)
-        val addressRT = view.findViewById<TextInputEditText>(R.id.address_rt)
-        val addressRW = view.findViewById<TextInputEditText>(R.id.address_rw)
-        val addressKelurahan = view.findViewById<TextInputEditText>(R.id.address_kelurahan)
-        val addressKecamatan = view.findViewById<TextInputEditText>(R.id.address_kecamatan)
-        val addressCity = view.findViewById<TextInputEditText>(R.id.address_city)
-
-        val addressStatus = view.findViewById<MaterialSpinner>(R.id.address_status)
-        val addressHowLongMonth = view.findViewById<Spinner>(R.id.address_how_long_month)
-        val addressHowLongYear = view.findViewById<Spinner>(R.id.address_how_long_year)
-
-        val addressStreetDomisili = view.findViewById<TextInputEditText>(R.id.address_street_domisili)
-        val addressNoDomisili = view.findViewById<TextInputEditText>(R.id.address_no_domisili)
-        val addressRTDomisili = view.findViewById<TextInputEditText>(R.id.address_rt_domisili)
-        val addressRWDomisili = view.findViewById<TextInputEditText>(R.id.address_rw_domisili)
-        val addressKelurahanDomisili = view.findViewById<TextInputEditText>(R.id.address_kelurahan_domisili)
-        val addressKecamatanDomisili = view.findViewById<TextInputEditText>(R.id.address_kecamatan_domisili)
-        val addressCityDomisili = view.findViewById<TextInputEditText>(R.id.address_city_domisili)
-
-        val addressStatusDomisili = view.findViewById<MaterialSpinner>(R.id.address_status_domisili)
-        val addressHowLongMonthDomisili = view.findViewById<Spinner>(R.id.address_how_long_domisili_month)
-        val addressHowLongYearDomisili = view.findViewById<Spinner>(R.id.address_how_long_domisili_year)
-
         if(isChecked) {
-            addressStreetDomisili.setText(addressStreet.text.toString())
-            addressNoDomisili.setText(addressNo.text.toString())
-            addressRTDomisili.setText(addressRT.text.toString())
-            addressRWDomisili.setText(addressRW.text.toString())
-            addressKelurahanDomisili.setText(addressKelurahan.text.toString())
-            addressKecamatanDomisili.setText(addressKecamatan.text.toString())
-            addressCityDomisili.setText(addressCity.text.toString())
-            addressStatusDomisili.selection = addressStatus.selection
-            addressHowLongMonthDomisili.setSelection(addressHowLongMonth.selectedItemPosition)
-            addressHowLongYearDomisili.setSelection(addressHowLongYear.selectedItemPosition)
+            address_street_domisili.setText(address_street.text.toString())
+            address_no_domisili.setText(address_no.text.toString())
+            address_rt_domisili.setText(address_rt.text.toString())
+            address_rw_domisili.setText(address_rw.text.toString())
+            address_kelurahan_domisili.setText(address_kelurahan.text.toString())
+            address_kecamatan_domisili.setText(address_kecamatan.text.toString())
+            address_city_domisili.setText(address_city.text.toString())
+            address_province_domisili.setText(address_province.text.toString())
+            address_status_domisili.selection = address_status.selection
+            address_how_long_domisili_month.setSelection(address_how_long_month.selectedItemPosition)
+            address_how_long_domisili_year.setSelection(address_how_long_year.selectedItemPosition)
         }else{
-            addressStreetDomisili.setText("")
-            addressNoDomisili.setText("")
-            addressRTDomisili.setText("")
-            addressRWDomisili.setText("")
-            addressKelurahanDomisili.setText("")
-            addressKecamatanDomisili.setText("")
-            addressCityDomisili.setText("")
-            addressStatusDomisili.selection = 0
-            addressHowLongMonthDomisili.setSelection(0)
-            addressHowLongYearDomisili.setSelection(0)
+            address_street_domisili.setText("")
+            address_no_domisili.setText("")
+            address_rt_domisili.setText("")
+            address_rw_domisili.setText("")
+            address_kelurahan_domisili.setText("")
+            address_kecamatan_domisili.setText("")
+            address_city_domisili.setText("")
+            address_status_domisili.selection = 0
+            address_how_long_domisili_month.setSelection(0)
+            address_how_long_domisili_year.setSelection(0)
         }
     }
 

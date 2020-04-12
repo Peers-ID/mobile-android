@@ -1,65 +1,79 @@
 package com.android.id.peers.loans
 
+import android.content.Context
 import android.hardware.Camera
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.android.id.peers.R
 import com.android.id.peers.loans.adapters.LoansAdapter
+import com.android.id.peers.loans.models.Loan
 import com.android.id.peers.loans.models.LoanItem
+import com.android.id.peers.util.callback.LoanDisbursement
+import com.android.id.peers.util.connection.ApiConnections
+import kotlinx.android.synthetic.main.activity_loan_disbursement.*
 
 class LoanDisbursementActivity : AppCompatActivity() {
 
     val loans: ArrayList<LoanItem> = ArrayList()
+    lateinit var loan: List<Loan>
+    val activity = this
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_loan_disbursement)
 
-        val loanDisburseItem = LoanItem()
-        loanDisburseItem.loanNo = "312190F"
-        loanDisburseItem.memberName = "Aditya"
-        loanDisburseItem.disburseAmount = 1250000
+        val apiConnections = ApiConnections()
+        apiConnections.authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
+    this, ApiConnections.REQUEST_TYPE_GET_LOAN, object :
+                LoanDisbursement {
+                override fun onSuccess(result: List<Loan>) {
+                    loan = ArrayList<Loan>(result)
+                    for (l in loan) {
+                        val loanDisburseItem = LoanItem()
+                        loanDisburseItem.loanNo = ""
+                        loanDisburseItem.memberName = l.memberName
+                        loanDisburseItem.disburseAmount = l.totalDisbursed
+                        loans.add(loanDisburseItem)
+                    }
+                    loan_disbursement.adapter!!.notifyDataSetChanged()
+                }
+            })
 
-        val loanDisburseItem2 = LoanItem()
-        loanDisburseItem2.loanNo = "239101D"
-        loanDisburseItem2.memberName = "Ricky"
-        loanDisburseItem2.disburseAmount = 2500000
-
-        loans.add(loanDisburseItem)
-        loans.add(loanDisburseItem2)
-        loans.add(loanDisburseItem2)
-
-        val loanDisbursement = findViewById<RecyclerView>(R.id.loan_disbursement)
-
-        loanDisbursement.setHasFixedSize(true);
+        loan_disbursement.setHasFixedSize(true);
         val llm = LinearLayoutManager(this)
         llm.orientation = LinearLayoutManager.VERTICAL
-        loanDisbursement.layoutManager = llm
+        loan_disbursement.layoutManager = llm
 
-        loanDisbursement.adapter = LoansAdapter(loans,this)
+        loan_disbursement.adapter = LoansAdapter(loans, activity, 0) { loan : LoanItem -> loanItemClicked(loan)}
 
-        loanDisbursement.addItemDecoration(
+        loan_disbursement.addItemDecoration(
             DividerItemDecoration(this,
             DividerItemDecoration.HORIZONTAL)
         )
-        loanDisbursement.addItemDecoration(DividerItemDecoration(this,
+        loan_disbursement.addItemDecoration(DividerItemDecoration(this,
             DividerItemDecoration.VERTICAL))
 
-        loanDisbursement.setOnClickListener {
+        loan_disbursement.setOnClickListener {
             /** A safe way to get an instance of the Camera object. */
-            fun getCameraInstance(): Camera? {
-                return try {
-                    Camera.open() // attempt to get a Camera instance
-                } catch (e: Exception) {
-                    // Camera is not available (in use or does not exist)
-                    null // returns null if camera is unavailable
-                }
-            }
+
 
         }
     }
 
+    private fun loanItemClicked(loan : LoanItem) {
+        Toast.makeText(this, "Clicked: ${loan.memberName}", Toast.LENGTH_LONG).show()
+//        val intent = Intent(this, RepaymentCollectionDetailActivity::class.java)
+//        startActivity(intent)
+        fun getCameraInstance(): Camera? {
+            return try {
+                Camera.open() // attempt to get a Camera instance
+            } catch (e: Exception) {
+                // Camera is not available (in use or does not exist)
+                null // returns null if camera is unavailable
+            }
+        }
+    }
 }

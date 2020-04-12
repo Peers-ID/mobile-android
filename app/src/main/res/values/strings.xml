@@ -49,14 +49,16 @@
     <string name="address_rw">Alamat sesuai KTP : RW</string>
     <string name="address_kelurahan">Alamat sesuai KTP : Kelurahan</string>
     <string name="address_kecamatan">Alamat sesuai KTP : Kecamatan</string>
-    <string name="address_city">Alamat sesuai KTP : Kota/Provinsi</string>
+    <string name="address_city">Alamat sesuai KTP : Kota</string>
+    <string name="address_province">Alamat sesuai KTP : Provinsi</string>
     <string name="address_street_domisili">Alamat domisili : Jalan</string>
     <string name="address_no_domisili">Alamat domisili : Nomor</string>
     <string name="address_rt_domisili">Alamat domisili : RT</string>
     <string name="address_rw_domisili">Alamat domisili : RW</string>
     <string name="address_kelurahan_domisili">Alamat domisili : Kelurahan</string>
     <string name="address_kecamatan_domisili">Alamat domisili : Kecamatan</string>
-    <string name="address_city_domisili">Alamat domisili : Kota/Provinsi</string>
+    <string name="address_city_domisili">Alamat domisili : Kota</string>
+    <string name="address_province_domisili">Alamat domisili : Provinsi</string>
     <string name="npwp_exist">Memiliki NPWP</string>
     <string name="occupation_status">Pekerjaan/Usaha</string>
     <string name="npwp_no">Nomor NPWP</string>
@@ -75,7 +77,8 @@
     <string name="office_address_rw">Alamat Kantor : RW</string>
     <string name="office_address_kelurahan">Alamat Kantor : Kelurahan</string>
     <string name="office_address_kecamatan">Alamat Kantor : Kecamatan</string>
-    <string name="office_address_city">Alamat Kantor : Kota/Provinsi</string>
+    <string name="office_address_city">Alamat Kantor : Kota</string>
+    <string name="office_address_province">Alamat Kantor : Provinsi</string>
     <string name="name">Nama</string>
     <string name="handphone_no">No Handphone</string>
     <string name="relationship">Hubungan</string>
@@ -91,7 +94,8 @@
     <string name="address_rw_general">RW</string>
     <string name="address_kelurahan_general">Kelurahan</string>
     <string name="address_kecamatan_general">Kecamatan</string>
-    <string name="address_city_general">Kota/Provinsi</string>
+    <string name="address_city_general">Kota</string>
+    <string name="address_province_general">Provinsi</string>
     <string name="address_status_general">Status Tempat Tinggal</string>
     <string name="address_status_general_two_lines">Status Tempat\nTinggal</string>
     <string name="address_how_long_text_general">Lama Tinggal</string>
@@ -140,4 +144,13 @@ Ut at nulla turpis. Maecenas scelerisque felis ut gravida ornare. Integer urna l
     <string name="lengkapi">Lengkapi 4 digit-nya</string>
     <string name="tidak">Tidak menerima telpon? <u>ulangi</u></string>
     <string name="verifikasi">Verifikasi</string>
+    <string name="zero">0</string>
+    <string name="sukarela">Sukarela</string>
+    <string name="pokok">Pokok</string>
+    <string name="cicilan">Cicilan</string>
+    <string name="old_password">Old Password</string>
+    <string name="new_password">New Password</string>
+    <string name="confirm_password">Retype New Password</string>
+    <string name="logo">Logo</string>
+    <string name="cicilan_per_bulan">Cicilan per Bulan</string>
 </resources>

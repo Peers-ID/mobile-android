@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import kotlinx.android.synthetic.main.activity_verification.*
 
 class VerificationActivity : AppCompatActivity() {
 
@@ -16,16 +17,12 @@ class VerificationActivity : AppCompatActivity() {
 
         noHP = (intent.getStringExtra("hand_phone"))!!
 
-        val handphoneNo = findViewById<TextView>(R.id.handphone_no)
-        handphoneNo.text = noHP
+        handphone_no.text = noHP
+        handphone_no2.text = "+628-1312-"
 
-        val handphoneNo2 = findViewById<TextView>(R.id.handphone_no2)
-        handphoneNo2.text = "+628-1312-"
-
-        val verifikasi = findViewById<Button>(R.id.verifikasi)
         verifikasi.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
-            finishAndRemoveTask()
+            finishAffinity()
             startActivity(intent)
         }
     }

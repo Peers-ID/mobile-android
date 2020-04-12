@@ -1,4 +1,4 @@
-package com.android.id.peers.members.communication
+package com.android.id.peers.util.communication
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

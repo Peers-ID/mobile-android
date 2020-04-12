@@ -1,17 +1,19 @@
 package com.android.id.peers.loans
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.DisplayMetrics
+import android.view.ViewTreeObserver
 import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.constraintlayout.widget.ConstraintSet.*
 import com.android.id.peers.R
 import com.android.id.peers.loans.models.Loan
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
+import com.android.id.peers.loans.models.OtherFees
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_loan_application.*
 
 class LoanApplicationActivity : AppCompatActivity() {
@@ -21,154 +23,191 @@ class LoanApplicationActivity : AppCompatActivity() {
         setContentView(R.layout.activity_loan_application)
         title = "Loan Application"
 
-        val minLoanText = findViewById<TextView>(R.id.min_loan_text)
-        val maxLoanText = findViewById<TextView>(R.id.max_loan_text)
-        val handphoneNoC = findViewById<TextInputLayout>(R.id.handphone_no_container)
-        val handphoneNo = findViewById<TextInputEditText>(R.id.emergency_handphone_no)
-        val numberOfLoanText = findViewById<TextInputEditText>(R.id.number_of_loan)
-        val numberOfLoan = findViewById<SeekBar>(R.id.number_of_loan_seek_bar)
-        var minLoan = 500000
-        var stepLoan = 100000
-        var maxLoan = 5000000
-        minLoanText.text = String.format("%d", minLoan)
-        maxLoanText.text = String.format("%d", maxLoan)
-        numberOfLoan.progress = 0
-        numberOfLoan.max = maxLoan
-        numberOfLoan.progress = maxLoan/2
-        numberOfLoan.incrementProgressBy(stepLoan)
-        Toast.makeText(this, String.format("%d", numberOfLoan.progress), Toast.LENGTH_SHORT).show()
-        numberOfLoanText.setText(String.format("%d", numberOfLoan.progress))
-        numberOfLoan.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
-                // Display the current progress of SeekBar
-                numberOfLoanText.setText(String.format("%d", i/stepLoan*stepLoan))
-                if (numberOfLoan.progress < minLoan) {
-                    numberOfLoan.progress = minLoan
-                    numberOfLoanText.setText(String.format("%d", minLoan))
-                }
-            }
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val height = displayMetrics.heightPixels
 
-            override fun onStartTrackingTouch(seekBar: SeekBar) {
-                // Do something
-//                Toast.makeText(applicationContext, "start tracking", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar) {
-                // Do something
-//                Toast.makeText(applicationContext, "stop tracking", Toast.LENGTH_SHORT).show()
+        ajukan.viewTreeObserver.addOnGlobalLayoutListener(object :
+            ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                ajukan.viewTreeObserver.removeOnGlobalLayoutListener(this)
+//                Log.d("TermsActivity", "HAHAHA" + String.format("%d", termsText.height))
+                val temp = height - ajukan.height - 7 * resources.getDimension(R.dimen.activity_vertical_margin).toInt()
+                scroll_view.layoutParams.height = temp
+                scroll_view.requestLayout()
+//                Log.d("TermsActivity", "WKWKWK" + String.format("%d", termsTextArea.layoutParams.height))
             }
         })
 
-        val minTenorText = findViewById<TextView>(R.id.min_tenor_text)
-        val maxTenorText = findViewById<TextView>(R.id.max_tenor_text)
-        val tenorText = findViewById<TextInputEditText>(R.id.tenor)
-        val tenor = findViewById<SeekBar>(R.id.tenor_seek_bar)
-        var minTenor = 200000
-        var stepTenor = 200000
-        var maxTenor = 2000000
-        minTenorText.text = String.format("%d", minTenor)
-        maxTenorText.text = String.format("%d", maxTenor)
-        tenor.progress = 0
-        tenor.max = maxTenor
-        tenor.progress = maxTenor/2
-        tenor.incrementProgressBy(stepTenor)
-        Toast.makeText(this, String.format("%d", tenor.progress), Toast.LENGTH_SHORT).show()
-        tenorText.setText(String.format("%d", tenor.progress))
-        tenor.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
-                // Display the current progress of SeekBar
-                tenorText.setText(String.format("%d", i/stepTenor*stepTenor))
-                if (tenor.progress < minTenor) {
-                    tenor.progress = minTenor
-                    tenorText.setText(String.format("%d", minTenor))
-                }
+        val memberPreferences = getSharedPreferences("member", Context.MODE_PRIVATE)
+        val loanPreferences = getSharedPreferences("loan_config", Context.MODE_PRIVATE)
+        val feePreferences = getSharedPreferences("fee_config", Context.MODE_PRIVATE)
+        if(intent.extras != null) {
+            val noHp = intent.extras!!.getString("member_handphone")
+            if(noHp != null) {
+                handphone_no.setText(noHp)
             }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar) {
-                // Do something
-//                Toast.makeText(applicationContext, "start tracking", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar) {
-                // Do something
-//                Toast.makeText(applicationContext, "stop tracking", Toast.LENGTH_SHORT).show()
-            }
-        })
-
-        var fee = 100000
-        var serviceFee = findViewById<TextView>(R.id.service_fee)
-        serviceFee.text = String.format("%d", fee)
-
-        for(i in 1..5) {
-            val linearLayoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            linearLayoutParams.marginStart = (resources. getDimension(R.dimen.activity_horizontal_margin)).toInt()
-            linearLayoutParams.marginEnd = (resources. getDimension(R.dimen.activity_horizontal_margin)).toInt()
-            linearLayoutParams.topMargin = (resources. getDimension(R.dimen.activity_vertical_margin)).toInt()
-            linearLayoutParams.bottomMargin = (resources. getDimension(R.dimen.margin_between)).toInt()
-            val feeContainer1 = ConstraintLayout(this)
-            feeContainer1.id = ConstraintLayout.generateViewId()
-            feeContainer1.layoutParams = linearLayoutParams
-            this.loan_container.addView(feeContainer1)
-            val otherFeeText = TextView(this)
-            otherFeeText.id = TextView.generateViewId()
-            otherFeeText.text = "Other Fee"
-
-            val otherFee = TextView(this)
-            otherFee.id = TextView.generateViewId()
-            otherFee.text = "2000000"
-
-            feeContainer1.addView(otherFeeText)
-            feeContainer1.addView(otherFee)
-
-            val constraintSet = ConstraintSet()
-            constraintSet.clone(feeContainer1)
-            constraintSet.constrainHeight(otherFeeText.id, WRAP_CONTENT)
-            constraintSet.constrainWidth(otherFeeText.id, WRAP_CONTENT)
-            constraintSet.setHorizontalBias(otherFeeText.id, 0F)
-
-            constraintSet.constrainHeight(otherFee.id, WRAP_CONTENT)
-            constraintSet.constrainWidth(otherFee.id, WRAP_CONTENT)
-            constraintSet.setHorizontalBias(otherFee.id, 0.5F)
-
-            constraintSet.connect(otherFeeText.id, TOP, PARENT_ID, TOP)
-            constraintSet.connect(otherFeeText.id, START, PARENT_ID, START)
-            constraintSet.connect(otherFeeText.id, BOTTOM, PARENT_ID, BOTTOM)
-            constraintSet.connect(otherFeeText.id, END, PARENT_ID, END)
-
-            constraintSet.connect(otherFee.id, TOP, PARENT_ID, TOP)
-            constraintSet.connect(otherFee.id, START, PARENT_ID, START)
-            constraintSet.connect(otherFee.id, BOTTOM, PARENT_ID, BOTTOM)
-            constraintSet.connect(otherFee.id, END, PARENT_ID, END)
-
-            constraintSet.applyTo(feeContainer1)
         }
 
-//        this.loan_container.addView(feeContainer1)
-        val ajukan = findViewById<Button>(R.id.ajukan)
+//        val memberName = intent.extras!!.getString("member_name")
+
+        val formulaId = loanPreferences.getInt("id", 0)
+        val tenureCycle = loanPreferences.getString("tenure_cycle", null)!!
+        val serviceFeeAmount = loanPreferences.getLong("service_amount", 0)
+        val serviceFeeCycle = loanPreferences.getString("service_cycle", null)!!
+
+        val tenureMultiplier = if(tenureCycle == "tahun") 12 else 1
+        val serviceFeeMultiplier = if(serviceFeeCycle == "tahun") 12 else 1
+
+        service_fee.text = String.format("%d", serviceFeeAmount)
+
+        val feeJson = feePreferences.getString("fees", null)!!
+        val otherFees = Gson().fromJson<List<OtherFees>>(feeJson)
+        var sumFee: Long = 0
+
+        val minLoan = loanPreferences.getInt("min_loan_amount", 0)
+        val stepLoan = loanPreferences.getInt("kelipatan", 0)
+        val maxLoan = loanPreferences.getInt("max_loan_amount", 0)
+        min_loan_text.text = String.format("%d", minLoan)
+        max_loan_text.text = String.format("%d", maxLoan)
+        number_of_loan_seek_bar.progress = 0
+        number_of_loan_seek_bar.max = maxLoan
+        number_of_loan_seek_bar.progress = maxLoan/2
+        number_of_loan_seek_bar.incrementProgressBy(stepLoan)
+        number_of_loan.setText(String.format("%d", number_of_loan_seek_bar.progress))
+
+        val minTenor = loanPreferences.getInt("min_tenure", 0)
+        val stepTenor = 1
+        val maxTenor = loanPreferences.getInt("max_tenure", 0)
+        min_tenor_text.text = String.format("%d", minTenor)
+        max_tenor_text.text = String.format("%d", maxTenor)
+        tenor_seek_bar.progress = 0
+        tenor_seek_bar.max = maxTenor
+        tenor_seek_bar.progress = maxTenor/2
+        tenor_seek_bar.incrementProgressBy(stepTenor)
+        tenor.setText(String.format("%d", tenor_seek_bar.progress))
+
+        for(f in otherFees) {
+            val fMultiplier = if(f.serviceCycle == "tahun") 12 else 1
+            sumFee += tenor_seek_bar.progress * tenureMultiplier / fMultiplier * f.serviceAmount
+        }
+
+        var loanDisbursement = number_of_loan.text.toString().toLong() - tenor.text.toString().toInt() * tenureMultiplier / serviceFeeMultiplier * serviceFeeAmount - sumFee
+        var cicilanPerBulan = loanDisbursement / (tenor.text.toString().toInt() * tenureMultiplier)
+        loan_disbursement.text = loanDisbursement.toString()
+        cicilan.text = cicilanPerBulan.toString()
+        number_of_loan_seek_bar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
+                // Display the current progress of SeekBar
+                number_of_loan.setText(String.format("%d", i/stepLoan*stepLoan))
+                if (number_of_loan_seek_bar.progress < minLoan) {
+                    number_of_loan_seek_bar.progress = minLoan
+                    number_of_loan.setText(String.format("%d", minLoan))
+                }
+                loanDisbursement = number_of_loan.text.toString().toLong() - tenor.text.toString().toInt() * tenureMultiplier / serviceFeeMultiplier * serviceFeeAmount - sumFee
+                cicilanPerBulan = loanDisbursement / (tenor.text.toString().toInt() * tenureMultiplier)
+                loan_disbursement.text = loanDisbursement.toString()
+                cicilan.text= cicilanPerBulan.toString()
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+                // Do something
+//                Toast.makeText(applicationContext, "start tracking", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                // Do something
+//                Toast.makeText(applicationContext, "stop tracking", Toast.LENGTH_SHORT).show()
+            }
+        })
+
+
+        tenor_seek_bar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
+                // Display the current progress of SeekBar
+                tenor.setText(String.format("%d", i/stepTenor*stepTenor))
+                if (tenor_seek_bar.progress < minTenor) {
+                    tenor_seek_bar.progress = minTenor
+                    tenor.setText(String.format("%d", minTenor))
+                }
+                loanDisbursement = number_of_loan.text.toString().toLong() - tenor.text.toString().toInt() * tenureMultiplier / serviceFeeMultiplier * serviceFeeAmount - sumFee
+                cicilanPerBulan = loanDisbursement / (tenor.text.toString().toInt() * tenureMultiplier)
+                loan_disbursement.text = loanDisbursement.toString()
+                cicilan.text= cicilanPerBulan.toString()
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+                // Do something
+//                Toast.makeText(applicationContext, "start tracking", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                // Do something
+//                Toast.makeText(applicationContext, "stop tracking", Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        var index = 1
+
+        for(feeItem in otherFees) {
+            val tableRowParams = TableLayout.LayoutParams(
+                TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT
+            )
+            tableRowParams.marginStart = (resources.getDimension(R.dimen.activity_horizontal_margin)).toInt()
+            tableRowParams.marginEnd = (resources.getDimension(R.dimen.activity_horizontal_margin)).toInt()
+            tableRowParams.topMargin = (resources.getDimension(R.dimen.margin_between)).toInt()
+            tableRowParams.bottomMargin = (resources.getDimension(R.dimen.margin_between)).toInt()
+            val tableRow = TableRow(this)
+            tableRow.layoutParams = tableRowParams
+            val otherFeeText = TextView(this)
+            otherFeeText.layoutParams = TableRow.LayoutParams(0, WRAP_CONTENT, 1f)
+            otherFeeText.id = TextView.generateViewId()
+            otherFeeText.text = feeItem.serviceName
+
+            val otherFee = TextView(this)
+            otherFee.layoutParams = TableRow.LayoutParams(0, WRAP_CONTENT, 1f)
+            otherFee.id = TextView.generateViewId()
+            otherFee.text = feeItem.serviceAmount.toString()
+
+            tableRow.addView(otherFeeText)
+            tableRow.addView(otherFee)
+            table_layout.addView(tableRow, index)
+            index += 1
+        }
+
         ajukan.setOnClickListener {
             var allTrue = true
 
-            if(handphoneNo.text.toString().isEmpty()) {
-                handphoneNoC.error = "Nomor HP tidak boleh kosong"
+            if(handphone_no.text.toString().isEmpty()) {
+                handphone_no_container.error = "Nomor HP tidak boleh kosong"
                 allTrue = false
             }
             if(allTrue) {
                 val intent = Intent(this, LoanApplicationConfirmationActivity::class.java)
-                val otherFees = ArrayList<Pair<String, Long>>()
-                otherFees.add(Pair("Unexpected Fees", 2500000))
-                otherFees.add(Pair("Additional Fees", 2500000))
-                otherFees.add(Pair("Other Fees", 5000000))
-                val loan = Loan(otherFees = otherFees)
-                loan.noHp = handphoneNo.text.toString()
-                loan.numberOfLoan = numberOfLoanText.text.toString().toLong()
-                loan.tenor = tenorText.text.toString().toLong()
-                loan.serviceFee = tenorText.text.toString().toLong()
-                intent.putExtra("numberOfLoan", loan)
+                val fees = ArrayList<Pair<String, Long>>()
+                for(fee in otherFees) {
+                    fees.add(Pair(fee.serviceName, fee.serviceAmount))
+                }
+                val loan = Loan(otherFees = fees)
+                loan.noHp = handphone_no.text.toString()
+                loan.numberOfLoan = number_of_loan.text.toString().toLong()
+                loan.tenor = tenor.text.toString().toInt()
+                loan.formulaId = formulaId
+                val loginPreferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)
+                loan.aoId = loginPreferences.getInt("id", 0)
+                loan.totalDisbursed = loanDisbursement
+                loan.cicilanPerBulan = cicilanPerBulan
+                loan.serviceFee = tenor.text.toString().toLong()
+//                if(memberName != null) {
+                intent.putExtra("member_handphone", handphone_no.text.toString())
+//                    intent.putExtra("member_name", memberName)
+//                }
+                intent.putExtra("number_of_loan", loan)
                 startActivity(intent)
             }
         }
 
     }
+
+    inline fun <reified T> Gson.fromJson(json: String): T = fromJson<T>(json, object: TypeToken<T>() {}.type)
 }

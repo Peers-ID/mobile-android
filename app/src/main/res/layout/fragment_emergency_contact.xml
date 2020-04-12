@@ -12,7 +12,8 @@
         android:id="@+id/emergency_name_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:errorEnabled="true" >
+		android:layout_marginTop="@dimen/margin_between"
+		app:errorEnabled="true" >
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/emergency_name"
@@ -28,10 +29,11 @@
         android:id="@+id/handphone_no_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:errorEnabled="true" >
+		android:layout_marginTop="@dimen/margin_between"
+		app:errorEnabled="true" >
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/emergency_handphone_no"
+            android:id="@+id/handphone_no"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/handphone_no"
