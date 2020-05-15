@@ -52,8 +52,10 @@ class LoginActivity : AppCompatActivity() {
         finish()
     }
 
+    val API_HOSTNAME = "http://api.peers.id/api/v1/"
+
     private fun authenticate(view: View, username: String, password: String) {
-        val url = "http://dev-api.peers.id/api/v1/login"
+        val url = "${API_HOSTNAME}login"
 
         val params = HashMap<String, String>()
         params["email"] = username

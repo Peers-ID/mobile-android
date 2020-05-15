@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -66,13 +67,31 @@ class PersonalInformationFragment : Fragment() {
         val configPreferences: SharedPreferences = activity!!.getSharedPreferences("member_config", Context.MODE_PRIVATE)
 
         if (configPreferences.getInt("jenis_identitas", 1) == 0) identity_type.visibility = View.GONE
-        if (configPreferences.getInt("no_identitas", 1) == 0) identity_no.visibility = View.GONE
-        if (configPreferences.getInt("nama_lengkap", 1) == 0) full_name.visibility = View.GONE
-        if (configPreferences.getInt("no_hp", 1) == 0) handphone_no.visibility = View.GONE
-        if (configPreferences.getInt("tanggal_lahir", 1) == 0) birth_date.visibility = View.GONE
-        if (configPreferences.getInt("tempat_lahir", 1) == 0) birth_place.visibility = View.GONE
+        if (configPreferences.getInt("no_identitas", 1) == 0) {
+            identity_no.visibility = View.GONE
+            identity_no_container.visibility = View.GONE
+        }
+        if (configPreferences.getInt("nama_lengkap", 1) == 0) {
+            full_name.visibility = View.GONE
+            full_name_container.visibility = View.GONE
+        }
+        if (configPreferences.getInt("no_hp", 1) == 0) {
+            handphone_no.visibility = View.GONE
+            handphone_no_container.visibility = View.GONE
+        }
+        if (configPreferences.getInt("tanggal_lahir", 1) == 0) {
+            birth_date.visibility = View.GONE
+            birth_place_container.visibility = View.GONE
+        }
+        if (configPreferences.getInt("tempat_lahir", 1) == 0) {
+            birth_place.visibility = View.GONE
+            birth_place_container.visibility = View.GONE
+        }
         if (configPreferences.getInt("jenis_kelamin", 1) == 0) sex.visibility = View.GONE
-        if (configPreferences.getInt("nama_gadis_ibu", 1) == 0) mother_name.visibility = View.GONE
+        if (configPreferences.getInt("nama_gadis_ibu", 1) == 0) {
+            mother_name.visibility = View.GONE
+            mother_name_container.visibility = View.GONE
+        }
         if (configPreferences.getInt("status_perkawinan", 1) == 0) marital_status.visibility = View.GONE
         if (configPreferences.getInt("pendidikan_terakhir", 1) == 0) last_education.visibility = View.GONE
 

@@ -50,8 +50,10 @@ class ChangePasswordActivity : AppCompatActivity() {
         }
     }
 
+    val API_HOSTNAME = "http://api.peers.id/api/v1/"
+
     private fun changePassword(view: View, password: String, newPassword: String) {
-        val url = "http://dev-api.peers.id/api/v1/users/change_password"
+        val url = "${API_HOSTNAME}users/change_password"
 
         val params = HashMap<String, String>()
         val preferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)

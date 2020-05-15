@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: com.params.stepview:stepview:1.0.2@aar">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/2a9d65402224d6a44df0484890f9ec30/jetified-stepview-1.0.2/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/2a9d65402224d6a44df0484890f9ec30/jetified-stepview-1.0.2/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/120d5a9767d0fbc3480eba9bdb57633e/jetified-stepview-1.0.2/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/120d5a9767d0fbc3480eba9bdb57633e/jetified-stepview-1.0.2/res" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.params.stepview/stepview/1.0.2/b7dabc3a5d7a43f50937833b3929b4ddd45b38a2/stepview-1.0.2-javadoc.jar!/" />

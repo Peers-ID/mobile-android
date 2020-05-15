@@ -9,10 +9,10 @@ import com.android.id.peers.members.models.Member
 class RcdTablePagerAdapter(fm: FragmentManager): FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
     // sebuah list yang menampung objek Fragment
     private val pages = listOf(
-        Rc1Fragment(),
-        Rc2Fragment(),
-        Rc3Fragment(),
-        Rc4Fragment()
+        RcPersonalFragment(),
+        RcAddressFragment(),
+        RcOccupationFragment(),
+        RcEmergencyFragment()
     )
 
     // menentukan fragment yang akan dibuka pada posisi tertentu

@@ -80,6 +80,46 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.tiper.MaterialSpinner
+            android:id="@+id/address_province"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:hint="@string/address_province"
+            android:prompt="@string/address_province"
+            app:errorEnabled="true" />
+
+        <com.tiper.MaterialSpinner
+            android:id="@+id/address_city"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:hint="@string/address_city"
+            android:prompt="@string/address_city"
+            app:errorEnabled="true" />
+
+        <com.tiper.MaterialSpinner
+            android:id="@+id/address_kecamatan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:hint="@string/address_kecamatan"
+            android:prompt="@string/address_kecamatan"
+            app:errorEnabled="true" />
+
+<!--        <com.tiper.MaterialSpinner-->
+<!--            android:id="@+id/address_kelurahan"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="8dp"-->
+<!--            android:layout_marginBottom="8dp"-->
+<!--            android:hint="@string/address_kelurahan"-->
+<!--            android:prompt="@string/address_kelurahan"-->
+<!--            app:errorEnabled="true" />-->
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/address_kelurahan_container"
             android:layout_width="match_parent"
@@ -97,56 +137,58 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/address_kecamatan_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/margin_between"
-			app:errorEnabled="true" >
+<!--        <com.google.android.material.textfield.TextInputLayout-->
+<!--            android:id="@+id/address_kecamatan_container"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--			android:layout_marginTop="@dimen/margin_between"-->
+<!--			app:errorEnabled="true" >-->
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/address_kecamatan"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/address_kecamatan"
-                android:inputType="text"
-                android:selectAllOnFocus="true" />
+<!--            <com.google.android.material.textfield.TextInputEditText-->
+<!--                android:id="@+id/address_kecamatan"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:hint="@string/address_kecamatan"-->
+<!--                android:inputType="text"-->
+<!--                android:selectAllOnFocus="true" />-->
 
-        </com.google.android.material.textfield.TextInputLayout>
+<!--        </com.google.android.material.textfield.TextInputLayout>-->
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/address_city_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/margin_between"
-			app:errorEnabled="true" >
+<!--        <com.google.android.material.textfield.TextInputLayout-->
+<!--            android:id="@+id/address_city_container"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--			android:layout_marginTop="@dimen/margin_between"-->
+<!--			app:errorEnabled="true" >-->
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/address_city"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/address_city"
-                android:inputType="text"
-                android:selectAllOnFocus="true" />
+<!--            <com.google.android.material.textfield.TextInputEditText-->
+<!--                android:id="@+id/address_city"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:hint="@string/address_city"-->
+<!--                android:inputType="text"-->
+<!--                android:selectAllOnFocus="true" />-->
 
-        </com.google.android.material.textfield.TextInputLayout>
+<!--        </com.google.android.material.textfield.TextInputLayout>-->
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/address_province_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/margin_between"
-			app:errorEnabled="true" >
+<!--        <com.google.android.material.textfield.TextInputLayout-->
+<!--            android:id="@+id/address_province_container"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--			android:layout_marginTop="@dimen/margin_between"-->
+<!--			app:errorEnabled="true" >-->
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/address_province"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/address_province"
-                android:inputType="text"
-                android:selectAllOnFocus="true" />
+<!--            <com.google.android.material.textfield.TextInputEditText-->
+<!--                android:id="@+id/address_province"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:hint="@string/address_province"-->
+<!--                android:inputType="text"-->
+<!--                android:selectAllOnFocus="true" />-->
 
-        </com.google.android.material.textfield.TextInputLayout>
+<!--        </com.google.android.material.textfield.TextInputLayout>-->
+
+
 
 
         <com.tiper.MaterialSpinner
@@ -263,6 +305,36 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.tiper.MaterialSpinner
+            android:id="@+id/address_province_domisili"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:hint="@string/address_province_domisili"
+            android:prompt="@string/address_province_domisili"
+            app:errorEnabled="true" />
+
+        <com.tiper.MaterialSpinner
+            android:id="@+id/address_city_domisili"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:hint="@string/address_city_domisili"
+            android:prompt="@string/address_city_domisili"
+            app:errorEnabled="true" />
+
+        <com.tiper.MaterialSpinner
+            android:id="@+id/address_kecamatan_domisili"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:hint="@string/address_kecamatan_domisili"
+            android:prompt="@string/address_kecamatan_domisili"
+            app:errorEnabled="true" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/address_kelurahan_domisili_container"
             android:layout_width="match_parent"
@@ -280,56 +352,56 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/address_kecamatan_domisili_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/margin_between"
-			app:errorEnabled="true" >
+<!--        <com.google.android.material.textfield.TextInputLayout-->
+<!--            android:id="@+id/address_kecamatan_domisili_container"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--			android:layout_marginTop="@dimen/margin_between"-->
+<!--			app:errorEnabled="true" >-->
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/address_kecamatan_domisili"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/address_kecamatan_domisili"
-                android:inputType="text"
-                android:selectAllOnFocus="true" />
+<!--            <com.google.android.material.textfield.TextInputEditText-->
+<!--                android:id="@+id/address_kecamatan_domisili"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:hint="@string/address_kecamatan_domisili"-->
+<!--                android:inputType="text"-->
+<!--                android:selectAllOnFocus="true" />-->
 
-        </com.google.android.material.textfield.TextInputLayout>
+<!--        </com.google.android.material.textfield.TextInputLayout>-->
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/address_city_domisili_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/margin_between"
-			app:errorEnabled="true" >
+<!--        <com.google.android.material.textfield.TextInputLayout-->
+<!--            android:id="@+id/address_city_domisili_container"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--			android:layout_marginTop="@dimen/margin_between"-->
+<!--			app:errorEnabled="true" >-->
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/address_city_domisili"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/address_city_domisili"
-                android:inputType="text"
-                android:selectAllOnFocus="true" />
+<!--            <com.google.android.material.textfield.TextInputEditText-->
+<!--                android:id="@+id/address_city_domisili"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:hint="@string/address_city_domisili"-->
+<!--                android:inputType="text"-->
+<!--                android:selectAllOnFocus="true" />-->
 
-        </com.google.android.material.textfield.TextInputLayout>
+<!--        </com.google.android.material.textfield.TextInputLayout>-->
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/address_province_domisili_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/margin_between"
-			app:errorEnabled="true" >
+<!--        <com.google.android.material.textfield.TextInputLayout-->
+<!--            android:id="@+id/address_province_domisili_container"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--			android:layout_marginTop="@dimen/margin_between"-->
+<!--			app:errorEnabled="true" >-->
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/address_province_domisili"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/address_province_domisili"
-                android:inputType="text"
-                android:selectAllOnFocus="true" />
+<!--            <com.google.android.material.textfield.TextInputEditText-->
+<!--                android:id="@+id/address_province_domisili"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:hint="@string/address_province_domisili"-->
+<!--                android:inputType="text"-->
+<!--                android:selectAllOnFocus="true" />-->
 
-        </com.google.android.material.textfield.TextInputLayout>
+<!--        </com.google.android.material.textfield.TextInputLayout>-->
 
         <com.tiper.MaterialSpinner
             android:id="@+id/address_status_domisili"

@@ -1,25 +1,54 @@
 package com.android.id.peers.loans
 
+import android.Manifest
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.hardware.Camera
+import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
+import android.util.Log
 import android.widget.Toast
+import androidx.core.content.FileProvider
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.id.peers.R
 import com.android.id.peers.loans.adapters.LoansAdapter
 import com.android.id.peers.loans.models.Loan
 import com.android.id.peers.loans.models.LoanItem
+import com.android.id.peers.loans.models.LoanPicture
 import com.android.id.peers.util.callback.LoanDisbursement
 import com.android.id.peers.util.connection.ApiConnections
+import com.android.id.peers.util.connection.NetworkConnectivity
+import com.android.id.peers.util.database.OfflineDatabase
+import com.android.id.peers.util.database.OfflineViewModel
 import kotlinx.android.synthetic.main.activity_loan_disbursement.*
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class LoanDisbursementActivity : AppCompatActivity() {
+    val REQUEST_IMAGE_CAPTURE = 1
+    val MY_CAMERA_REQUEST_CODE = 100
+    lateinit var pictureUri: Uri
+    lateinit var pictureName: String
 
-    val loans: ArrayList<LoanItem> = ArrayList()
+//    val loans: ArrayList<LoanItem> = ArrayList()
+    val loans: ArrayList<Loan> = ArrayList()
+//    var loan: ArrayList<Loan> = ArrayList()
     lateinit var loan: List<Loan>
+    lateinit var selectedLoan: Loan
     val activity = this
+
+    var selectedItemLoanId = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,22 +61,25 @@ class LoanDisbursementActivity : AppCompatActivity() {
                 override fun onSuccess(result: List<Loan>) {
                     loan = ArrayList<Loan>(result)
                     for (l in loan) {
-                        val loanDisburseItem = LoanItem()
-                        loanDisburseItem.loanNo = ""
+                        val loanDisburseItem = Loan(otherFees = ArrayList())
+//                        loanDisburseItem.loanNo = ""
+                        loanDisburseItem.memberId = l.memberId
                         loanDisburseItem.memberName = l.memberName
-                        loanDisburseItem.disburseAmount = l.totalDisbursed
+                        loanDisburseItem.totalDisbursed = l.totalDisbursed
                         loans.add(loanDisburseItem)
                     }
                     loan_disbursement.adapter!!.notifyDataSetChanged()
                 }
-            })
+            }, listType = 0)
 
         loan_disbursement.setHasFixedSize(true);
         val llm = LinearLayoutManager(this)
         llm.orientation = LinearLayoutManager.VERTICAL
         loan_disbursement.layoutManager = llm
 
-        loan_disbursement.adapter = LoansAdapter(loans, activity, 0) { loan : LoanItem -> loanItemClicked(loan)}
+//        loans = ArrayList()
+//        loan_disbursement.adapter = LoansAdapter(loans, activity, 0) { loan : LoanItem -> loanItemClicked(loan)}
+        loan_disbursement.adapter = LoansAdapter(loans, activity, 0) { loan : Loan -> loanItemClicked(loan)}
 
         loan_disbursement.addItemDecoration(
             DividerItemDecoration(this,
@@ -63,17 +95,124 @@ class LoanDisbursementActivity : AppCompatActivity() {
         }
     }
 
-    private fun loanItemClicked(loan : LoanItem) {
+//    private fun loanItemClicked(loan : LoanItem) {
+    private fun loanItemClicked(loan : Loan) {
         Toast.makeText(this, "Clicked: ${loan.memberName}", Toast.LENGTH_LONG).show()
 //        val intent = Intent(this, RepaymentCollectionDetailActivity::class.java)
 //        startActivity(intent)
-        fun getCameraInstance(): Camera? {
-            return try {
-                Camera.open() // attempt to get a Camera instance
-            } catch (e: Exception) {
-                // Camera is not available (in use or does not exist)
-                null // returns null if camera is unavailable
+
+        selectedItemLoanId = loan.memberId
+        selectedLoan = loan
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(Manifest.permission.CAMERA),
+                    MY_CAMERA_REQUEST_CODE)
+                Log.d("LoanDisburse", "Not Permitted")
+            } else {
+                Log.d("LoanDisburse", "Permitted")
+                dispatchTakePictureIntent(loan)
             }
         }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+            Log.d("LoanDisburse", "Permission has been denied by user")
+        } else {
+            dispatchTakePictureIntent(selectedLoan)
+            Log.d("LoanDisburse", "Permission has been granted by user")
+        }
+    }
+
+    private fun dispatchTakePictureIntent(loan: Loan) {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            takePictureIntent.resolveActivity(packageManager)?.also {
+                // Create the File where the photo should go
+                val photoFile: File? = try {
+                    createImageFile(loan)
+                } catch (ex: IOException) {
+                    // Error occurred while creating the File
+                    null
+                }
+                // Continue only if the File was successfully created
+                photoFile?.also {
+                    val photoURI: Uri = FileProvider.getUriForFile(
+                        this,
+                        "com.android.id.peers.file_provider",
+                        it
+                    )
+                    pictureUri = photoURI
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+                }
+
+            }
+        }
+    }
+
+    lateinit var currentPhotoPath: String
+
+    @Throws(IOException::class)
+    private fun createImageFile(loan: Loan): File {
+        // Create an image file name
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        pictureName = "IMG_${loan.memberName}${loan.memberId}${loan.formulaId}_$timeStamp"
+        val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            pictureName, /* prefix */
+            ".jpg", /* suffix */
+            storageDir /* directory */
+        ).apply {
+            // Save a file: path for use with ACTION_VIEW intents
+            currentPhotoPath = absolutePath
+        }
+    }
+
+    private var imageData: ByteArray? = null
+
+    @Throws(IOException::class)
+    private fun createImageData(uri: Uri) {
+        val inputStream = contentResolver.openInputStream(uri)
+        inputStream?.buffered()?.use {
+            imageData = it.readBytes()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        Log.d("LoanDisburse", "onActivityResult ${data.toString()}")
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_IMAGE_CAPTURE) {
+//            val uri = data?.data
+            val uri = pictureUri
+            Log.d("LoanDisburse", "onActivityResult selectedItemLoanId $selectedItemLoanId")
+            if (uri != null) {
+//                imageView.setImageURI(uri)
+                Log.d("LoanDisburse", "onActivityResult $uri")
+                createImageData(uri)
+                val networkConnectivity = NetworkConnectivity(this)
+                if (networkConnectivity.isNetworkConnected()) {
+                    val apiConnections = ApiConnections()
+                    apiConnections.authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
+                        this, ApiConnections.REQUEST_TYPE_POST_PICTURE, imageData, memberId = selectedItemLoanId, fileName = pictureName)
+                    val fDelete = File(uri.path!!)
+                    if (fDelete.delete()) {
+                        Log.d("LoanDisburse","File is deleted" )
+                    } else {
+                        Log.d("LoanDisburse","File is not deleted" )
+                    }
+                } else {
+                    val loanPicture = LoanPicture(0, selectedItemLoanId, pictureName)
+                    val offlineViewModel: OfflineViewModel = ViewModelProvider(this).get(
+                        OfflineViewModel::class.java)
+                    offlineViewModel.insertLoanPictures(loanPicture)
+                }
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 }

@@ -1,26 +1,32 @@
 package com.android.id.peers.loans.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater.*
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.id.peers.R
+import com.android.id.peers.loans.models.Loan
 import com.android.id.peers.loans.models.LoanItem
 import kotlinx.android.synthetic.main.layout_loan_disbursement_items.view.*
 
-class LoansAdapter(val items : ArrayList<LoanItem>, val context : Context,
+//class LoansAdapter(val items : ArrayList<LoanItem>, val context : Context,
+//                   val type: Int,
+//                   val clickListener: (LoanItem) -> Unit) :
+class LoansAdapter(val items : ArrayList<Loan>, val context : Context,
                    val type: Int,
-                   val clickListener: (LoanItem) -> Unit) :
+                   val clickListener: (Loan) -> Unit) :
     RecyclerView.Adapter<LoansAdapter.ViewHolder>() {
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = items.get(position)
-        holder.loanNo?.text = item.loanNo
+        val item = items[position]
+        Log.d("LoansAdapter", "Item name : ${item.memberName}")
+        holder.loanNo?.text = ""
         holder.memberName?.text = item.memberName
         if(type == 0) {
-            holder.totalDisburse?.text = String.format("%d", item.disburseAmount)
+            holder.totalDisburse?.text = String.format("%d", item.totalDisbursed)
         } else {
-            val temp = ": " + String.format("%d", item.cicilan) + " dari Total : " + String.format("%d", item.disburseAmount)/* + ", \nSukarela : " + String.format("%d", item.sukarela)*/
+            val temp = ": " + String.format("%d", item.cicilanPerBulan) + " dari Total : " + String.format("%d", item.totalDisbursed)/* + ", \nSukarela : " + String.format("%d", item.sukarela)*/
             holder.totalDisburse?.text = temp
         }
         (holder as ViewHolder).bind(items[position], clickListener)
@@ -39,7 +45,10 @@ class LoansAdapter(val items : ArrayList<LoanItem>, val context : Context,
         val loanNo = itemView.loan_no
         val memberName = itemView.member_name
         val totalDisburse = itemView.total_disburse
-        fun bind(loan: LoanItem, clickListener: (LoanItem) -> Unit) {
+        //        fun bind(loan: LoanItem, clickListener: (LoanItem) -> Unit) {
+//            itemView.setOnClickListener { clickListener(loan) }
+//        }
+        fun bind(loan: Loan, clickListener: (Loan) -> Unit) {
             itemView.setOnClickListener { clickListener(loan) }
         }
     }

@@ -2,35 +2,85 @@ package com.android.id.peers
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.android.id.peers.auth.LoginActivity
 import com.android.id.peers.loans.models.LoanFormulaConfig
+import com.android.id.peers.loans.models.LoanFormulaConfig.Companion.saveLoanFormula
 import com.android.id.peers.loans.models.OtherFees
-import com.android.id.peers.members.models.MemberAcquisitionConfig
+import com.android.id.peers.loans.models.OtherFees.Companion.saveOtherFees
+import com.android.id.peers.members.models.*
+import com.android.id.peers.members.models.MemberAcquisitionConfig.Companion.saveConfig
+import com.android.id.peers.util.callback.KabupatenCallback
+import com.android.id.peers.util.callback.KecamatanCallback
+import com.android.id.peers.util.callback.ProvinceCallback
 import com.android.id.peers.util.callback.SplashScreen
 import com.android.id.peers.util.connection.ApiConnections
+import com.android.id.peers.util.connection.ConnectionStateMonitor
 import com.android.id.peers.util.connection.NetworkConnectivity
-import com.google.gson.Gson
+import com.android.id.peers.util.database.OfflineViewModel
 import kotlinx.android.synthetic.main.activity_splash_screen.*
 import kotlin.properties.Delegates
 
 class SplashScreenActivity : AppCompatActivity() {
+    private lateinit var offlineViewModel : OfflineViewModel
+    private lateinit var mProvince : List<Province>
+    private lateinit var mKabupaten : List<Kabupaten>
+    private lateinit var mKecamatan : List<Kecamatan>
+    private lateinit var mDesa : List<Desa>
+    val viewModelStoreOwner = this
     val activity = this
+    var skipping : Boolean = true
+    var threshold : Int = 9999
 
     var done: Int by Delegates.observable(0) { property, oldValue, newValue ->
-        if(newValue == 3) {
-            dot_progress_bar.stopAnimation()
-            val intent = Intent(activity, MainActivity::class.java)
-            startActivity(intent)
-            finish()
+//        Log.d("SplashScreen", "done Value : $done")
+        if (skipping) {
+            if(newValue == 3) {
+                dot_progress_bar.stopAnimation()
+                val intent = Intent(activity, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+        } else {
+            if(newValue == (3 + threshold)) {
+                dot_progress_bar.stopAnimation()
+                val intent = Intent(activity, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)
+
+        mProvince = ArrayList()
+        mKabupaten = ArrayList()
+        mKecamatan = ArrayList()
+        mDesa = ArrayList()
+
+        offlineViewModel = ViewModelProvider(this).get(OfflineViewModel::class.java)
+        offlineViewModel.allProvince.observe(this, Observer {provinces ->
+            mProvince = provinces
+            Log.d("SplashScreen", "Province Observed: ${mProvince.size}")
+        })
+        offlineViewModel.allKabupaten.observe(this, Observer {kabupaten ->
+            mKabupaten = kabupaten
+            Log.d("SplashScreen", "Kabupaten Observed: ${mKabupaten.size}")
+        })
+        offlineViewModel.allKecamatan.observe(this, Observer {kecamatan ->
+            mKecamatan = kecamatan
+            Log.d("SplashScreen", "Kecamatan Observed: ${mKecamatan.size}")
+        })
+//        offlineViewModel.allDesa.observe(this, Observer {desa ->
+//            mDesa = desa
+//            Log.d("SplashScreen", "Desa Observed: ${mDesa.size}")
+//        })
 
         val preferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)
 
@@ -47,104 +97,82 @@ class SplashScreenActivity : AppCompatActivity() {
             networkConnectivity.deleteCache()
         }
 
-        if(networkConnectivity.isNetworkConnected()) {
-            val apiConnections = ApiConnections()
-            apiConnections.authenticate(preferences, this, ApiConnections.REQUEST_TYPE_GET_CONFIG,
-                object :
-                    SplashScreen {
-                    override fun onSuccess(result: MemberAcquisitionConfig) {
-                        val configPreferences = getSharedPreferences("member_config", Context.MODE_PRIVATE)
-                        saveConfig(configPreferences, result)
-                        done += 1
-                    }
+        val connectionStateMonitor = ConnectionStateMonitor(application)
+        connectionStateMonitor.observe(this, Observer {isConnected ->
+            if (isConnected) {
+                Log.d("SplashScreen", "Network is connected")
+                val apiConnections = ApiConnections()
+                apiConnections.authenticate(preferences, this, ApiConnections.REQUEST_TYPE_GET_CONFIG,
+                    object :
+                        SplashScreen {
+                        override fun onSuccess(result: MemberAcquisitionConfig) {
+                            val configPreferences = getSharedPreferences("member_config", Context.MODE_PRIVATE)
+                            saveConfig(configPreferences, result)
+                            done += 1
+                        }
 
-                    override fun onSuccess(result: LoanFormulaConfig) {
-                        val loanPreferences = getSharedPreferences("loan_config", Context.MODE_PRIVATE)
-                        saveLoanFormula(loanPreferences, result)
-                        done += 1
-                    }
+                        override fun onSuccess(result: LoanFormulaConfig) {
+                            val loanPreferences = getSharedPreferences("loan_config", Context.MODE_PRIVATE)
+                            saveLoanFormula(loanPreferences, result)
+                            done += 1
+                        }
 
-                    override fun onSuccess(result: List<OtherFees>) {
-                        val feePreferences = getSharedPreferences("fee_config", Context.MODE_PRIVATE)
-                        saveOtherFees(feePreferences, result)
-                        done += 1
-                    }
-                })
-            dot_progress_bar.startAnimation()
+                        override fun onSuccess(result: List<OtherFees>) {
+                            val feePreferences = getSharedPreferences("fee_config", Context.MODE_PRIVATE)
+                            saveOtherFees(feePreferences, result)
+                            done += 1
+                        }
+                    })
+                val regionPreferences = getSharedPreferences("regions", Context.MODE_PRIVATE)
+                Log.d("SplashScreen", "Is filled: ${regionPreferences.getBoolean("is_filled", false)}")
+                if(!regionPreferences.getBoolean("is_filled", false)) {
+                    skipping = false
+                    apiConnections.getProvince(context = this, callback = pCallback)
+                    regionPreferences.edit().putBoolean("is_filled", true).apply()
+                    Log.d("SplashScreen", "HERE")
+                }
+                dot_progress_bar.startAnimation()
+            } else {
+                val intent = Intent(activity, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+                Log.d("SplashScreen", "Network is not connected")
+            }
+        })
+    }
+
+    val pCallback = object : ProvinceCallback {
+        override fun onSuccess(result: List<Province>) {
+            threshold = result.size
+            offlineViewModel.insertProvince(result)
+            for (province in result) {
+                val apiConnections = ApiConnections()
+                apiConnections.getKabupaten(context = activity, callback = bCallback, idProvinsi = province.id)
+                done += 1
+            }
         }
     }
 
-    fun saveConfig(configPreferences: SharedPreferences, result: MemberAcquisitionConfig) {
-        configPreferences.edit().putInt("jenis_identitas", result.jenisIdentitas)
-            .putInt("no_identitas", result.noIdentitas)
-            .putInt("nama_lengkap", result.namaLengkap)
-//                        .putInt("no_hp", result.noHp)
-            .putInt("tanggal_lahir", result.tanggalLahir)
-            .putInt("jenis_kelamin", result.jenisKelamin)
-            .putInt("nama_gadis_ibu", result.namaGadisIbu)
-            .putInt("pendidikan_terakhir", result.pendidikanTerakhir)
-            .putInt("alamat_ktp_jalan", result.alamatKtpJalan)
-            .putInt("alamat_ktp_no", result.alamatKtpNo)
-            .putInt("alamat_ktp_rt", result.alamatKtpRt)
-            .putInt("alamat_ktp_rw", result.alamatKtpRw)
-            .putInt("alamat_ktp_kelurahan", result.alamatKtpKelurahan)
-//            .putInt("alamat_ktp_kecamatan", result.alamatKtpKecamatan)
-            .putInt("alamat_ktp_kota", result.alamatKtpKota)
-            .putInt("alamat_ktp_provinsi", result.alamatKtpProvinsi)
-            .putInt("alamat_ktp_status_tempat_tinggal", result.alamatKtpStatusTempatTinggal)
-            .putInt("alamat_ktp_lama_tinggal", result.alamatKtpLamaTinggal)
-            .putInt("domisili_sesuai_ktp", result.domisiliSesuaiKtp)
-            .putInt("alamat_domisili_jalan", result.alamatDomisiliJalan)
-            .putInt("alamat_domisili_no", result.alamatDomisiliNo)
-            .putInt("alamat_domisili_rt", result.alamatDomisiliRt)
-            .putInt("alamat_domisili_rw", result.alamatDomisiliRw)
-            .putInt("alamat_domisili_kelurahan", result.alamatDomisiliKelurahan)
-            .putInt("alamat_domisili_kecamatan", result.alamatDomisiliKecamatan)
-//            .putInt("alamat_domisili_kota_provinsi", result.alamatDomisiliKotaProvinsi)
-            .putInt("alamat_domisili_kota", result.alamatDomisiliKota)
-            .putInt("alamat_domisili_provinsi", result.alamatDomisiliProvinsi)
-            .putInt("alamat_domisili_status_tempat_tinggal", result.alamatDomisiliStatusTempatTinggal)
-            .putInt("alamat_domisili_lama_tempat_tinggal", result.alamatDomisiliLamaTempatTinggal)
-            .putInt("memiliki_npwp", result.memilikiNpwp)
-            .putInt("nomer_npwp", result.nomerNpwp)
-            .putInt("pekerja_usaha", result.pekerjaUsaha)
-            .putInt("bidang_pekerja", result.bidangPekerja)
-            .putInt("posisi_jabatan", result.posisiJabatan)
-            .putInt("nama_perusahaan", result.namaPerusahaan)
-            .putInt("lama_bekerja", result.lamaBekerja)
-            .putInt("penghasilan_omset", result.penghasilanOmset)
-            .putInt("alamat_kantor_jalan", result.alamatKantorJalan)
-            .putInt("alamat_kantor_no", result.alamatKantorNo)
-            .putInt("alamat_kantor_rt", result.alamatKantorRt)
-            .putInt("alamat_kantor_rw", result.alamatKantorRw)
-            .putInt("alamat_kantor_kelurahan", result.alamatKantorKelurahan)
-            .putInt("alamat_kantor_kecamatan", result.alamatKantorKecamatan)
-//            .putInt("alamat_kantor_kota_provinsi", result.alamatKantorKotaProvinsi)
-            .putInt("alamat_kantor_kota", result.alamatKantorKota)
-            .putInt("alamat_kantor_provinsi", result.alamatKantorProvinsi)
-            .putInt("nama_emergency", result.namaEmergency)
-            .putInt("no_hp_emergency", result.noHpEmergency)
-            .putInt("hubungan", result.hubungan)
-            .apply()
+    val bCallback = object : KabupatenCallback {
+        override fun onSuccess(result: List<Kabupaten>) {
+            threshold += result.size
+            offlineViewModel.insertKabupaten(result)
+            for (kabupaten in result) {
+                val apiConnections = ApiConnections()
+                apiConnections.getKecamatan(activity, cCallback, kabupaten.id)
+                done += 1
+            }
+        }
     }
 
-    fun saveLoanFormula(configPreferences: SharedPreferences, result: LoanFormulaConfig) {
-        configPreferences.edit()
-            .putString("formula_name", result.formulaName)
-            .putInt("min_loan_amount", result.minLoanAmount)
-            .putInt("max_loan_amount", result.maxLoanAmount)
-            .putInt("kelipatan", result.kelipatan)
-            .putInt("min_tenure", result.minTenure)
-            .putInt("max_tenure", result.maxTenure)
-            .putString("tenure_cycle", result.tenureCycle)
-            .putString("service_type", result.serviceType)
-            .putLong("service_amount", result.serviceAmount)
-            .putString("service_cycle", result.serviceCycle)
-            .apply()
-    }
+    val cCallback = object : KecamatanCallback {
+        override fun onSuccess(result: List<Kecamatan>) {
+            threshold += result.size
+            offlineViewModel.insertKecamatan(result)
+            for (kecamatan in result) {
+                done += 1
+            }
+        }
 
-    fun saveOtherFees(configPreferences: SharedPreferences, result: List<OtherFees>) {
-        val json = Gson().toJson(result)
-        configPreferences.edit().putString("fees", json).apply()
     }
 }

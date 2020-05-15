@@ -23,7 +23,7 @@ class TermsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_terms)
 
-        noHP = (intent.getStringExtra("hand_phone"))!!
+        noHP = (intent.getStringExtra("member_handphone"))!!
 
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)

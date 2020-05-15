@@ -15,19 +15,40 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 
 import com.android.id.peers.R
+import com.android.id.peers.members.models.Kabupaten
+import com.android.id.peers.members.models.Kecamatan
 import com.android.id.peers.util.communication.MemberViewModel
 import com.android.id.peers.members.models.Member
+import com.android.id.peers.members.models.Province
+import com.android.id.peers.util.database.OfflineViewModel
 import com.shuhart.stepview.StepView
+import com.tiper.MaterialSpinner
+import kotlinx.android.synthetic.main.fragment_address.*
 import kotlinx.android.synthetic.main.fragment_occupation.*
+import kotlinx.android.synthetic.main.fragment_occupation.address_city
+import kotlinx.android.synthetic.main.fragment_occupation.address_kecamatan
+import kotlinx.android.synthetic.main.fragment_occupation.address_kelurahan
+import kotlinx.android.synthetic.main.fragment_occupation.address_kelurahan_container
+import kotlinx.android.synthetic.main.fragment_occupation.address_no
+import kotlinx.android.synthetic.main.fragment_occupation.address_no_container
+import kotlinx.android.synthetic.main.fragment_occupation.address_province
+import kotlinx.android.synthetic.main.fragment_occupation.address_rt
+import kotlinx.android.synthetic.main.fragment_occupation.address_rt_container
+import kotlinx.android.synthetic.main.fragment_occupation.address_rw
+import kotlinx.android.synthetic.main.fragment_occupation.address_rw_container
+import kotlinx.android.synthetic.main.fragment_occupation.address_street
+import kotlinx.android.synthetic.main.fragment_occupation.address_street_container
+import kotlinx.android.synthetic.main.fragment_occupation.back
 import kotlinx.android.synthetic.main.fragment_occupation.company_name
+import kotlinx.android.synthetic.main.fragment_occupation.next
 import kotlinx.android.synthetic.main.fragment_occupation.npwp_exist
 import kotlinx.android.synthetic.main.fragment_occupation.npwp_no
 import kotlinx.android.synthetic.main.fragment_occupation.occupation_field
 import kotlinx.android.synthetic.main.fragment_occupation.occupation_position
 import kotlinx.android.synthetic.main.fragment_occupation.occupation_revenue
 import kotlinx.android.synthetic.main.fragment_occupation.occupation_status
-import kotlinx.android.synthetic.main.layout_occupation.*
-import kotlinx.android.synthetic.main.layout_office_address.*
+import kotlinx.coroutines.*
+import kotlin.coroutines.CoroutineContext
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -43,11 +64,22 @@ private var memberViewModel = MemberViewModel()
  * Use the [OccupationFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class OccupationFragment : Fragment() {
+class OccupationFragment : Fragment(), CoroutineScope {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
     private var listener: OnFragmentInteractionListener? = null
+    private lateinit var offlineViewModel: OfflineViewModel
+    private var provinces: List<Province> = ArrayList()
+    private var kabupatens: List<Kabupaten> = ArrayList()
+    private var kecamatans: List<Kecamatan> = ArrayList()
+    private lateinit var provinceAdapter: ArrayAdapter<Province>
+    private lateinit var cityAdapter: ArrayAdapter<Kabupaten>
+    private lateinit var kecamatanAdapter: ArrayAdapter<Kecamatan>
+    private val coroutineScope = this
+
+    override val coroutineContext: CoroutineContext =
+        Dispatchers.Main + SupervisorJob()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +88,7 @@ class OccupationFragment : Fragment() {
             param2 = it.getString(ARG_PARAM2)
         }
         memberViewModel = ViewModelProvider(activity!!).get(MemberViewModel::class.java)
+        offlineViewModel = ViewModelProvider(activity!!).get(OfflineViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -72,26 +105,58 @@ class OccupationFragment : Fragment() {
         val configPreferences: SharedPreferences = activity!!.getSharedPreferences("member_config", Context.MODE_PRIVATE)
 
         if (configPreferences.getInt("memiliki_npwp", 1) == 0) npwp_exist.visibility = View.GONE
-        if (configPreferences.getInt("nomer_npwp", 1) == 0) npwp_no.visibility = View.GONE
-        if (configPreferences.getInt("pekerja_usaha", 1) == 0) occupation.visibility = View.GONE
-        if (configPreferences.getInt("bidang_pekerja", 1) == 0) occupation_field.visibility = View.GONE
-        if (configPreferences.getInt("posisi_jabatan", 1) == 0) occupation_position.visibility = View.GONE
-        if (configPreferences.getInt("nama_perusahaan", 1) == 0) company_name.visibility = View.GONE
+        if (configPreferences.getInt("nomer_npwp", 1) == 0) {
+            npwp_no.visibility = View.GONE
+            npwp_no_container.visibility = View.GONE
+        }
+        if (configPreferences.getInt("pekerja_usaha", 1) == 0) occupation_status.visibility = View.GONE
+        if (configPreferences.getInt("bidang_pekerja", 1) == 0) {
+            occupation_field.visibility = View.GONE
+            occupation_field_container.visibility = View.GONE
+        }
+        if (configPreferences.getInt("posisi_jabatan", 1) == 0) {
+            occupation_position.visibility = View.GONE
+            occupation_position_container.visibility = View.GONE
+        }
+        if (configPreferences.getInt("nama_perusahaan", 1) == 0) {
+            company_name.visibility = View.GONE
+            company_name_container.visibility = View.GONE
+        }
         if (configPreferences.getInt("lama_bekerja", 1) == 0) {
             work_how_long_text.visibility = View.GONE
             work_how_long_month.visibility = View.GONE
             work_how_long_year.visibility = View.GONE
         }
-        if (configPreferences.getInt("penghasilan_omset", 1) == 0) occupation_revenue.visibility = View.GONE
-        if (configPreferences.getInt("alamat_kantor_jalan", 1) == 0) office_address_street.visibility = View.GONE
-        if (configPreferences.getInt("alamat_kantor_nomer", 1) == 0) office_address_no.visibility = View.GONE
-        if (configPreferences.getInt("alamat_kantor_rt", 1) == 0) office_address_rt.visibility = View.GONE
-        if (configPreferences.getInt("alamat_kantor_rw", 1) == 0) office_address_rw.visibility = View.GONE
-        if (configPreferences.getInt("alamat_kantor_kelurahan", 1) == 0) office_address_kelurahan.visibility = View.GONE
-        if (configPreferences.getInt("alamat_kantor_kecamatan", 1) == 0) office_address_kecamatan.visibility = View.GONE
-        if (configPreferences.getInt("alamat_kantor_kota_provinsi", 1) == 0) {
-            office_address_city.visibility = View.GONE
-            office_address_province.visibility = View.GONE
+        if (configPreferences.getInt("penghasilan_omset", 1) == 0) {
+            occupation_revenue.visibility = View.GONE
+            occupation_revenue_container.visibility = View.GONE
+        }
+        if (configPreferences.getInt("alamat_kantor_jalan", 1) == 0) {
+            address_street.visibility = View.GONE
+            address_street_container.visibility = View.GONE
+        }
+        if (configPreferences.getInt("alamat_kantor_nomer", 1) == 0) {
+            address_no.visibility = View.GONE
+            address_no_container.visibility = View.GONE
+        }
+        if (configPreferences.getInt("alamat_kantor_rt", 1) == 0) {
+            address_rt.visibility = View.GONE
+            address_rt_container.visibility = View.GONE
+        }
+        if (configPreferences.getInt("alamat_kantor_rw", 1) == 0) {
+            address_rw.visibility = View.GONE
+            address_rw_container.visibility = View.GONE
+        }
+        if (configPreferences.getInt("alamat_kantor_kelurahan", 1) == 0) {
+            address_kelurahan.visibility = View.GONE
+            address_kelurahan_container.visibility = View.GONE
+        }
+        if (configPreferences.getInt("alamat_kantor_kecamatan", 1) == 0) address_kecamatan.visibility = View.GONE
+        if (configPreferences.getInt("alamat_kantor_kota", 1) == 0) {
+            address_city.visibility = View.GONE
+        }
+        if (configPreferences.getInt("alamat_kantor_provinsi", 1) == 0) {
+            address_province.visibility = View.GONE
         }
 
         next.setOnClickListener { onNextButtonClicked(view) }
@@ -121,10 +186,72 @@ class OccupationFragment : Fragment() {
             address_no.setText(member.nomorKantor)
             address_rt.setText(member.rtKantor)
             address_rw.setText(member.rwKantor)
+            address_province.selection = member.provinsiKantorPosisi
+            address_city.selection = member.kotaKantorPosisi
+            address_kecamatan.selection = member.kecamatanKantorPosisi
             address_kelurahan.setText(member.kelurahanKantor)
-            address_kecamatan.setText(member.kecamatanKantor)
-            address_city.setText(member.kotaKantor)
+
         })
+        provinceAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_dropdown_item, provinces)
+        cityAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_dropdown_item, kabupatens)
+        kecamatanAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_dropdown_item, kecamatans)
+//            val arrayAdapter = RegionAdapter(context!!, provinces, "Province")
+        address_province.adapter = provinceAdapter
+        address_city.adapter = cityAdapter
+        address_kecamatan.adapter = kecamatanAdapter
+
+        offlineViewModel.allProvince.observe(viewLifecycleOwner, Observer {provinces ->
+            this.provinces = provinces
+            provinceAdapter.clear()
+            provinceAdapter.addAll(provinces)
+            provinceAdapter.notifyDataSetChanged()
+        })
+
+        address_province.onItemSelectedListener = object: MaterialSpinner.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: MaterialSpinner,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                coroutineScope.launch(Dispatchers.Main) {
+                    if (provinces.isNotEmpty()) {
+                        kabupatens = offlineViewModel.getKabupatenByProvinceId(provinces[position].id)
+                        cityAdapter.clear()
+                        cityAdapter.addAll(kabupatens)
+                        cityAdapter.notifyDataSetChanged()
+
+                    }
+                }
+            }
+
+            override fun onNothingSelected(parent: MaterialSpinner) {
+            }
+
+        }
+
+        address_city.onItemSelectedListener = object: MaterialSpinner.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: MaterialSpinner,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                coroutineScope.launch(Dispatchers.Main) {
+                    if (kabupatens.isNotEmpty()) {
+                        kecamatans = offlineViewModel.getKecamatanByKabupatenId(kabupatens[position].id)
+                        kecamatanAdapter.clear()
+                        kecamatanAdapter.addAll(kecamatans)
+                        kecamatanAdapter.notifyDataSetChanged()
+
+                    }
+                }
+            }
+
+            override fun onNothingSelected(parent: MaterialSpinner) {
+            }
+
+        }
 
     }
 
@@ -218,19 +345,17 @@ class OccupationFragment : Fragment() {
             address_kelurahan_container.error = "Alamat Kantor : Kelurahan tidak boleh kosong"
             allTrue = false
         }
-        if(configPreferences.getInt("alamat_kantor_kecamatan", 1) == 1 && address_kecamatan.text.toString().isEmpty()) {
-            address_kecamatan_container.error = "Alamat Kantor : Kecamatan tidak boleh kosong"
+        if(configPreferences.getInt("alamat_kantor_kecamatan", 1) == 1 && address_kecamatan.selectedItemId < 0) {
+            address_kecamatan.error = "Alamat Kantor : Kecamatan tidak boleh kosong"
             allTrue = false
         }
-        if(configPreferences.getInt("alamat_kantor_kota_provinsi", 1) == 1) {
-            if(address_city.text.toString().isEmpty()) {
-                address_city_container.error = "Alamat Kantor : Kota tidak boleh kosong"
-                allTrue = false
-            }
-            if(address_province.text.toString().isEmpty()) {
-                address_province_container.error = "Alamat Kantor : Provinsi tidak boleh kosong"
-                allTrue = false
-            }
+        if(configPreferences.getInt("alamat_kantor_kota", 1) == 1 && address_city.selectedItemId < 0) {
+            address_city.error = "Alamat Kantor : Kota tidak boleh kosong"
+            allTrue = false
+        }
+        if(configPreferences.getInt("alamat_kantor_provinsi", 1) == 1 && address_province.selectedItemId < 0) {
+            address_province.error = "Alamat Kantor : Provinsi tidak boleh kosong"
+            allTrue = false
         }
         if(allTrue) {
 //            val memberStatusView = activity!!.findViewById<StatusViewScroller>(R.id.status_view_member_acquisition)
@@ -267,9 +392,24 @@ class OccupationFragment : Fragment() {
         member.rtKantor = address_rt.text.toString()
         member.rwKantor = address_rw.text.toString()
         member.kelurahanKantor = address_kelurahan.text.toString()
-        member.kecamatanKantor = address_kecamatan.text.toString()
-        member.kotaKantor = address_city.text.toString()
-        member.provinsiKantor = address_province.text.toString()
+        member.kecamatanKantorPosisi = address_kecamatan.selection
+        member.kotaKantorPosisi = address_city.selection
+        member.provinsiKantorPosisi = address_province.selection
+        if(address_kecamatan.selectedItem != null) {
+            member.kecamatanKantor = (address_kecamatan.selectedItem as Kecamatan).nama
+        } else {
+            member.kecamatanKantor = ""
+        }
+        if(address_city.selectedItem != null) {
+            member.kotaKantor = (address_city.selectedItem as Kabupaten).nama
+        } else {
+            member.kotaKantor = ""
+        }
+        if(address_province.selectedItem != null) {
+            member.provinsiKantor = (address_province.selectedItem as Province).nama
+        } else {
+            member.provinsiKantor = ""
+        }
 
         memberViewModel.setMember(member)
     }

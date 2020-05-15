@@ -5,6 +5,7 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
 import android.os.Build
+import android.util.Log
 import java.io.File
 import java.lang.Exception
 
@@ -13,25 +14,27 @@ class NetworkConnectivity(val context: Context) {
     public fun isNetworkConnected(): Boolean {
         var connected = true
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//            try {
-//                cm.registerDefaultNetworkCallback(object: ConnectivityManager.NetworkCallback() {
-//                    override fun onAvailable(network: Network) {
-//                        connected = true
-//                    }
-//
-//                    override fun onLost(network: Network) {
-//                        connected = false
-//                    }
-//                })
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            try {
+                cm.registerDefaultNetworkCallback(object: ConnectivityManager.NetworkCallback() {
+                    override fun onAvailable(network: Network) {
+                        connected = true
+                        Log.d("NetworkConnectivity", "Is Available")
+                    }
+
+                    override fun onLost(network: Network) {
+                        connected = false
+                        Log.d("NetworkConnectivity", "Is Lost")
+                    }
+                })
 //                connected = false
-//            } catch(error: Exception) {
+            } catch(error: Exception) {
 //                connected = false
-//            }
-//        }
-//        else {
+            }
+        }
+        else {
             connected = cm.activeNetworkInfo != null && cm.activeNetworkInfo!!.isConnected
-//        }
+        }
         return connected
     }
 

@@ -153,4 +153,6 @@ Ut at nulla turpis. Maecenas scelerisque felis ut gravida ornare. Integer urna l
     <string name="confirm_password">Retype New Password</string>
     <string name="logo">Logo</string>
     <string name="cicilan_per_bulan">Cicilan per Bulan</string>
+    <string name="empty_data">Data kosong, mohon hubungi admin koperasi anda</string>
+    <string name="perbarui">Perbarui</string>
 </resources>

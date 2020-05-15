@@ -4,15 +4,25 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.*
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.android.id.peers.R
 import com.android.id.peers.loans.models.Loan
-import com.android.id.peers.TermsActivity
 import com.android.id.peers.VerificationActivity
+import com.android.id.peers.members.models.Member
+import com.android.id.peers.util.callback.RepaymentCollection
 import com.android.id.peers.util.connection.ApiConnections
+import com.android.id.peers.util.connection.ConnectionStateMonitor
+import com.android.id.peers.util.connection.NetworkConnectivity
+import com.android.id.peers.util.database.OfflineDatabase
+import com.android.id.peers.util.database.OfflineViewModel
 import kotlinx.android.synthetic.main.activity_loan_application_confirmation.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class LoanApplicationConfirmationActivity : AppCompatActivity() {
 
@@ -22,10 +32,22 @@ class LoanApplicationConfirmationActivity : AppCompatActivity() {
         title = "Loan Application"
 
         val loan = intent.getParcelableExtra<Loan>("number_of_loan")
-        val noHp = intent.extras!!.getString("member_handphone")
         val memberName = intent.getStringExtra("member_name")
 
         if(loan != null) {
+            val apiConnections = ApiConnections()
+            apiConnections.authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
+                this, ApiConnections.REQUEST_TYPE_GET_MEMBER_BY_PHONE, object: RepaymentCollection {
+                override fun onSuccess(result: Member) {
+                    loan.memberId = result.id
+                    loan.memberName = result.namaLengkap
+                    member_name.text = loan.memberName
+                    Log.d("LoanConfirmation", "Id : ${result.id}")
+                }
+            }
+        , memberPhone = loan.noHp)
+
+            member_name.text = loan.memberName
             handphone_no.text = loan.noHp
             number_of_loan.text = String.format("%d", loan.numberOfLoan)
             tenor.text = String.format("%d", loan.tenor)
@@ -64,9 +86,20 @@ class LoanApplicationConfirmationActivity : AppCompatActivity() {
 
         lanjutkan.setOnClickListener {
             val intent = Intent(this, VerificationActivity::class.java)
-            val apiConnections = ApiConnections()
-            apiConnections.authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
-                this, ApiConnections.REQUEST_TYPE_POST_LOAN, loan)
+            val connectionStateMonitor = ConnectionStateMonitor(application)
+            connectionStateMonitor.observe(this, Observer { isConnected ->
+                if (isConnected) {
+                    val apiConnections = ApiConnections()
+                    apiConnections.authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
+                        this, ApiConnections.REQUEST_TYPE_POST_LOAN, loan)
+                    Log.d("LoanApplication", "Network is connected")
+                } else {
+                    Log.d("LoanApplication", "Network is not connected, saving to database")
+                    val offlineViewModel: OfflineViewModel = ViewModelProvider(this).get(OfflineViewModel::class.java)
+                    Log.d("LoanApplication", "ID AO : ${loan!!.aoId}")
+                    offlineViewModel.insertLoan(loan)
+                }
+            })
             intent.putExtra("hand_phone", handphone_no.text.toString())
             startActivity(intent)
         }

@@ -46,11 +46,13 @@
             android:id="@+id/cicilan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="number"
             android:enabled="false" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/pokok_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_between"
@@ -63,11 +65,12 @@
             android:id="@+id/pokok"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:enabled="false" />
+            android:inputType="number" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/sukarela_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_between"
@@ -80,7 +83,7 @@
             android:id="@+id/sukarela"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/zero"/>
+            android:inputType="number" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

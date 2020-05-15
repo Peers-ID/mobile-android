@@ -4,8 +4,8 @@ import com.android.id.peers.loans.models.LoanFormulaConfig
 import com.android.id.peers.loans.models.OtherFees
 import com.android.id.peers.members.models.MemberAcquisitionConfig
 
-public interface SplashScreen {
+public interface SplashScreen: LoanApplication {
     public fun onSuccess(result: MemberAcquisitionConfig)
-    public fun onSuccess(result: LoanFormulaConfig)
-    public fun onSuccess(result: List<OtherFees>)
+    public override fun onSuccess(result: LoanFormulaConfig)
+    public override fun onSuccess(result: List<OtherFees>)
 }

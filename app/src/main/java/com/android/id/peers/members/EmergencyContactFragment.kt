@@ -64,8 +64,14 @@ class EmergencyContactFragment : Fragment() {
 
         val configPreferences: SharedPreferences = activity!!.getSharedPreferences("member_config", Context.MODE_PRIVATE)
 
-        if (configPreferences.getInt("nama_emergency", 1) == 0) emergency_name.visibility = View.GONE
-        if (configPreferences.getInt("no_hp_emergency", 1) == 0) handphone_no.visibility = View.GONE
+        if (configPreferences.getInt("nama_emergency", 1) == 0) {
+            emergency_name.visibility = View.GONE
+            emergency_name_container.visibility = View.GONE
+        }
+        if (configPreferences.getInt("no_hp_emergency", 1) == 0) {
+            handphone_no.visibility = View.GONE
+            handphone_no_container.visibility = View.GONE
+        }
         if (configPreferences.getInt("hubungan", 1) == 0) relationship.visibility = View.GONE
 
         val relationshipAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, resources.getStringArray(R.array.relationship))
