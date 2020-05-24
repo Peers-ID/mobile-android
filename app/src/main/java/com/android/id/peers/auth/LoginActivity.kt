@@ -2,20 +2,19 @@ package com.android.id.peers.auth
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import com.android.id.peers.R
 import com.android.id.peers.SplashScreenActivity
+import com.android.id.peers.util.PeersSnackbar
 import com.android.id.peers.util.connection.VolleyRequestSingleton
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_login.*
 import org.json.JSONObject
 
@@ -61,7 +60,9 @@ class LoginActivity : AppCompatActivity() {
         params["email"] = username
         params["password"] = password
 
-        val parameters = JSONObject(params as Map<*, *>);
+        val mainView = this.window.decorView
+
+        val parameters = JSONObject(params as Map<*, *>)
         val jsonObjectRequest = JsonObjectRequest(Request.Method.POST, url, parameters,
             Response.Listener { response ->
                 val strResp = response.toString()
@@ -69,7 +70,7 @@ class LoginActivity : AppCompatActivity() {
                 val loginStatus = jsonObj.getString("status")
                 Log.d("LoginActivity", strResp)
                 if (loginStatus.toInt() == 400 || loginStatus.toInt() == 401) {
-                    popUpSnack(view, "Login Failed!")
+                    PeersSnackbar.popUpSnack(mainView, "Login Failed!")
                 } else if (loginStatus.toInt() == 201) {
                     val dataJsonObj = jsonObj.getJSONObject("data")
                     val token = dataJsonObj.getString("token")
@@ -84,23 +85,26 @@ class LoginActivity : AppCompatActivity() {
                     val akId = userJsonObj.getString("ak_id")
                     val status = userJsonObj.getString("status")
 
-                    val preferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)
+                    if (role != "Admin AO") {
+                        PeersSnackbar.popUpSnack(mainView, "Only AO can access!!")
+                    } else {
+                        val preferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)
 
-                    preferences.edit().putString("token", token).apply()
-                    preferences.edit().putInt("id", id.toInt()).apply()
-                    preferences.edit().putInt("koperasi_id", koperasiId.toInt()).apply()
-                    preferences.edit().putString("full_name", fullName).apply()
-                    preferences.edit().putString("phone_mobile", phoneMobile).apply()
-                    preferences.edit().putString("birth_date", birthDate).apply()
-                    preferences.edit().putString("email", email).apply()
-                    preferences.edit().putString("password", password).apply()
-                    preferences.edit().putString("role", role).apply()
-                    preferences.edit().putInt("ak_id", akId.toInt()).apply()
-                    preferences.edit().putString("status", status).apply()
-                    val intent = Intent(this, SplashScreenActivity::class.java)
-                    startActivity(intent)
-                    finish()
-
+                        preferences.edit().putString("token", token).apply()
+                        preferences.edit().putInt("id", id.toInt()).apply()
+                        preferences.edit().putInt("koperasi_id", koperasiId.toInt()).apply()
+                        preferences.edit().putString("full_name", fullName).apply()
+                        preferences.edit().putString("phone_mobile", phoneMobile).apply()
+                        preferences.edit().putString("birth_date", birthDate).apply()
+                        preferences.edit().putString("email", email).apply()
+                        preferences.edit().putString("password", password).apply()
+                        preferences.edit().putString("role", role).apply()
+                        preferences.edit().putInt("ak_id", akId.toInt()).apply()
+                        preferences.edit().putString("status", status).apply()
+                        val intent = Intent(this, SplashScreenActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    }
 //                    popUpSnack(view, "Login Success!")
                 }
             },
@@ -110,19 +114,5 @@ class LoginActivity : AppCompatActivity() {
         )
 
         VolleyRequestSingleton.getInstance(this).addToRequestQueue(jsonObjectRequest)
-    }
-
-    fun popUpSnack(view: View, message: String){
-        val rootView = this.window.decorView.findViewById<View>(android.R.id.content)
-        val snackBar = Snackbar.make(rootView, "",
-            Snackbar.LENGTH_LONG).setAction("Action", null)
-        snackBar.setActionTextColor(Color.BLUE)
-        val snackBarView = snackBar.view
-        snackBarView.setBackgroundColor(Color.BLACK)
-        val textView =
-            snackBarView.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
-        textView.text = message
-        textView.setTextColor(Color.WHITE)
-        snackBar.show()
     }
 }

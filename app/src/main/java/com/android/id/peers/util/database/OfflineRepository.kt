@@ -1,6 +1,5 @@
 package com.android.id.peers.util.database
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import com.android.id.peers.loans.models.Loan
 import com.android.id.peers.loans.models.LoanPicture
@@ -41,7 +40,7 @@ class OfflineRepository(private val offlineDatabase: OfflineDatabase) {
 
     val allKabupaten: LiveData<List<Kabupaten>> = offlineDatabase.kabupatenDao().getAll()
 
-    fun getKabupatenByProvinceId(idProvince: Int): List<Kabupaten> {
+    fun getKabupatenByProvinceId(idProvince: String): List<Kabupaten> {
         return offlineDatabase.kabupatenDao().getByProvinceId(idProvince)
     }
 
@@ -51,7 +50,7 @@ class OfflineRepository(private val offlineDatabase: OfflineDatabase) {
 
     val allKecamatan: LiveData<List<Kecamatan>> = offlineDatabase.kecamatanDao().getAll()
 
-    fun getKecamatanByKabupatenId(idKabupaten: Int): List<Kecamatan> {
+    fun getKecamatanByKabupatenId(idKabupaten: String): List<Kecamatan> {
         return offlineDatabase.kecamatanDao().getByKabupatenId(idKabupaten)
     }
 

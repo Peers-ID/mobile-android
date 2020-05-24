@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/submit_data"
+        android:title="@string/submit_data"/>
     <item android:id="@+id/change_password"
         android:title="@string/change_password"/>
     <item android:id="@+id/logout"

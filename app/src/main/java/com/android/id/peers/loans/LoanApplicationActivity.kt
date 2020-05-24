@@ -2,14 +2,19 @@ package com.android.id.peers.loans
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.ViewTreeObserver
-import android.widget.*
+import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
-import androidx.constraintlayout.widget.ConstraintSet.*
+import android.widget.TableLayout
+import android.widget.TableRow
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintSet.WRAP_CONTENT
 import androidx.lifecycle.Observer
 import com.android.id.peers.R
 import com.android.id.peers.loans.models.Loan
@@ -17,9 +22,15 @@ import com.android.id.peers.loans.models.LoanFormulaConfig
 import com.android.id.peers.loans.models.LoanFormulaConfig.Companion.saveLoanFormula
 import com.android.id.peers.loans.models.OtherFees
 import com.android.id.peers.loans.models.OtherFees.Companion.saveOtherFees
-import com.android.id.peers.util.callback.LoanApplication
+import com.android.id.peers.members.models.Member
+import com.android.id.peers.util.CurrencyFormat
+import com.android.id.peers.util.PeersSnackbar
+import com.android.id.peers.util.callback.LoanFormulaCallback
+import com.android.id.peers.util.callback.RepaymentCollection
 import com.android.id.peers.util.connection.ApiConnections
+import com.android.id.peers.util.connection.ApiConnections.Companion.authenticate
 import com.android.id.peers.util.connection.ConnectionStateMonitor
+import com.android.id.peers.util.connection.NetworkConnectivity
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_blank.*
@@ -28,6 +39,10 @@ import kotlin.properties.Delegates
 
 class LoanApplicationActivity : AppCompatActivity() {
     val activity = this
+    var member: Member? = null
+//    var submissionMode: Int = 0 //1. Only Member, 2. Only Loan, 3. Both Member and Loan
+
+    var connected: Boolean = true
 
     var done: Int by Delegates.observable(0) { property, oldValue, newValue ->
         if(newValue == 2) {
@@ -39,33 +54,40 @@ class LoanApplicationActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val connectionStateMonitor = ConnectionStateMonitor(application)
+        connectionStateMonitor.observe(this, Observer { isConnected ->
+            connected = isConnected
+        })
+
         val loanPreferences = getSharedPreferences("loan_config", Context.MODE_PRIVATE)
         val formulaId = loanPreferences.getInt("id", 0)
         if(formulaId == 0) {
             setContentView(R.layout.activity_blank)
             perbarui.setOnClickListener {
-                val connectionStateMonitor = ConnectionStateMonitor(application)
-                connectionStateMonitor.observe(this, Observer { isConnected ->
-                    if (isConnected) {
-                        val apiConnections = ApiConnections()
-                        val preferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)
-                        apiConnections.authenticate(preferences, this, ApiConnections.REQUEST_TYPE_GET_LOAN_FORMULA,
-                            object :
-                                LoanApplication {
-                                override fun onSuccess(result: LoanFormulaConfig) {
-                                    val loanPreferences = getSharedPreferences("loan_config", Context.MODE_PRIVATE)
-                                    saveLoanFormula(loanPreferences, result)
-                                    done += 1
-                                }
 
-                                override fun onSuccess(result: List<OtherFees>) {
-                                    val feePreferences = getSharedPreferences("fee_config", Context.MODE_PRIVATE)
-                                    saveOtherFees(feePreferences, result)
-                                    done += 1
-                                }
-                            })
-                    }
-                })
+                val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+                connected = activeNetwork?.isConnectedOrConnecting == true
+
+                if (connected) {
+                    val preferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)
+                    authenticate(preferences, this, ApiConnections.REQUEST_TYPE_GET_LOAN_FORMULA,
+                        object :
+                            LoanFormulaCallback {
+                            override fun onSuccess(result: LoanFormulaConfig) {
+                                saveLoanFormula(loanPreferences, result)
+                                done += 1
+                            }
+
+                            override fun onSuccess(result: List<OtherFees>) {
+                                val feePreferences = getSharedPreferences("fee_config", Context.MODE_PRIVATE)
+                                saveOtherFees(feePreferences, result)
+                                done += 1
+                            }
+                        }
+                    )
+                }
             }
         } else {
             setContentView(R.layout.activity_loan_application)
@@ -91,9 +113,15 @@ class LoanApplicationActivity : AppCompatActivity() {
             val feePreferences = getSharedPreferences("fee_config", Context.MODE_PRIVATE)
             if(intent.extras != null) {
                 val noHp = intent.extras!!.getString("member_handphone")
+                member = intent.extras!!.getParcelable("member")!!
                 if(noHp != null) {
+//                    submissionMode = 2
                     handphone_no.setText(noHp)
                 }
+//                } else {
+//                    if (member != null)
+//                    submissionMode = 3
+//                }
             }
 
 //        val memberName = intent.extras!!.getString("member_name")
@@ -107,7 +135,7 @@ class LoanApplicationActivity : AppCompatActivity() {
             val tenureMultiplier = if(tenureCycle == "bulan") 30 else if(tenureCycle == "minggu") 7 else 1
             val serviceFeeMultiplier = if(serviceFeeCycle == "bulan") 30 else if(serviceFeeCycle == "minggu") 7 else 1
 
-            service_fee.text = String.format("%d", serviceFeeAmount)
+            service_fee.text = CurrencyFormat.formatAmount(serviceFeeAmount.toString())
 
             val feeJson = feePreferences.getString("fees", null)!!
             val otherFees = Gson().fromJson<List<OtherFees>>(feeJson)
@@ -116,13 +144,13 @@ class LoanApplicationActivity : AppCompatActivity() {
             val minLoan = loanPreferences.getInt("min_loan_amount", 0)
             val stepLoan = loanPreferences.getInt("kelipatan", 0)
             val maxLoan = loanPreferences.getInt("max_loan_amount", 0)
-            min_loan_text.text = String.format("%d", minLoan)
-            max_loan_text.text = String.format("%d", maxLoan)
+            min_loan_text.text = CurrencyFormat.formatAmount(minLoan.toString())
+            max_loan_text.text = CurrencyFormat.formatAmount(maxLoan.toString())
             number_of_loan_seek_bar.progress = 0
             number_of_loan_seek_bar.max = maxLoan
             number_of_loan_seek_bar.progress = maxLoan/2
             number_of_loan_seek_bar.incrementProgressBy(stepLoan)
-            number_of_loan.setText(String.format("%d", number_of_loan_seek_bar.progress))
+            number_of_loan.setText(CurrencyFormat.formatAmount(number_of_loan_seek_bar.progress.toString()))
 
             val minTenor = loanPreferences.getInt("min_tenure", 0)
             val stepTenor = 1
@@ -140,24 +168,24 @@ class LoanApplicationActivity : AppCompatActivity() {
                 sumFee += tenor_seek_bar.progress * tenureMultiplier / fMultiplier * f.serviceAmount
             }
 
-            var loanDisbursement = number_of_loan.text.toString().toLong() - tenor.text.toString().toInt() * tenureMultiplier / serviceFeeMultiplier * serviceFeeAmount - sumFee
+            var loanDisbursement = CurrencyFormat.removeCurrencyFormat(number_of_loan.text.toString()).toLong() - tenor.text.toString().toInt() * tenureMultiplier / serviceFeeMultiplier * serviceFeeAmount - sumFee
             Log.d("LoanApplication", "${tenor.text.toString().toInt()}")
             Log.d("LoanApplication", "$tenureMultiplier")
             var cicilanPerBulan = loanDisbursement / (tenor.text.toString().toInt() * tenureMultiplier)
-            loan_disbursement.text = loanDisbursement.toString()
-            cicilan.text = cicilanPerBulan.toString()
+            loan_disbursement.text = CurrencyFormat.formatAmount(loanDisbursement.toString())
+            cicilan.text = CurrencyFormat.formatAmount(cicilanPerBulan.toString())
             number_of_loan_seek_bar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
                     // Display the current progress of SeekBar
-                    number_of_loan.setText(String.format("%d", i/stepLoan*stepLoan))
+                    number_of_loan.setText(CurrencyFormat.formatAmount((i/stepLoan*stepLoan).toString()))
                     if (number_of_loan_seek_bar.progress < minLoan) {
                         number_of_loan_seek_bar.progress = minLoan
-                        number_of_loan.setText(String.format("%d", minLoan))
+                        number_of_loan.setText(CurrencyFormat.formatAmount(minLoan.toString()))
                     }
-                    loanDisbursement = number_of_loan.text.toString().toLong() - tenor.text.toString().toInt() * tenureMultiplier / serviceFeeMultiplier * serviceFeeAmount - sumFee
+                    loanDisbursement = CurrencyFormat.removeCurrencyFormat(number_of_loan.text.toString()).toLong() - tenor.text.toString().toInt() * tenureMultiplier / serviceFeeMultiplier * serviceFeeAmount - sumFee
                     cicilanPerBulan = loanDisbursement / (tenor.text.toString().toInt() * tenureMultiplier)
-                    loan_disbursement.text = loanDisbursement.toString()
-                    cicilan.text= cicilanPerBulan.toString()
+                    loan_disbursement.text = CurrencyFormat.formatAmount(loanDisbursement.toString())
+                    cicilan.text= CurrencyFormat.formatAmount(cicilanPerBulan.toString())
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar) {
@@ -180,10 +208,10 @@ class LoanApplicationActivity : AppCompatActivity() {
                         tenor_seek_bar.progress = minTenor
                         tenor.setText(String.format("%d", minTenor))
                     }
-                    loanDisbursement = number_of_loan.text.toString().toLong() - tenor.text.toString().toInt() * tenureMultiplier / serviceFeeMultiplier * serviceFeeAmount - sumFee
+                    loanDisbursement = CurrencyFormat.removeCurrencyFormat(number_of_loan.text.toString()).toLong() - tenor.text.toString().toInt() * tenureMultiplier / serviceFeeMultiplier * serviceFeeAmount - sumFee
                     cicilanPerBulan = loanDisbursement / (tenor.text.toString().toInt() * tenureMultiplier)
-                    loan_disbursement.text = loanDisbursement.toString()
-                    cicilan.text= cicilanPerBulan.toString()
+                    loan_disbursement.text = CurrencyFormat.formatAmount(loanDisbursement.toString())
+                    cicilan.text= CurrencyFormat.formatAmount(cicilanPerBulan.toString())
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar) {
@@ -217,7 +245,7 @@ class LoanApplicationActivity : AppCompatActivity() {
                 val otherFee = TextView(this)
                 otherFee.layoutParams = TableRow.LayoutParams(0, WRAP_CONTENT, 1f)
                 otherFee.id = TextView.generateViewId()
-                otherFee.text = feeItem.serviceAmount.toString()
+                otherFee.text = CurrencyFormat.formatAmount(feeItem.serviceAmount.toString())
 
                 tableRow.addView(otherFeeText)
                 tableRow.addView(otherFee)
@@ -233,30 +261,55 @@ class LoanApplicationActivity : AppCompatActivity() {
                     allTrue = false
                 }
                 if(allTrue) {
-                    val intent = Intent(this, LoanApplicationConfirmationActivity::class.java)
-                    val fees = ArrayList<Pair<String, Long>>()
-                    for(fee in otherFees) {
-                        fees.add(Pair(fee.serviceName, fee.serviceAmount))
+                    if (member == null) {
+
+                        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                        val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+                        connected = activeNetwork?.isConnectedOrConnecting == true
+
+                        if (connected) {
+                            authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
+                                this, ApiConnections.REQUEST_TYPE_GET_MEMBER_BY_PHONE, object:
+                                    RepaymentCollection {
+                                    override fun onSuccess(result: Member) {
+                                        if (result.id == 0) {
+                                            PeersSnackbar.popUpSnack(activity.window.decorView, "Member with this phone number is not found!")
+                                        } else {
+                                            goToConfirmationPage(otherFees, formulaId, loanDisbursement, cicilanPerBulan, serviceFeeAmount)
+                                        }
+                                    }
+                                }
+                                , memberPhone = handphone_no.text.toString())
+                        } else {
+                            goToConfirmationPage(otherFees, formulaId, loanDisbursement, cicilanPerBulan, serviceFeeAmount)
+                        }
                     }
-                    val loan = Loan(otherFees = fees)
-                    loan.noHp = handphone_no.text.toString()
-                    loan.numberOfLoan = number_of_loan.text.toString().toLong()
-                    loan.tenor = tenor.text.toString().toInt()
-                    loan.formulaId = formulaId
-                    val loginPreferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)
-                    loan.aoId = loginPreferences.getInt("id", 0)
-                    loan.totalDisbursed = loanDisbursement
-                    loan.cicilanPerBulan = cicilanPerBulan
-                    loan.serviceFee = tenor.text.toString().toLong()
-//                if(memberName != null) {
-                    intent.putExtra("member_handphone", handphone_no.text.toString())
-//                    intent.putExtra("member_name", memberName)
-//                }
-                    intent.putExtra("number_of_loan", loan)
-                    startActivity(intent)
                 }
             }
         }
+    }
+
+    fun goToConfirmationPage(otherFees: List<OtherFees>, formulaId: Int, loanDisbursement: Long, cicilanPerBulan: Long, serviceFeeAmount: Long) {
+        val intent = Intent(activity, LoanApplicationConfirmationActivity::class.java)
+        val fees = ArrayList<Pair<String, Long>>()
+        for(fee in otherFees) {
+            fees.add(Pair(fee.serviceName, fee.serviceAmount))
+        }
+        val loan = Loan(otherFees = fees)
+        loan.noHp = handphone_no.text.toString()
+        loan.numberOfLoan = CurrencyFormat.removeCurrencyFormat(number_of_loan.text.toString()).toLong()
+        loan.tenor = tenor.text.toString().toInt()
+        loan.formulaId = formulaId
+        val loginPreferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)
+        loan.aoId = loginPreferences.getInt("id", 0)
+        loan.totalDisbursed = loanDisbursement
+        loan.cicilanPerBulan = cicilanPerBulan
+        loan.serviceFee = serviceFeeAmount
+        if(member != null) {
+            intent.putExtra("member", member)
+        }
+        intent.putExtra("number_of_loan", loan)
+        startActivity(intent)
     }
 
     inline fun <reified T> Gson.fromJson(json: String): T = fromJson<T>(json, object: TypeToken<T>() {}.type)

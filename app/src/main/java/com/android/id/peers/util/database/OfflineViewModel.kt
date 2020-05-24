@@ -1,7 +1,6 @@
 package com.android.id.peers.util.database
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
@@ -12,6 +11,7 @@ import com.android.id.peers.members.models.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class OfflineViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: OfflineRepository = OfflineRepository(OfflineDatabase.getDatabase(application, viewModelScope))
@@ -51,21 +51,23 @@ class OfflineViewModel(application: Application) : AndroidViewModel(application)
         repository.insertCollection(collection)
     }
 
-    fun insertProvince(provinces: List<Province>) = viewModelScope.async(Dispatchers.IO) {
-        repository.insertProvince(provinces)
-    }
+    suspend fun insertProvince(provinces: List<Province>) =
+        withContext(viewModelScope.coroutineContext + Dispatchers.IO) {
+            repository.insertProvince(provinces)
+        }
 
-    suspend fun getKabupatenByProvinceId(idProvince: Int): List<Kabupaten> {
+    suspend fun getKabupatenByProvinceId(idProvince: String): List<Kabupaten> {
         return viewModelScope.async(Dispatchers.IO) {
             repository.getKabupatenByProvinceId(idProvince)
         }.await()
     }
 
-    fun insertKabupaten(kabupatens: List<Kabupaten>) = viewModelScope.async(Dispatchers.IO) {
-        repository.insertKabupaten(kabupatens)
-    }
+    suspend fun insertKabupaten(kabupatens: List<Kabupaten>) =
+        withContext(viewModelScope.coroutineContext + Dispatchers.IO) {
+            repository.insertKabupaten(kabupatens)
+        }
 
-    suspend fun getKecamatanByKabupatenId(idKabupaten: Int): List<Kecamatan> {
+    suspend fun getKecamatanByKabupatenId(idKabupaten: String): List<Kecamatan> {
         return viewModelScope.async(Dispatchers.IO) {
             repository.getKecamatanByKabupatenId(idKabupaten)
         }.await()

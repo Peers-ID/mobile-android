@@ -5,28 +5,31 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.hardware.Camera
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.net.Uri
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.id.peers.R
 import com.android.id.peers.loans.adapters.LoansAdapter
 import com.android.id.peers.loans.models.Loan
-import com.android.id.peers.loans.models.LoanItem
 import com.android.id.peers.loans.models.LoanPicture
+import com.android.id.peers.util.PeersSnackbar
 import com.android.id.peers.util.callback.LoanDisbursement
 import com.android.id.peers.util.connection.ApiConnections
+import com.android.id.peers.util.connection.ApiConnections.Companion.authenticate
+import com.android.id.peers.util.connection.ConnectionStateMonitor
 import com.android.id.peers.util.connection.NetworkConnectivity
-import com.android.id.peers.util.database.OfflineDatabase
 import com.android.id.peers.util.database.OfflineViewModel
 import kotlinx.android.synthetic.main.activity_loan_disbursement.*
 import java.io.File
@@ -42,35 +45,52 @@ class LoanDisbursementActivity : AppCompatActivity() {
     lateinit var pictureName: String
 
 //    val loans: ArrayList<LoanItem> = ArrayList()
-    val loans: ArrayList<Loan> = ArrayList()
+    var loans: ArrayList<Loan> = ArrayList()
 //    var loan: ArrayList<Loan> = ArrayList()
     lateinit var loan: List<Loan>
     lateinit var selectedLoan: Loan
     val activity = this
+    val loansAdapter = LoansAdapter(loans, activity, 0) { loan : Loan -> loanItemClicked(loan)}
 
     var selectedItemLoanId = 0
+
+    var connected: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_loan_disbursement)
 
-        val apiConnections = ApiConnections()
-        apiConnections.authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
-    this, ApiConnections.REQUEST_TYPE_GET_LOAN, object :
-                LoanDisbursement {
-                override fun onSuccess(result: List<Loan>) {
-                    loan = ArrayList<Loan>(result)
-                    for (l in loan) {
-                        val loanDisburseItem = Loan(otherFees = ArrayList())
+        val connectionStateMonitor = ConnectionStateMonitor(application)
+        connectionStateMonitor.observe(this, Observer { isConnected ->
+            connected = isConnected
+        })
+
+        loan_disbursement.adapter = loansAdapter
+
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+        connected = activeNetwork?.isConnectedOrConnecting == true
+
+        if (connected) {
+            authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
+                this, ApiConnections.REQUEST_TYPE_GET_LOAN, object :
+                    LoanDisbursement {
+                    override fun onSuccess(result: List<Loan>) {
+                        loan = ArrayList<Loan>(result)
+                        for (l in loan) {
+                            val loanDisburseItem = Loan(otherFees = ArrayList())
 //                        loanDisburseItem.loanNo = ""
-                        loanDisburseItem.memberId = l.memberId
-                        loanDisburseItem.memberName = l.memberName
-                        loanDisburseItem.totalDisbursed = l.totalDisbursed
-                        loans.add(loanDisburseItem)
+                            loanDisburseItem.memberId = l.memberId
+                            loanDisburseItem.memberName = l.memberName
+                            loanDisburseItem.totalDisbursed = l.totalDisbursed
+                            loans.add(loanDisburseItem)
+                        }
+//                    loan_disbursement.adapter!!.notifyDataSetChanged()
+                        loansAdapter.notifyDataSetChanged()
                     }
-                    loan_disbursement.adapter!!.notifyDataSetChanged()
                 }
-            }, listType = 0)
+                , listType = 3)
+        }
 
         loan_disbursement.setHasFixedSize(true);
         val llm = LinearLayoutManager(this)
@@ -79,7 +99,6 @@ class LoanDisbursementActivity : AppCompatActivity() {
 
 //        loans = ArrayList()
 //        loan_disbursement.adapter = LoansAdapter(loans, activity, 0) { loan : LoanItem -> loanItemClicked(loan)}
-        loan_disbursement.adapter = LoansAdapter(loans, activity, 0) { loan : Loan -> loanItemClicked(loan)}
 
         loan_disbursement.addItemDecoration(
             DividerItemDecoration(this,
@@ -190,28 +209,47 @@ class LoanDisbursementActivity : AppCompatActivity() {
 //            val uri = data?.data
             val uri = pictureUri
             Log.d("LoanDisburse", "onActivityResult selectedItemLoanId $selectedItemLoanId")
-            if (uri != null) {
+//            if (uri != null) {
 //                imageView.setImageURI(uri)
-                Log.d("LoanDisburse", "onActivityResult $uri")
-                createImageData(uri)
-                val networkConnectivity = NetworkConnectivity(this)
-                if (networkConnectivity.isNetworkConnected()) {
-                    val apiConnections = ApiConnections()
-                    apiConnections.authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
-                        this, ApiConnections.REQUEST_TYPE_POST_PICTURE, imageData, memberId = selectedItemLoanId, fileName = pictureName)
-                    val fDelete = File(uri.path!!)
-                    if (fDelete.delete()) {
-                        Log.d("LoanDisburse","File is deleted" )
-                    } else {
-                        Log.d("LoanDisburse","File is not deleted" )
-                    }
+//                Log.d("LoanDisburse", "onActivityResult $uri")
+            createImageData(uri)
+
+            val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+            connected = activeNetwork?.isConnectedOrConnecting == true
+
+            if (connected) {
+                authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
+                    this, ApiConnections.REQUEST_TYPE_POST_PICTURE, imageData, memberId = selectedItemLoanId, loanId = selectedLoan.id, fileName = pictureName)
+                val fDelete = File(uri.path!!)
+                if (fDelete.delete()) {
+                    Log.d("LoanDisburse","File is deleted" )
                 } else {
-                    val loanPicture = LoanPicture(0, selectedItemLoanId, pictureName)
-                    val offlineViewModel: OfflineViewModel = ViewModelProvider(this).get(
-                        OfflineViewModel::class.java)
-                    offlineViewModel.insertLoanPictures(loanPicture)
+                    Log.d("LoanDisburse","File is not deleted" )
                 }
+
+                authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
+                    this, ApiConnections.REQUEST_TYPE_GET_LOAN, object :
+                    LoanDisbursement {
+                        override fun onSuccess(result: List<Loan>) {
+                            loans.clear()
+                            loan = ArrayList<Loan>(result)
+                            loans.addAll(loan)
+                            Log.d("LoanDisburse", "Loan Size : ${loans.size}")
+//                                loan_disbursement.adapter!!.notifyDataSetChanged()
+                            loansAdapter.notifyDataSetChanged()
+                            PeersSnackbar.popUpSnack(activity.window.decorView, "Loan disbursed successfully!")
+                        }
+                    }
+                    , listType = 3)
+            } else {
+                val loanPicture = LoanPicture(0, selectedItemLoanId, pictureName)
+                val offlineViewModel: OfflineViewModel = ViewModelProvider(this).get(
+                    OfflineViewModel::class.java)
+                offlineViewModel.insertLoanPictures(loanPicture)
+                PeersSnackbar.popUpSnack(activity.window.decorView, "There was no internet access! Data is saved locally")
             }
+//            }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }

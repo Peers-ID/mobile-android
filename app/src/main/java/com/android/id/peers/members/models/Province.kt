@@ -6,7 +6,8 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "provinces")
 data class Province (
-    @PrimaryKey var id: Int = 0,
+    @PrimaryKey(autoGenerate = true) var id: Int = 0,
+    @ColumnInfo(name = "kode_wilayah") var kodeWilayah: String = "",
     @ColumnInfo(name = "nama") var nama: String = ""
 ) {
     override fun toString(): String {

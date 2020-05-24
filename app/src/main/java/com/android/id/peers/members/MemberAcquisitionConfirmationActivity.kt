@@ -1,51 +1,23 @@
 package com.android.id.peers.members
 
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.appcompat.app.AppCompatActivity
 import com.android.id.peers.R
 import com.android.id.peers.TermsActivity
 import com.android.id.peers.loans.LoanApplicationActivity
 import com.android.id.peers.members.models.Member
 import com.android.id.peers.util.CurrencyFormat
-import com.android.id.peers.util.connection.ApiConnections
-import com.android.id.peers.util.connection.ConnectionStateMonitor
-import com.android.id.peers.util.connection.NetworkConnectivity
-import com.android.id.peers.util.database.OfflineDatabase
-import com.android.id.peers.util.database.OfflineViewModel
 import kotlinx.android.synthetic.main.activity_member_acquisition_confirmation.*
-import kotlinx.android.synthetic.main.fragment_rc_address.*
 import kotlinx.android.synthetic.main.layout_address.*
-import kotlinx.android.synthetic.main.layout_address.address_city
-import kotlinx.android.synthetic.main.layout_address.address_how_long
-import kotlinx.android.synthetic.main.layout_address.address_kecamatan
-import kotlinx.android.synthetic.main.layout_address.address_kelurahan
-import kotlinx.android.synthetic.main.layout_address.address_no
-import kotlinx.android.synthetic.main.layout_address.address_rt
-import kotlinx.android.synthetic.main.layout_address.address_rw
-import kotlinx.android.synthetic.main.layout_address.address_status
-import kotlinx.android.synthetic.main.layout_address.address_street
 import kotlinx.android.synthetic.main.layout_address_domisili.*
-import kotlinx.android.synthetic.main.layout_address_domisili.address_city_domisili
-import kotlinx.android.synthetic.main.layout_address_domisili.address_how_long_domisili
-import kotlinx.android.synthetic.main.layout_address_domisili.address_kecamatan_domisili
-import kotlinx.android.synthetic.main.layout_address_domisili.address_kelurahan_domisili
-import kotlinx.android.synthetic.main.layout_address_domisili.address_no_domisili
-import kotlinx.android.synthetic.main.layout_address_domisili.address_rt_domisili
-import kotlinx.android.synthetic.main.layout_address_domisili.address_rw_domisili
-import kotlinx.android.synthetic.main.layout_address_domisili.address_status_domisili
-import kotlinx.android.synthetic.main.layout_address_domisili.address_street_domisili
 import kotlinx.android.synthetic.main.layout_emergency_contact.*
 import kotlinx.android.synthetic.main.layout_occupation.*
-import kotlinx.android.synthetic.main.layout_personal_information.*
-import kotlinx.android.synthetic.main.layout_occupation.occupation_position
 import kotlinx.android.synthetic.main.layout_office_address.*
+import kotlinx.android.synthetic.main.layout_personal_information.*
 
 class MemberAcquisitionConfirmationActivity : AppCompatActivity() {
     var sesuai : Boolean = false
@@ -145,18 +117,20 @@ class MemberAcquisitionConfirmationActivity : AppCompatActivity() {
 //        }
 
 //        if (networkConnectivity.isNetworkConnected()) {
-        val connectionStateMonitor = ConnectionStateMonitor(application)
-        connectionStateMonitor.observe(this, Observer { isConnected ->
-            if (isConnected) {
-                val apiConnections = ApiConnections()
-                apiConnections.authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
-                    this, ApiConnections.REQUEST_TYPE_POST_MEMBER, member)
-            } else {
-                val offlineViewModel: OfflineViewModel = ViewModelProvider(this).get(
-                    OfflineViewModel::class.java)
-                offlineViewModel.insertMember(member)
-            }
-        })
+
+//        val connectionStateMonitor = ConnectionStateMonitor(application)
+//        connectionStateMonitor.observe(this, Observer { isConnected ->
+//            if (isConnected) {
+//                val apiConnections = ApiConnections()
+//                apiConnections.authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
+//                    this, ApiConnections.REQUEST_TYPE_POST_MEMBER, member)
+//            } else {
+//                val offlineViewModel: OfflineViewModel = ViewModelProvider(this).get(
+//                    OfflineViewModel::class.java)
+//                offlineViewModel.insertMember(member)
+//            }
+//        })
+
 //        } else {
 //            val memberDao = OfflineDatabase.getDatabase(application).memberDao()
 //            memberDao.insertAll(member)
@@ -177,6 +151,7 @@ class MemberAcquisitionConfirmationActivity : AppCompatActivity() {
     val positiveButtonClick = { dialog: DialogInterface, which: Int ->
         val member = intent.getParcelableExtra<Member>("member")!!
         val intent = Intent(this, LoanApplicationActivity::class.java)
+        intent.putExtra("member", member)
         intent.putExtra("member_handphone", member.noHp)
         intent.putExtra("member_name", member.namaLengkap)
         finishAffinity()
@@ -186,6 +161,7 @@ class MemberAcquisitionConfirmationActivity : AppCompatActivity() {
     val negativeButtonClick = { dialog: DialogInterface, which: Int ->
         val member = intent.getParcelableExtra<Member>("member")!!
         val intent = Intent(this, TermsActivity::class.java)
+        intent.putExtra("member", member)
         intent.putExtra("member_handphone", member.noHp)
         intent.putExtra("member_name", member.namaLengkap)
         startActivity(intent)

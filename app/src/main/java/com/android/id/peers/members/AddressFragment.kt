@@ -5,17 +5,17 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.CheckBox
+import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-
 import com.android.id.peers.R
-import com.android.id.peers.members.adapters.RegionAdapter
 import com.android.id.peers.members.models.*
 import com.android.id.peers.util.communication.MemberViewModel
 import com.android.id.peers.util.database.OfflineViewModel
@@ -218,7 +218,7 @@ class AddressFragment : Fragment(), CoroutineScope {
 
                 coroutineScope.launch(Dispatchers.Main) {
                     if(provinces.isNotEmpty()) {
-                        kabupatens = offlineViewModel.getKabupatenByProvinceId(provinces[position].id)
+                        kabupatens = offlineViewModel.getKabupatenByProvinceId(provinces[position].kodeWilayah)
                         cityAdapter.clear()
                         cityAdapter.addAll(kabupatens)
                         cityAdapter.notifyDataSetChanged()
@@ -240,7 +240,7 @@ class AddressFragment : Fragment(), CoroutineScope {
             ) {
                 coroutineScope.launch(Dispatchers.Main) {
                     if(kabupatens.isNotEmpty()) {
-                        kecamatans = offlineViewModel.getKecamatanByKabupatenId(kabupatens[position].id)
+                        kecamatans = offlineViewModel.getKecamatanByKabupatenId(kabupatens[position].kodeWilayah)
                         kecamatanAdapter.clear()
                         kecamatanAdapter.addAll(kecamatans)
                         kecamatanAdapter.notifyDataSetChanged()
@@ -262,7 +262,7 @@ class AddressFragment : Fragment(), CoroutineScope {
             ) {
                 coroutineScope.launch(Dispatchers.Main) {
                     if(provinces.isNotEmpty()) {
-                        kabupatensDomisili = offlineViewModel.getKabupatenByProvinceId(provinces[position].id)
+                        kabupatensDomisili = offlineViewModel.getKabupatenByProvinceId(provinces[position].kodeWilayah)
                         cityDomisiliAdapter.clear()
                         cityDomisiliAdapter.addAll(kabupatensDomisili)
                         cityDomisiliAdapter.notifyDataSetChanged()
@@ -285,7 +285,7 @@ class AddressFragment : Fragment(), CoroutineScope {
 //                Log.d("AddressFragment", "SELECTED CITY ${address_city_domisili.selectedItem}")
                 coroutineScope.launch(Dispatchers.Main) {
                     if(kabupatensDomisili.isNotEmpty()) {
-                        kecamatansDomisili = offlineViewModel.getKecamatanByKabupatenId(kabupatensDomisili[position].id)
+                        kecamatansDomisili = offlineViewModel.getKecamatanByKabupatenId(kabupatensDomisili[position].kodeWilayah)
                         kecamatanDomisiliAdapter.clear()
                         kecamatanDomisiliAdapter.addAll(kecamatansDomisili)
                         kecamatanDomisiliAdapter.notifyDataSetChanged()

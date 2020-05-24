@@ -6,10 +6,10 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.android.id.peers.loans.dao.CollectionDao
-import com.android.id.peers.loans.models.Loan
 import com.android.id.peers.loans.dao.LoanDao
-import com.android.id.peers.loans.models.LoanPicture
 import com.android.id.peers.loans.dao.LoanPictureDao
+import com.android.id.peers.loans.models.Loan
+import com.android.id.peers.loans.models.LoanPicture
 import com.android.id.peers.loans.models.RepaymentCollection
 import com.android.id.peers.members.dao.*
 import com.android.id.peers.members.models.*

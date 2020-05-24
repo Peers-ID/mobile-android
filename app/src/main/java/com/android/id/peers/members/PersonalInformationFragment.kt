@@ -3,20 +3,26 @@ package com.android.id.peers.members
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-
 import com.android.id.peers.R
-import com.android.id.peers.util.communication.MemberViewModel
 import com.android.id.peers.members.models.Member
+import com.android.id.peers.util.PeersSnackbar
+import com.android.id.peers.util.callback.RepaymentCollection
+import com.android.id.peers.util.communication.MemberViewModel
+import com.android.id.peers.util.connection.ApiConnections
+import com.android.id.peers.util.connection.ApiConnections.Companion.authenticate
+import com.android.id.peers.util.connection.ConnectionStateMonitor
+import com.android.id.peers.util.connection.NetworkConnectivity
 import com.shuhart.stepview.StepView
 import kotlinx.android.synthetic.main.fragment_personal_information.*
 import java.text.SimpleDateFormat
@@ -42,6 +48,8 @@ class PersonalInformationFragment : Fragment() {
     private var param2: String? = null
     private var listener: OnFragmentInteractionListener? = null
 
+    var connected: Boolean = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -49,6 +57,11 @@ class PersonalInformationFragment : Fragment() {
             param2 = it.getString(ARG_PARAM2)
         }
         memberViewModel = ViewModelProvider(activity!!).get(MemberViewModel::class.java)
+
+        val connectionStateMonitor = ConnectionStateMonitor(activity!!)
+        connectionStateMonitor.observe(this, Observer { isConnected ->
+            connected = isConnected
+        })
     }
 
     override fun onCreateView(
@@ -179,18 +192,59 @@ class PersonalInformationFragment : Fragment() {
 //            memberStatusView.statusView.run {
 //                currentCount += 1
 //            }
-            val stepView = activity!!.findViewById<StepView>(R.id.step_view)
-            stepView.go(1, true)
 
-            var member = memberViewModel.member.value
-            if(member == null) {
-                member = Member()
+            val cm = context!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+            connected = activeNetwork?.isConnectedOrConnecting == true
+
+            if (connected) {
+                val mainView = activity!!.window.decorView
+                progress_bar_holder.visibility = View.VISIBLE
+                authenticate(activity!!.getSharedPreferences("login_data", Context.MODE_PRIVATE),
+                    activity!!, ApiConnections.REQUEST_TYPE_GET_MEMBER_BY_PHONE, object:
+                        RepaymentCollection {
+                        override fun onSuccess(result: Member) {
+                            progress_bar_holder.visibility = View.GONE
+                            if (result.id == 0) {
+                                val stepView = activity!!.findViewById<StepView>(R.id.step_view)
+                                stepView.go(1, true)
+
+                                var member = memberViewModel.member.value
+                                if(member == null) {
+                                    member = Member()
+                                }
+                                setMember(member!!)
+
+                                val fragment = AddressFragment()
+                                val transaction = activity?.supportFragmentManager?.beginTransaction()
+                                transaction?.replace(R.id.member_acquisition_fragment_container, fragment)?.addToBackStack(null)?.commit()
+                            } else {
+                                PeersSnackbar.popUpSnack(mainView, "Phone number has already been registered!")
+                            }
+                        }
+                    }
+                    , memberPhone = handphone_no.text.toString())
+            } else {
+                val stepView = activity!!.findViewById<StepView>(R.id.step_view)
+                stepView.go(1, true)
+
+                var member = memberViewModel.member.value
+                if(member == null) {
+                    member = Member()
+                }
+                setMember(member!!)
+
+                val fragment = AddressFragment()
+                val transaction = activity?.supportFragmentManager?.beginTransaction()
+                transaction?.replace(R.id.member_acquisition_fragment_container, fragment)?.addToBackStack(null)?.commit()
             }
-            setMember(member)
 
-            val fragment = AddressFragment()
-            val transaction = activity?.supportFragmentManager?.beginTransaction()
-            transaction?.replace(R.id.member_acquisition_fragment_container, fragment)?.addToBackStack(null)?.commit()
+            /* else {
+                val offlineViewModel: OfflineViewModel = ViewModelProvider(this).get(
+                    OfflineViewModel::class.java
+                )
+                offlineViewModel.insertMember(member)
+            }*/
         }
     }
 

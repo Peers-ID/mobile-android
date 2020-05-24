@@ -3,8 +3,10 @@ package com.android.id.peers.loans.adapters
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import com.android.id.peers.loans.*
-import com.android.id.peers.members.models.Member
+import com.android.id.peers.loans.RcAddressFragment
+import com.android.id.peers.loans.RcEmergencyFragment
+import com.android.id.peers.loans.RcOccupationFragment
+import com.android.id.peers.loans.RcPersonalFragment
 
 class RcdTablePagerAdapter(fm: FragmentManager): FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
     // sebuah list yang menampung objek Fragment

@@ -142,7 +142,8 @@ Ut at nulla turpis. Maecenas scelerisque felis ut gravida ornare. Integer urna l
     <string name="total_disburse_text">Total Disburse :</string>
     <string name="notice">Sistem akan menelpon ke nomor</string>
     <string name="lengkapi">Lengkapi 4 digit-nya</string>
-    <string name="tidak">Tidak menerima telpon? <u>ulangi</u></string>
+    <string name="tidak">Tidak menerima telpon?</string>
+    <string name="ulangi"><u>Ulangi</u></string>
     <string name="verifikasi">Verifikasi</string>
     <string name="zero">0</string>
     <string name="sukarela">Sukarela</string>
@@ -155,4 +156,5 @@ Ut at nulla turpis. Maecenas scelerisque felis ut gravida ornare. Integer urna l
     <string name="cicilan_per_bulan">Cicilan per Bulan</string>
     <string name="empty_data">Data kosong, mohon hubungi admin koperasi anda</string>
     <string name="perbarui">Perbarui</string>
+    <string name="submit_data">Submit Data</string>
 </resources>

@@ -1,59 +1,70 @@
 package com.android.id.peers.loans
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.Bundle
 import android.util.Log
-import android.widget.*
+import android.widget.TableLayout
+import android.widget.TableRow
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.work.*
+import com.android.id.peers.MainActivity
 import com.android.id.peers.R
-import com.android.id.peers.loans.models.Loan
 import com.android.id.peers.VerificationActivity
+import com.android.id.peers.loans.models.Loan
 import com.android.id.peers.members.models.Member
-import com.android.id.peers.util.callback.RepaymentCollection
-import com.android.id.peers.util.connection.ApiConnections
+import com.android.id.peers.util.CurrencyFormat
+import com.android.id.peers.util.PeersSnackbar
 import com.android.id.peers.util.connection.ConnectionStateMonitor
 import com.android.id.peers.util.connection.NetworkConnectivity
-import com.android.id.peers.util.database.OfflineDatabase
 import com.android.id.peers.util.database.OfflineViewModel
+import com.android.id.peers.util.workers.LoanWorker
+import com.android.id.peers.util.workers.MemberWorker
+
 import kotlinx.android.synthetic.main.activity_loan_application_confirmation.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import java.io.Serializable
 
 class LoanApplicationConfirmationActivity : AppCompatActivity() {
 
+    var member: Member? = null
+    var context = this
+
+    var connected: Boolean = true
+
+    @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_loan_application_confirmation)
         title = "Loan Application"
 
+        val connectionStateMonitor = ConnectionStateMonitor(application)
+        connectionStateMonitor.observe(this, Observer { isConnected ->
+            connected = isConnected
+        })
+
+        if (intent.extras != null) {
+            if (intent.getParcelableExtra<Member>("member") != null) {
+                member = (intent.getParcelableExtra("member"))!!
+            }
+        }
+
         val loan = intent.getParcelableExtra<Loan>("number_of_loan")
-        val memberName = intent.getStringExtra("member_name")
+//        val memberName = intent.getStringExtra("member_name")
 
         if(loan != null) {
-            val apiConnections = ApiConnections()
-            apiConnections.authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
-                this, ApiConnections.REQUEST_TYPE_GET_MEMBER_BY_PHONE, object: RepaymentCollection {
-                override fun onSuccess(result: Member) {
-                    loan.memberId = result.id
-                    loan.memberName = result.namaLengkap
-                    member_name.text = loan.memberName
-                    Log.d("LoanConfirmation", "Id : ${result.id}")
-                }
-            }
-        , memberPhone = loan.noHp)
-
-            member_name.text = loan.memberName
+//            member_name.text = loan.memberName
             handphone_no.text = loan.noHp
-            number_of_loan.text = String.format("%d", loan.numberOfLoan)
+            number_of_loan.text = CurrencyFormat.formatRupiah.format(loan.numberOfLoan)
             tenor.text = String.format("%d", loan.tenor)
-            service_fee.text = String.format("%d", loan.serviceFee)
-            loan_disbursement.text = loan.totalDisbursed.toString()
-            cicilan.text = loan.cicilanPerBulan.toString()
+            service_fee.text = CurrencyFormat.formatRupiah.format(loan.serviceFee)
+            loan_disbursement.text = CurrencyFormat.formatRupiah.format(loan.totalDisbursed)
+            cicilan.text = CurrencyFormat.formatRupiah.format(loan.cicilanPerBulan)
 
             var index = 4
 
@@ -85,23 +96,64 @@ class LoanApplicationConfirmationActivity : AppCompatActivity() {
         }
 
         lanjutkan.setOnClickListener {
-            val intent = Intent(this, VerificationActivity::class.java)
-            val connectionStateMonitor = ConnectionStateMonitor(application)
-            connectionStateMonitor.observe(this, Observer { isConnected ->
-                if (isConnected) {
-                    val apiConnections = ApiConnections()
-                    apiConnections.authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
-                        this, ApiConnections.REQUEST_TYPE_POST_LOAN, loan)
-                    Log.d("LoanApplication", "Network is connected")
-                } else {
-                    Log.d("LoanApplication", "Network is not connected, saving to database")
-                    val offlineViewModel: OfflineViewModel = ViewModelProvider(this).get(OfflineViewModel::class.java)
-                    Log.d("LoanApplication", "ID AO : ${loan!!.aoId}")
-                    offlineViewModel.insertLoan(loan)
+
+            val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+            connected = activeNetwork?.isConnectedOrConnecting == true
+
+            if (connected) {
+                Log.d("LoanApplication", "There is internet connection")
+                val intent = Intent(this, VerificationActivity::class.java)
+                if (member != null) {
+                    intent.putExtra("member", member)
                 }
-            })
-            intent.putExtra("hand_phone", handphone_no.text.toString())
-            startActivity(intent)
+                intent.putExtra("loan", loan)
+                intent.putExtra("hand_phone", handphone_no.text.toString())
+                startActivity(intent)
+            } else {
+                Log.d("LoanApplication", "There is no internet connection")
+                PeersSnackbar.popUpSnack(context.window.decorView, "There was no internet access! Data is saved locally")
+                val constraints = Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
+                val data = Loan.putLoanOnDataBuilder(loan!!)
+
+                val offlineViewModel: OfflineViewModel = ViewModelProvider(this).get(OfflineViewModel::class.java)
+                if (member != null) {
+                    val data2 = Member.putMemberOnDataBuilder(member!!)
+                    offlineViewModel.insertMember(member!!)
+                    val memberWorker = OneTimeWorkRequestBuilder<MemberWorker>()
+                        .setConstraints(constraints)
+                        .setInputData(data2.build())
+                        .build() // or PeriodicWorkRequest
+
+                    val loanWorker = OneTimeWorkRequestBuilder<LoanWorker>()
+                        .setConstraints(constraints)
+                        .setInputData(data.build())
+                        .build() // or PeriodicWorkRequest
+
+                    WorkManager.getInstance(context)
+                        .beginWith(memberWorker)
+                        .then(loanWorker)
+                        .enqueue()
+                } else {
+                    val loanWorker = OneTimeWorkRequestBuilder<LoanWorker>()
+                        .setConstraints(constraints)
+                        .setInputData(data.build())
+                        .build() // or PeriodicWorkRequest
+
+                    WorkManager.getInstance(context).enqueue(loanWorker)
+                }
+                offlineViewModel.insertLoan(loan!!)
+
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+            }
+//            connectionStateMonitor.observe(this, Observer { isConnected ->
+//
+//            })
         }
     }
+
+
 }

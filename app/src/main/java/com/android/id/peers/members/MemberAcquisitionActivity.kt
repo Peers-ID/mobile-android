@@ -1,8 +1,8 @@
 package com.android.id.peers.members
 
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.android.id.peers.R
 import kotlinx.android.synthetic.main.activity_member_acquisition.*
 

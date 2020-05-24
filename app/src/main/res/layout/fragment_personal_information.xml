@@ -1,219 +1,243 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".members.PersonalInformationFragment">
-
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-<!--        <Spinner-->
-<!--            android:id="@+id/identity_type"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginTop="8dp"-->
-<!--            android:entries="@array/identity" />-->
-
-        <com.tiper.MaterialSpinner
-            android:id="@+id/identity_type"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:hint="@string/identity"
-            android:prompt="@string/identity"
-            app:errorEnabled="true" />
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:orientation="vertical">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/identity_no_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/margin_between"
-			app:errorEnabled="true" >
+            <!--        <Spinner-->
+            <!--            android:id="@+id/identity_type"-->
+            <!--            android:layout_width="match_parent"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:layout_marginTop="8dp"-->
+            <!--            android:entries="@array/identity" />-->
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/identity_no"
+            <com.tiper.MaterialSpinner
+                android:id="@+id/identity_type"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/identity_no"
-                android:inputType="number"
-                android:selectAllOnFocus="true" />
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:hint="@string/identity"
+                android:prompt="@string/identity"
+                app:errorEnabled="true" />
 
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/full_name_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/margin_between"
-			app:errorEnabled="true" >
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/full_name"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/identity_no_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/full_name"
-                android:inputType="text"
-                android:selectAllOnFocus="true" />
+                android:layout_marginTop="@dimen/margin_between"
+                app:errorEnabled="true" >
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/identity_no"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/identity_no"
+                    android:inputType="number"
+                    android:selectAllOnFocus="true" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/handphone_no_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/margin_between"
-			app:errorEnabled="true" >
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/handphone_no"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/full_name_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/handphone_no"
-                android:inputType="phone"
-                android:selectAllOnFocus="true" />
+                android:layout_marginTop="@dimen/margin_between"
+                app:errorEnabled="true" >
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/full_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/full_name"
+                    android:inputType="text"
+                    android:selectAllOnFocus="true" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/birth_date_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/margin_between"
-			app:errorEnabled="true" >
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/birth_date"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/handphone_no_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/birth_date_text_indo"
+                android:layout_marginTop="@dimen/margin_between"
+                app:errorEnabled="true" >
 
-                android:focusable="false"
-                android:inputType="date"
-                android:selectAllOnFocus="true" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/handphone_no"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/handphone_no"
+                    android:inputType="phone"
+                    android:selectAllOnFocus="true" />
 
-        </com.google.android.material.textfield.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/birth_place_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/margin_between"
-			app:errorEnabled="true" >
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/birth_place"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/birth_date_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/birth_place"
-                android:inputType="text"
-                android:selectAllOnFocus="true" />
+                android:layout_marginTop="@dimen/margin_between"
+                app:errorEnabled="true" >
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/birth_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/birth_date_text_indo"
 
-<!--        <Spinner-->
-<!--            android:id="@+id/sex"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginTop="8dp"-->
-<!--            android:entries="@array/sex" />-->
+                    android:focusable="false"
+                    android:inputType="date"
+                    android:selectAllOnFocus="true" />
 
-        <com.tiper.MaterialSpinner
-            android:id="@+id/sex"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:entries="@array/sex"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:hint="@string/sex"
-            android:prompt="@string/sex"
-            app:errorEnabled="true" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/mother_name_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/margin_between"
-			app:errorEnabled="true" >
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/mother_name"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/birth_place_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/mother_name"
-                android:inputType="text"
-                android:selectAllOnFocus="true" />
+                android:layout_marginTop="@dimen/margin_between"
+                app:errorEnabled="true" >
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/birth_place"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/birth_place"
+                    android:inputType="text"
+                    android:selectAllOnFocus="true" />
 
-<!--        <Spinner-->
-<!--            android:id="@+id/marital_status"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginTop="8dp"-->
-<!--            android:entries="@array/marital_status" />-->
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <com.tiper.MaterialSpinner
-            android:id="@+id/marital_status"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:entries="@array/marital_status"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:hint="@string/marital_status"
-            android:prompt="@string/marital_status"
-            app:errorEnabled="true" />
+            <!--        <Spinner-->
+            <!--            android:id="@+id/sex"-->
+            <!--            android:layout_width="match_parent"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:layout_marginTop="8dp"-->
+            <!--            android:entries="@array/sex" />-->
 
-        <com.tiper.MaterialSpinner
-            android:id="@+id/last_education"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:entries="@array/last_education"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="32dp"
-            android:hint="@string/last_education"
-            android:prompt="@string/last_education"
-            app:errorEnabled="true" />
-
-        <!--    <Spinner-->
-        <!--        android:id="@+id/last_education"-->
-        <!--        android:layout_width="match_parent"-->
-        <!--        android:layout_height="wrap_content"-->
-        <!--        android:entries="@array/last_education" />-->
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingBottom="@dimen/activity_vertical_margin">
-
-            <Button
-                android:id="@+id/next"
-                android:layout_width="wrap_content"
+            <com.tiper.MaterialSpinner
+                android:id="@+id/sex"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:background="@color/colorWhite"
-                android:text="@string/next"
-                android:textColor="@color/colorDarkButton"
-                android:theme="@style/PeersButton"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:entries="@array/sex"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:hint="@string/sex"
+                android:prompt="@string/sex"
+                app:errorEnabled="true" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/mother_name_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_between"
+                app:errorEnabled="true" >
 
-    </LinearLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/mother_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/mother_name"
+                    android:inputType="text"
+                    android:selectAllOnFocus="true" />
 
-</ScrollView>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!--        <Spinner-->
+            <!--            android:id="@+id/marital_status"-->
+            <!--            android:layout_width="match_parent"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:layout_marginTop="8dp"-->
+            <!--            android:entries="@array/marital_status" />-->
+
+            <com.tiper.MaterialSpinner
+                android:id="@+id/marital_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/marital_status"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:hint="@string/marital_status"
+                android:prompt="@string/marital_status"
+                app:errorEnabled="true" />
+
+            <com.tiper.MaterialSpinner
+                android:id="@+id/last_education"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/last_education"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="32dp"
+                android:hint="@string/last_education"
+                android:prompt="@string/last_education"
+                app:errorEnabled="true" />
+
+            <!--    <Spinner-->
+            <!--        android:id="@+id/last_education"-->
+            <!--        android:layout_width="match_parent"-->
+            <!--        android:layout_height="wrap_content"-->
+            <!--        android:entries="@array/last_education" />-->
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingBottom="@dimen/activity_vertical_margin">
+
+                <Button
+                    android:id="@+id/next"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@color/colorWhite"
+                    android:text="@string/next"
+                    android:textColor="@color/colorDarkButton"
+                    android:theme="@style/PeersButton"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <FrameLayout
+        android:id="@+id/progress_bar_holder"
+        android:animateLayoutChanges="true"
+        android:visibility="gone"
+        android:alpha="0.4"
+        android:background="#000000"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:id="@+id/phone_progress_bar"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true" />
+
+    </FrameLayout>
+</LinearLayout>

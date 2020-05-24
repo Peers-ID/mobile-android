@@ -35,7 +35,7 @@
             android:orientation="vertical"
             android:id="@+id/loan_container" >
 
-            <TableRow
+            <!--<TableRow
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
@@ -64,7 +64,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-            </TableRow>
+            </TableRow>-->
 
             <TableRow
                 android:layout_width="match_parent"
@@ -225,7 +225,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_between"
-                android:layout_marginBottom="@dimen/margin_between"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
                 android:layout_marginStart="@dimen/activity_horizontal_margin"
                 android:layout_marginEnd="@dimen/activity_horizontal_margin" >
 

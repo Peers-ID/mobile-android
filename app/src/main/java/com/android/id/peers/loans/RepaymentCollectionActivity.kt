@@ -2,23 +2,25 @@ package com.android.id.peers.loans
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.Bundle
-import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.id.peers.R
 import com.android.id.peers.loans.adapters.LoansAdapter
 import com.android.id.peers.loans.models.Loan
-import com.android.id.peers.loans.models.LoanItem
 import com.android.id.peers.util.callback.LoanDisbursement
 import com.android.id.peers.util.connection.ApiConnections
-import kotlinx.android.synthetic.main.activity_login.*
+import com.android.id.peers.util.connection.ApiConnections.Companion.authenticate
+import com.android.id.peers.util.connection.ConnectionStateMonitor
 import kotlinx.android.synthetic.main.activity_repayment_collection.*
 
 class RepaymentCollectionActivity : AppCompatActivity() {
     var activity = this
-    var memberId: Int = 0
+//    var memberId: Int = 0
 
 //    val loans: ArrayList<LoanItem> = ArrayList()
 //    var loan: List<Loan> = ArrayList()
@@ -27,31 +29,48 @@ class RepaymentCollectionActivity : AppCompatActivity() {
     //    var loan: ArrayList<Loan> = ArrayList()
     lateinit var loan: List<Loan>
 
+    var connected: Boolean = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_repayment_collection)
         title = "Repayment Collection"
 
-        val apiConnections = ApiConnections()
-        apiConnections.authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
-            this, ApiConnections.REQUEST_TYPE_GET_LOAN, object :
-                LoanDisbursement {
-                override fun onSuccess(result: List<Loan>) {
-                    loan = ArrayList(result)
-                    for (l in loan) {
-                        val loanDisburseItem = Loan(otherFees = ArrayList())
-                        memberId = l.memberId
+        val connectionStateMonitor = ConnectionStateMonitor(application)
+        connectionStateMonitor.observe(this, Observer { isConnected ->
+            connected = isConnected
+        })
+
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+        connected = activeNetwork?.isConnectedOrConnecting == true
+
+        if (connected) {
+            authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
+                this, ApiConnections.REQUEST_TYPE_GET_LOAN, object :
+                    LoanDisbursement {
+                    override fun onSuccess(result: List<Loan>) {
+                        loan = ArrayList(result)
+                        for (l in loan) {
+                            val loanDisburseItem = Loan(otherFees = ArrayList())
+//                            memberId = l.memberId
 //                        loanDisburseItem.loanNo = ""
-                        loanDisburseItem.memberId = l.memberId
-                        loanDisburseItem.memberName = l.memberName
-                        loanDisburseItem.cicilanPerBulan = l.cicilanPerBulan
-                        loanDisburseItem.totalDisbursed = l.totalDisbursed
-                        loans.add(loanDisburseItem)
-                    }
+                            loanDisburseItem.tenor = l.tenor
+                            loanDisburseItem.id = l.id
+                            loanDisburseItem.memberId = l.memberId
+                            loanDisburseItem.memberName = l.memberName
+                            loanDisburseItem.cicilanPerBulan = l.cicilanPerBulan
+                            loanDisburseItem.cicilanKe = l.cicilanKe
+                            loanDisburseItem.aoId = l.aoId
+                            loanDisburseItem.totalDisbursed = l.totalDisbursed
+
+                            loans.add(loanDisburseItem)
+                        }
 //                    Log.d("RepaymentCollection", "Cicilan : ${loans[0].cicilanPerBulan}")
-                    loan_disbursement.adapter!!.notifyDataSetChanged()
-                }
-            })
+                        loan_disbursement.adapter!!.notifyDataSetChanged()
+                    }
+                }, listType = 1)
+        }
 
         loan_disbursement.setHasFixedSize(true)
         val llm = LinearLayoutManager(this)
@@ -79,10 +98,11 @@ class RepaymentCollectionActivity : AppCompatActivity() {
         val loginPreferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)
         intent.putExtra("koperasi_id", loginPreferences.getInt("koperasi_id", 0))
         intent.putExtra("member_id", loan.memberId)
-        intent.putExtra("ao_id", loan.aoId)
+        intent.putExtra("ao_id", loginPreferences.getInt("id", 0))
         intent.putExtra("loan_id", loan.id)
-        intent.putExtra("loan_disbursed", loan.totalDisbursed)
+//        intent.putExtra("loan_disbursed", loan.totalDisbursed)
         intent.putExtra("loan_cicilan", loan.cicilanPerBulan)
+        intent.putExtra("cicilan_ke", loan.cicilanKe)
         startActivity(intent)
     }
 }

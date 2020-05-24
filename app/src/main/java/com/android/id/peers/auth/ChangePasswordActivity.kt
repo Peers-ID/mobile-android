@@ -3,11 +3,11 @@ package com.android.id.peers.auth
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import com.android.id.peers.MainActivity
 import com.android.id.peers.R
 import com.android.id.peers.util.connection.VolleyRequestSingleton
@@ -60,7 +60,6 @@ class ChangePasswordActivity : AppCompatActivity() {
         params["email"] = preferences.getString("email", null)!!
         params["password"] = password
         params["password_new"] = newPassword
-        Log.d("ChangePasswordActivity", newPassword)
         params["token"] = preferences.getString("token", null)!!
 
         val parameters = JSONObject(params as Map<*, *>);
@@ -73,10 +72,10 @@ class ChangePasswordActivity : AppCompatActivity() {
                 val responseStatus = jsonObj.getString("status")
 //                Log.d("LoginActivity", strResp)
                 if (responseStatus.toInt() == 400 || responseStatus.toInt() == 401) {
-                    popUpSnack(view, "Ubah password gagal")
+                    popUpSnack(view, "Failed to change password!")
                 } else if (responseStatus.toInt() == 201) {
                     val intent = Intent(this, MainActivity::class.java)
-                    intent.putExtra("message_change_password", "Password telah berhasil diubah")
+                    intent.putExtra("message", "Password has been successfully changed")
                     startActivity(intent)
                     finishAffinity()
                 }

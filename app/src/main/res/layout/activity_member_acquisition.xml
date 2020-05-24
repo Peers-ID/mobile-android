@@ -65,10 +65,10 @@
         android:name="com.android.id.peers.members.PersonalInformationFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-<!--    <androidx.fragment.app.FragmentContainerView-->
-<!--        android:id="@+id/member_acquisition_fragment_container"-->
-<!--        android:name="com.android.id.peers.members.AddressFragment"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent" />-->
+    <!--<androidx.fragment.app.FragmentContainerView
+        android:id="@+id/member_acquisition_fragment_container"
+        android:name="com.android.id.peers.members.OccupationFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />-->
 
 </LinearLayout>

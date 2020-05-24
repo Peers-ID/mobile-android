@@ -2,9 +2,11 @@ package com.android.id.peers
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.android.id.peers.auth.LoginActivity
@@ -19,13 +21,19 @@ import com.android.id.peers.util.callback.KecamatanCallback
 import com.android.id.peers.util.callback.ProvinceCallback
 import com.android.id.peers.util.callback.SplashScreen
 import com.android.id.peers.util.connection.ApiConnections
+import com.android.id.peers.util.connection.ApiConnections.Companion.authenticate
+import com.android.id.peers.util.connection.ApiConnections.Companion.getKabupaten
+import com.android.id.peers.util.connection.ApiConnections.Companion.getKecamatan
+import com.android.id.peers.util.connection.ApiConnections.Companion.getProvince
 import com.android.id.peers.util.connection.ConnectionStateMonitor
 import com.android.id.peers.util.connection.NetworkConnectivity
 import com.android.id.peers.util.database.OfflineViewModel
 import kotlinx.android.synthetic.main.activity_splash_screen.*
+import kotlinx.coroutines.*
+import kotlin.coroutines.CoroutineContext
 import kotlin.properties.Delegates
 
-class SplashScreenActivity : AppCompatActivity() {
+class SplashScreenActivity : AppCompatActivity(), CoroutineScope {
     private lateinit var offlineViewModel : OfflineViewModel
     private lateinit var mProvince : List<Province>
     private lateinit var mKabupaten : List<Kabupaten>
@@ -33,8 +41,19 @@ class SplashScreenActivity : AppCompatActivity() {
     private lateinit var mDesa : List<Desa>
     val viewModelStoreOwner = this
     val activity = this
-    var skipping : Boolean = true
+    var skipping : Boolean = true //If the login went successfully through the splash screen to main activity, the region data download from api will be skipped
     var threshold : Int = 9999
+    private val coroutineScope = this
+
+    var connected: Boolean = true
+
+    override val coroutineContext: CoroutineContext =
+        Dispatchers.Main + SupervisorJob()
+
+    override fun onDestroy() {
+        super.onDestroy()
+        coroutineContext[Job]!!.cancel()
+    }
 
     var done: Int by Delegates.observable(0) { property, oldValue, newValue ->
 //        Log.d("SplashScreen", "done Value : $done")
@@ -58,6 +77,11 @@ class SplashScreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)
+
+        val connectionStateMonitor = ConnectionStateMonitor(application)
+        connectionStateMonitor.observe(this, Observer { isConnected ->
+            connected = isConnected
+        })
 
         mProvince = ArrayList()
         mKabupaten = ArrayList()
@@ -92,62 +116,65 @@ class SplashScreenActivity : AppCompatActivity() {
             return
         }
 
-        val networkConnectivity = NetworkConnectivity(this)
-        if(networkConnectivity.isConnectedOverWifi()) {
-            networkConnectivity.deleteCache()
+        if(NetworkConnectivity.isConnectedOverWifi(this)) {
+            NetworkConnectivity.deleteCache(this)
         }
 
-        val connectionStateMonitor = ConnectionStateMonitor(application)
-        connectionStateMonitor.observe(this, Observer {isConnected ->
-            if (isConnected) {
-                Log.d("SplashScreen", "Network is connected")
-                val apiConnections = ApiConnections()
-                apiConnections.authenticate(preferences, this, ApiConnections.REQUEST_TYPE_GET_CONFIG,
-                    object :
-                        SplashScreen {
-                        override fun onSuccess(result: MemberAcquisitionConfig) {
-                            val configPreferences = getSharedPreferences("member_config", Context.MODE_PRIVATE)
-                            saveConfig(configPreferences, result)
-                            done += 1
-                        }
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+        connected = activeNetwork?.isConnectedOrConnecting == true
 
-                        override fun onSuccess(result: LoanFormulaConfig) {
-                            val loanPreferences = getSharedPreferences("loan_config", Context.MODE_PRIVATE)
-                            saveLoanFormula(loanPreferences, result)
-                            done += 1
-                        }
+        if (connected) {
+            Log.d("SplashScreen", "Network is connected")
+            authenticate(preferences, this, ApiConnections.REQUEST_TYPE_GET_CONFIG,
+                object :
+                    SplashScreen {
+                    override fun onSuccess(result: MemberAcquisitionConfig) {
+                        val configPreferences = getSharedPreferences("member_config", Context.MODE_PRIVATE)
+                        saveConfig(configPreferences, result)
+                        done += 1
+                    }
 
-                        override fun onSuccess(result: List<OtherFees>) {
-                            val feePreferences = getSharedPreferences("fee_config", Context.MODE_PRIVATE)
-                            saveOtherFees(feePreferences, result)
-                            done += 1
-                        }
-                    })
-                val regionPreferences = getSharedPreferences("regions", Context.MODE_PRIVATE)
-                Log.d("SplashScreen", "Is filled: ${regionPreferences.getBoolean("is_filled", false)}")
-                if(!regionPreferences.getBoolean("is_filled", false)) {
-                    skipping = false
-                    apiConnections.getProvince(context = this, callback = pCallback)
-                    regionPreferences.edit().putBoolean("is_filled", true).apply()
-                    Log.d("SplashScreen", "HERE")
-                }
-                dot_progress_bar.startAnimation()
-            } else {
-                val intent = Intent(activity, MainActivity::class.java)
-                startActivity(intent)
-                finish()
-                Log.d("SplashScreen", "Network is not connected")
+                    override fun onSuccess(result: LoanFormulaConfig) {
+                        val loanPreferences = getSharedPreferences("loan_config", Context.MODE_PRIVATE)
+                        saveLoanFormula(loanPreferences, result)
+                        done += 1
+                    }
+
+                    override fun onSuccess(result: List<OtherFees>) {
+                        val feePreferences = getSharedPreferences("fee_config", Context.MODE_PRIVATE)
+                        saveOtherFees(feePreferences, result)
+                        done += 1
+                    }
+                })
+            val regionPreferences = getSharedPreferences("regions", Context.MODE_PRIVATE)
+//                Log.d("SplashScreen", "Is filled: ${regionPreferences.getBoolean("is_filled", false)}")
+            if(!regionPreferences.getBoolean("is_filled", false)) {
+                skipping = false
+                getProvince(context = this, callback = pCallback)
+//                    regionPreferences.edit().putBoolean("is_filled", true).apply()
             }
-        })
+            dot_progress_bar.startAnimation()
+        } else {
+            val intent = Intent(activity, MainActivity::class.java)
+            intent.putExtra("message", "There was no internet access!")
+            startActivity(intent)
+            finish()
+        }
     }
 
     val pCallback = object : ProvinceCallback {
         override fun onSuccess(result: List<Province>) {
             threshold = result.size
-            offlineViewModel.insertProvince(result)
+            coroutineScope.launch(Dispatchers.Main) {
+                offlineViewModel.insertProvince(result)
+            }
+
+            val preferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)
+            val apiToken = preferences.getString("raja_api_token", "")
             for (province in result) {
                 val apiConnections = ApiConnections()
-                apiConnections.getKabupaten(context = activity, callback = bCallback, idProvinsi = province.id)
+                getKabupaten(context = activity, callback = bCallback, idProvinsi = province.kodeWilayah/*, apiToken = apiToken!!*/)
                 done += 1
             }
         }
@@ -156,10 +183,14 @@ class SplashScreenActivity : AppCompatActivity() {
     val bCallback = object : KabupatenCallback {
         override fun onSuccess(result: List<Kabupaten>) {
             threshold += result.size
-            offlineViewModel.insertKabupaten(result)
+            coroutineScope.launch(Dispatchers.Main) {
+                offlineViewModel.insertKabupaten(result)
+            }
+//            val preferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)
+//            val apiToken = preferences.getString("raja_api_token", "")
             for (kabupaten in result) {
                 val apiConnections = ApiConnections()
-                apiConnections.getKecamatan(activity, cCallback, kabupaten.id)
+                getKecamatan(activity, cCallback, kabupaten.kodeWilayah/*, apiToken!!*/)
                 done += 1
             }
         }

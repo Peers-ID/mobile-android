@@ -216,18 +216,18 @@
             android:layout_marginBottom="16dp" >
 
             <Spinner
-                android:id="@+id/address_how_long_month"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:entries="@array/how_long_month" />
-
-            <Spinner
                 android:id="@+id/address_how_long_year"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:entries="@array/how_long_year" />
+
+            <Spinner
+                android:id="@+id/address_how_long_month"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:entries="@array/how_long_month" />
 
         </LinearLayout>
 
@@ -428,18 +428,18 @@
             android:layout_marginBottom="16dp" >
 
             <Spinner
-                android:id="@+id/address_how_long_domisili_month"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:entries="@array/how_long_month" />
-
-            <Spinner
                 android:id="@+id/address_how_long_domisili_year"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:entries="@array/how_long_year" />
+
+            <Spinner
+                android:id="@+id/address_how_long_domisili_month"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:entries="@array/how_long_month" />
 
         </LinearLayout>
 

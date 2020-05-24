@@ -3,44 +3,48 @@ package com.android.id.peers
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewTreeObserver
 import android.widget.TextView
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.android.id.peers.auth.ChangePasswordActivity
+import com.android.id.peers.auth.LoginActivity
 import com.android.id.peers.loans.LoanApplicationActivity
 import com.android.id.peers.loans.LoanDisbursementActivity
 import com.android.id.peers.loans.RepaymentCollectionActivity
-import com.android.id.peers.auth.LoginActivity
 import com.android.id.peers.loans.models.Loan
 import com.android.id.peers.members.MemberAcquisitionActivity
-import com.android.id.peers.util.connection.ApiConnections
+import com.android.id.peers.util.PeersSnackbar
+import com.android.id.peers.util.connection.ConnectionStateMonitor
 import com.android.id.peers.util.connection.NetworkConnectivity
-import com.android.id.peers.util.database.OfflineDatabase
 import com.android.id.peers.util.database.OfflineViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlin.concurrent.thread
 import kotlin.coroutines.CoroutineContext
 
 class MainActivity : AppCompatActivity(), CoroutineScope {
     private lateinit var offlineViewModel: OfflineViewModel
     private lateinit var mLoans: List<Loan>
 
+    var connected: Boolean = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val connectionStateMonitor = ConnectionStateMonitor(application)
+        connectionStateMonitor.observe(this, Observer { isConnected ->
+            connected = isConnected
+            Log.d("MainActivity", "Is Connected: $connected")
+        })
 
         offlineViewModel = ViewModelProvider(this).get(OfflineViewModel::class.java)
         offlineViewModel.allLoans.observe(this, Observer {loans ->
@@ -54,10 +58,19 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         supportActionBar!!.setDisplayUseLogoEnabled(true)
         title = ""
 
-        val networkConnectivity = NetworkConnectivity(this.baseContext)
-        val isConnected = networkConnectivity.isNetworkConnected()
-        val temp = "Is connected? : $isConnected"
-        Log.d("MainActivity", temp)
+        //flag to notify that the download on data regions has been completed
+        val regionPreferences = getSharedPreferences("regions", Context.MODE_PRIVATE)
+        if (!regionPreferences.getBoolean("is_filled", false)) {
+            regionPreferences.edit().putBoolean("is_filled", true).apply()
+        }
+
+//        val isConnected = NetworkConnectivity.isNetworkConnected(this)
+//        val temp = "Is connected? : $isConnected"
+//        Log.d("MainActivity", temp)
+
+        if (intent.getStringExtra("message") != null) {
+            PeersSnackbar.popUpSnack(this.window.decorView, intent.getStringExtra("message")!!)
+        }
 
 
 //        launch {
@@ -83,6 +96,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
     }
 
     private fun memberAcquisition(view: View) {
+//        val intent = Intent(this, TermsActivity::class.java)
         val intent = Intent(this, MemberAcquisitionActivity::class.java)
         startActivity(intent)
     }
@@ -99,6 +113,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
 
     private fun repaymentCollection() {
         val intent = Intent(this, RepaymentCollectionActivity::class.java)
+//        val intent = Intent(this, TestActivity::class.java)
         startActivity(intent)
     }
 
@@ -121,6 +136,9 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
                 startActivity(intent)
                 finish()
 //                Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show()
+            }
+            R.id.submit_data -> {
+
             }
             else -> {
 //                Toast.makeText(this, item.itemId, Toast.LENGTH_SHORT).show()

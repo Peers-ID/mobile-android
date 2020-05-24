@@ -5,20 +5,17 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-
 import com.android.id.peers.R
-import com.android.id.peers.util.communication.MemberViewModel
 import com.android.id.peers.members.models.Member
+import com.android.id.peers.util.communication.MemberViewModel
 import kotlinx.android.synthetic.main.fragment_emergency_contact.*
-import kotlinx.android.synthetic.main.fragment_emergency_contact.emergency_name
-import kotlinx.android.synthetic.main.fragment_emergency_contact.relationship
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER

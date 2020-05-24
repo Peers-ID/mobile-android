@@ -5,49 +5,31 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-
 import com.android.id.peers.R
 import com.android.id.peers.members.models.Kabupaten
 import com.android.id.peers.members.models.Kecamatan
-import com.android.id.peers.util.communication.MemberViewModel
 import com.android.id.peers.members.models.Member
 import com.android.id.peers.members.models.Province
+import com.android.id.peers.util.CurrencyFormat
+import com.android.id.peers.util.communication.MemberViewModel
 import com.android.id.peers.util.database.OfflineViewModel
 import com.shuhart.stepview.StepView
 import com.tiper.MaterialSpinner
-import kotlinx.android.synthetic.main.fragment_address.*
 import kotlinx.android.synthetic.main.fragment_occupation.*
-import kotlinx.android.synthetic.main.fragment_occupation.address_city
-import kotlinx.android.synthetic.main.fragment_occupation.address_kecamatan
-import kotlinx.android.synthetic.main.fragment_occupation.address_kelurahan
-import kotlinx.android.synthetic.main.fragment_occupation.address_kelurahan_container
-import kotlinx.android.synthetic.main.fragment_occupation.address_no
-import kotlinx.android.synthetic.main.fragment_occupation.address_no_container
-import kotlinx.android.synthetic.main.fragment_occupation.address_province
-import kotlinx.android.synthetic.main.fragment_occupation.address_rt
-import kotlinx.android.synthetic.main.fragment_occupation.address_rt_container
-import kotlinx.android.synthetic.main.fragment_occupation.address_rw
-import kotlinx.android.synthetic.main.fragment_occupation.address_rw_container
-import kotlinx.android.synthetic.main.fragment_occupation.address_street
-import kotlinx.android.synthetic.main.fragment_occupation.address_street_container
-import kotlinx.android.synthetic.main.fragment_occupation.back
-import kotlinx.android.synthetic.main.fragment_occupation.company_name
-import kotlinx.android.synthetic.main.fragment_occupation.next
-import kotlinx.android.synthetic.main.fragment_occupation.npwp_exist
-import kotlinx.android.synthetic.main.fragment_occupation.npwp_no
-import kotlinx.android.synthetic.main.fragment_occupation.occupation_field
-import kotlinx.android.synthetic.main.fragment_occupation.occupation_position
-import kotlinx.android.synthetic.main.fragment_occupation.occupation_revenue
-import kotlinx.android.synthetic.main.fragment_occupation.occupation_status
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
 // TODO: Rename parameter arguments, choose names that match
@@ -131,6 +113,35 @@ class OccupationFragment : Fragment(), CoroutineScope {
             occupation_revenue.visibility = View.GONE
             occupation_revenue_container.visibility = View.GONE
         }
+
+        var textBefore = ""
+        occupation_revenue.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                textBefore = s.toString()
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (s == null)
+                    return
+                // 1. get cursor position : p0 = start + before
+                val initialCursorPosition = start + before
+                //2. get digit count after cursor position : c0
+                val numOfDigitsToRightOfCursor = CurrencyFormat.getNumberOfDigits(textBefore.substring(initialCursorPosition,
+                    textBefore.length))
+
+                val newAmount = CurrencyFormat.formatAmount(s.toString())
+                occupation_revenue.removeTextChangedListener(this)
+                occupation_revenue.setText(newAmount)
+                //set new cursor position
+                occupation_revenue.setSelection(CurrencyFormat.getNewCursorPosition(numOfDigitsToRightOfCursor, newAmount))
+                occupation_revenue.addTextChangedListener(this)
+            }
+
+        })
+
         if (configPreferences.getInt("alamat_kantor_jalan", 1) == 0) {
             address_street.visibility = View.GONE
             address_street_container.visibility = View.GONE
@@ -181,7 +192,7 @@ class OccupationFragment : Fragment(), CoroutineScope {
             company_name.setText(member.namaPerusahaan)
             work_how_long_month.setSelection(member.lamaBulanBekerja)
             work_how_long_year.setSelection(member.lamaTahunBekerja)
-            occupation_revenue.setText(member.penghasilan.toString())
+            occupation_revenue.setText(CurrencyFormat.formatRupiah.format(member.penghasilan).toString())
             address_street.setText(member.jalanKantor)
             address_no.setText(member.nomorKantor)
             address_rt.setText(member.rtKantor)
@@ -216,7 +227,7 @@ class OccupationFragment : Fragment(), CoroutineScope {
             ) {
                 coroutineScope.launch(Dispatchers.Main) {
                     if (provinces.isNotEmpty()) {
-                        kabupatens = offlineViewModel.getKabupatenByProvinceId(provinces[position].id)
+                        kabupatens = offlineViewModel.getKabupatenByProvinceId(provinces[position].kodeWilayah)
                         cityAdapter.clear()
                         cityAdapter.addAll(kabupatens)
                         cityAdapter.notifyDataSetChanged()
@@ -239,7 +250,7 @@ class OccupationFragment : Fragment(), CoroutineScope {
             ) {
                 coroutineScope.launch(Dispatchers.Main) {
                     if (kabupatens.isNotEmpty()) {
-                        kecamatans = offlineViewModel.getKecamatanByKabupatenId(kabupatens[position].id)
+                        kecamatans = offlineViewModel.getKecamatanByKabupatenId(kabupatens[position].kodeWilayah)
                         kecamatanAdapter.clear()
                         kecamatanAdapter.addAll(kecamatans)
                         kecamatanAdapter.notifyDataSetChanged()
@@ -386,7 +397,7 @@ class OccupationFragment : Fragment(), CoroutineScope {
         member.namaPerusahaan = company_name.text.toString()
         member.lamaBulanBekerja = work_how_long_month.selectedItemPosition
         member.lamaTahunBekerja = work_how_long_year.selectedItemPosition
-        member.penghasilan = occupation_revenue.text.toString().toLong()
+        member.penghasilan = CurrencyFormat.removeCurrencyFormat(occupation_revenue.text.toString()).toLong()
         member.jalanKantor = address_street.text.toString()
         member.nomorKantor = address_no.text.toString()
         member.rtKantor = address_rt.text.toString()
