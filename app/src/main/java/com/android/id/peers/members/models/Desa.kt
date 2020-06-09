@@ -6,11 +6,11 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "desa"/*, foreignKeys = [ForeignKey(entity = Kabupaten::class, parentColumns = ["id"], childColumns = ["id_kecamatan"], onDelete = ForeignKey.CASCADE)]*/)
 data class Desa (
-    @PrimaryKey var id: Int = 0,
-    @ColumnInfo(name = "id_kecamatan") var idKecamatan: Int = 0,
-    @ColumnInfo(name = "nama") var nama: String = ""
+    @PrimaryKey var id: String = "",
+    @ColumnInfo(name = "kecamatan_id") var kecamatanId: String = "",
+    @ColumnInfo(name = "name") var name: String = ""
 ) {
     override fun toString(): String {
-        return nama
+        return name
     }
 }

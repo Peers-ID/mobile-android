@@ -4,9 +4,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import com.android.id.peers.loans.models.Collection
 import com.android.id.peers.loans.models.Loan
 import com.android.id.peers.loans.models.LoanPicture
-import com.android.id.peers.loans.models.RepaymentCollection
 import com.android.id.peers.members.models.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -22,7 +22,7 @@ class OfflineViewModel(application: Application) : AndroidViewModel(application)
     val allKabupaten: LiveData<List<Kabupaten>>
     val allKecamatan: LiveData<List<Kecamatan>>
     val allDesa: LiveData<List<Desa>>
-    val allCollections: LiveData<List<RepaymentCollection>>
+    val allCollections: LiveData<List<Collection>>
 
     init {
         allMembers = repository.allMembers
@@ -47,7 +47,7 @@ class OfflineViewModel(application: Application) : AndroidViewModel(application)
         repository.insertLoanPicture(loanPicture)
     }
 
-    fun insertCollection(collection: RepaymentCollection) = viewModelScope.launch(Dispatchers.IO) {
+    fun insertCollection(collection: Collection) = viewModelScope.launch(Dispatchers.IO) {
         repository.insertCollection(collection)
     }
 
@@ -77,13 +77,19 @@ class OfflineViewModel(application: Application) : AndroidViewModel(application)
         repository.insertKecamatan(kecamatans)
     }
 
-    suspend fun getDesaByKecamatanId(idKecamatan: Int): List<Desa> {
+    suspend fun getDesaByKecamatanId(idKecamatan: String): List<Desa> {
         return viewModelScope.async(Dispatchers.IO) {
             repository.getDesaByKecamatanId(idKecamatan)
         }.await()
     }
 
-    fun insertDesa(desa: Desa) = viewModelScope.launch(Dispatchers.Main) {
-        repository.insertDesa(desa)
-    }
+//    fun insertDesa(desas: List<Desa>) = viewModelScope.launch(Dispatchers.Main) {
+//        repository.insertDesa(desas)
+//    }
+
+    suspend fun insertDesa(desas: List<Desa>) =
+        withContext(viewModelScope.coroutineContext + Dispatchers.Main) {
+            repository.insertDesa(desas)
+            //    }
+        }
 }

@@ -22,16 +22,16 @@ class RegionAdapter(val context: Context, val regions: List<Any>, val type: Stri
         val spinnerText = rowView.findViewById<TextView>(R.id.spinner_text)
         when (type) {
             "Province" -> {
-                spinnerText.text = (regions[position] as Province).nama
+                spinnerText.text = (regions[position] as Province).name
             }
             "Kabupaten" -> {
-                spinnerText.text = (regions[position] as Kabupaten).nama
+                spinnerText.text = (regions[position] as Kabupaten).name
             }
             "Kecamatan" -> {
-                spinnerText.text = (regions[position] as Kecamatan).nama
+                spinnerText.text = (regions[position] as Kecamatan).name
             }
             "Desa" -> {
-                spinnerText.text = (regions[position] as Desa).nama
+                spinnerText.text = (regions[position] as Desa).name
             }
             else -> {
 

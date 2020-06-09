@@ -52,6 +52,9 @@ class VerificationActivity : AppCompatActivity() {
             loan = (intent.getParcelableExtra("loan"))!!
         }
 
+//        if (loan != null)
+//            Log.d("Verification", "Loan : ${loan!!.id}")
+
         citCall()
         enableUlangiButton(15000)
 
@@ -91,8 +94,6 @@ class VerificationActivity : AppCompatActivity() {
                                             intent.putExtra("message", "Loan has been successfully created")
                                             finishAffinity()
                                             startActivity(intent)
-                                        } else {
-                                            PeersSnackbar.popUpSnack(mainView, "Already have on progress, approved or pending Loan!")
                                         }
                                     }
                                 }, loan = loan!!)

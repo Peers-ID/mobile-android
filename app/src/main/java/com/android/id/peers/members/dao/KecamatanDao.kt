@@ -12,8 +12,8 @@ interface KecamatanDao {
     @Query("SELECT * FROM kecamatan")
     fun getAll(): LiveData<List<Kecamatan>>
 
-    @Query("SELECT * FROM kecamatan where master_code = :masterCode ORDER BY nama ASC")
-    fun getByKabupatenId(masterCode: String): List<Kecamatan>
+    @Query("SELECT * FROM kecamatan where kabupaten_id = :kabupatenId ORDER BY name ASC")
+    fun getByKabupatenId(kabupatenId: String): List<Kecamatan>
 
     @Query("DELETE FROM kecamatan")
     suspend fun deleteAll()

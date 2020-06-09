@@ -19,6 +19,7 @@ import com.android.volley.Response
 import com.android.volley.ServerError
 import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.JsonObjectRequest
+import com.google.gson.Gson
 import kotlinx.android.parcel.Parcelize
 import org.json.JSONException
 import org.json.JSONObject
@@ -87,7 +88,10 @@ data class Loan constructor (
         fun getLoan(preferences: SharedPreferences, context: Context, callback: LoanDisbursement, listType: Int) {
             val aoId = preferences.getInt("id", 0).toString()
 
-            val url = "${API_HOSTNAME}loan?ao_id=$aoId&is_loan_approved=$listType"
+            var url = "${API_HOSTNAME}loan?ao_id=$aoId&is_loan_approved=$listType"
+            if (listType == 0) {
+                url = "${API_HOSTNAME}loan?ao_id=$aoId"
+            }
 
             val jsonObjectRequest = object: JsonObjectRequest(
                 Method.GET, url, null,
@@ -118,7 +122,9 @@ data class Loan constructor (
                             loan.cicilanPerBulan = loanObj.getLong("cicilan_per_bln")
 
                             //get collection based on loan id
+                            Log.d("getLoan", "List Type : $listType")
                             if (listType == 1) {
+                                Log.d("getLoan", "MASUK")
                                 getCollection(context, preferences, callback, loan)
                             } else {
                                 loanArray.add(loan)
@@ -127,6 +133,10 @@ data class Loan constructor (
 
                         if (listType != 1) {
                             callback.onSuccess(loanArray)
+                        } else {
+                            if (loanArray.size == 0) {
+                                callback.onSuccess(loanArray)
+                            }
                         }
                     }
                 },
@@ -177,13 +187,15 @@ data class Loan constructor (
         fun getCollection(context: Context, preferences: SharedPreferences, callback: LoanDisbursement, loan: Loan) {
             val url = "${API_HOSTNAME}collection?loan_id=${loan.id}&cicilan_jumlah=null"
 
+            Log.d("getCollection", "URL : $url")
+
             val jsonObjectRequest = object: JsonObjectRequest(
                 Method.GET, url, null,
                 Response.Listener { response ->
                     val strResp = response.toString()
                     val jsonObj = JSONObject(strResp)
                     val status = jsonObj.getString("status")
-                    Log.d("getLoan", strResp)
+                    Log.d("getCollection", strResp)
 //                if (loginStatus.toInt() == 400 || loginStatus.toInt() == 401) {
 //                    popUpSnack(view, "Login Failed!")
 //                } else if (loginStatus.toInt() == 201) {
@@ -342,7 +354,7 @@ data class Loan constructor (
             VolleyRequestSingleton.getInstance(context).addToRequestQueue(jsonObjectRequest)
         }
 
-        fun postCollection(collection: RepaymentCollection, preferences: SharedPreferences, context: Context) {
+        fun postCollection(collection: Collection, preferences: SharedPreferences, context: Context) {
             val url = "${API_HOSTNAME}collection"
 
             val params = HashMap<String, String>()
@@ -394,6 +406,12 @@ data class Loan constructor (
                 }
             }
             VolleyRequestSingleton.getInstance(context).addToRequestQueue(jsonObjectRequest)
+        }
+
+        fun saveLoans(configPreferences: SharedPreferences, result: List<Loan>, key: String) {
+            Log.d("saveLoans", "key : $key")
+            val json = Gson().toJson(result)
+            configPreferences.edit().putString(key, json).apply()
         }
 
         @SuppressLint("RestrictedApi")

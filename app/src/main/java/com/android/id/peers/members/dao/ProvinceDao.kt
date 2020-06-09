@@ -9,7 +9,7 @@ import com.android.id.peers.members.models.Province
 
 @Dao
 interface ProvinceDao {
-    @Query("SELECT * FROM provinces ORDER BY nama ASC")
+    @Query("SELECT * FROM provinces ORDER BY name ASC")
     fun getAll(): LiveData<List<Province>>
 
     @Query("DELETE FROM provinces")

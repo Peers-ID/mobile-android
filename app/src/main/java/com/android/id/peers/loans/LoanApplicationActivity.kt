@@ -7,6 +7,7 @@ import android.net.NetworkInfo
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
@@ -25,6 +26,7 @@ import com.android.id.peers.loans.models.OtherFees.Companion.saveOtherFees
 import com.android.id.peers.members.models.Member
 import com.android.id.peers.util.CurrencyFormat
 import com.android.id.peers.util.PeersSnackbar
+import com.android.id.peers.util.callback.LoanDisbursement
 import com.android.id.peers.util.callback.LoanFormulaCallback
 import com.android.id.peers.util.callback.RepaymentCollection
 import com.android.id.peers.util.connection.ApiConnections
@@ -267,15 +269,27 @@ class LoanApplicationActivity : AppCompatActivity() {
                         val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
                         connected = activeNetwork?.isConnectedOrConnecting == true
 
+                        val loginPreferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)
                         if (connected) {
-                            authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
+                            authenticate(loginPreferences,
                                 this, ApiConnections.REQUEST_TYPE_GET_MEMBER_BY_PHONE, object:
                                     RepaymentCollection {
                                     override fun onSuccess(result: Member) {
                                         if (result.id == 0) {
                                             PeersSnackbar.popUpSnack(activity.window.decorView, "Member with this phone number is not found!")
                                         } else {
-                                            goToConfirmationPage(otherFees, formulaId, loanDisbursement, cicilanPerBulan, serviceFeeAmount)
+                                            authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
+                                                activity, ApiConnections.REQUEST_TYPE_GET_LOAN, object :
+                                                    LoanDisbursement {
+                                                    override fun onSuccess(result: List<Loan>) {
+                                                        if (result.isNotEmpty()) {
+                                                            PeersSnackbar.popUpSnack(activity.window.decorView, "Already have on progress, approved or pending Loan!")
+                                                        } else {
+                                                            goToConfirmationPage(otherFees, formulaId, loanDisbursement, cicilanPerBulan, serviceFeeAmount)
+                                                        }
+                                                    }
+                                                }
+                                                , listType = 0)
                                         }
                                     }
                                 }

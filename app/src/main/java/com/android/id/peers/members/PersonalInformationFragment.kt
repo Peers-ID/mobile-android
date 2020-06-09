@@ -8,6 +8,7 @@ import android.net.NetworkInfo
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -124,6 +125,8 @@ class PersonalInformationFragment : Fragment() {
         val lastEducationAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, resources.getStringArray(R.array.last_education))
         lastEducationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         last_education.adapter = lastEducationAdapter
+
+        identity_type.setOnTouchListener { _, _ -> true }
 
         /* Member View Model */
         memberViewModel.member.observe(viewLifecycleOwner, Observer<Member> {

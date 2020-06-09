@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity (tableName = "collections")
-data class RepaymentCollection (
+data class Collection (
     @PrimaryKey(autoGenerate = true) var id : Int = 0,
     @ColumnInfo(name = "koperasi_id") var koperasiId : Int = 0,
     @ColumnInfo(name = "member_id") var memberId : Int = 0,

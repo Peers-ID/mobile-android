@@ -1,6 +1,7 @@
 package com.android.id.peers.loans
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -13,6 +14,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
@@ -20,6 +22,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.work.*
 import com.android.id.peers.R
 import com.android.id.peers.loans.adapters.LoansAdapter
 import com.android.id.peers.loans.models.Loan
@@ -31,6 +34,9 @@ import com.android.id.peers.util.connection.ApiConnections.Companion.authenticat
 import com.android.id.peers.util.connection.ConnectionStateMonitor
 import com.android.id.peers.util.connection.NetworkConnectivity
 import com.android.id.peers.util.database.OfflineViewModel
+import com.android.id.peers.util.workers.LoanPictureWorker
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_loan_disbursement.*
 import java.io.File
 import java.io.IOException
@@ -65,6 +71,8 @@ class LoanDisbursementActivity : AppCompatActivity() {
             connected = isConnected
         })
 
+        title = "Loan Disbursement"
+
         loan_disbursement.adapter = loansAdapter
 
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -72,6 +80,8 @@ class LoanDisbursementActivity : AppCompatActivity() {
         connected = activeNetwork?.isConnectedOrConnecting == true
 
         if (connected) {
+            shimmer_view_container.visibility = View.VISIBLE
+            shimmer_view_container.startShimmerAnimation()
             authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
                 this, ApiConnections.REQUEST_TYPE_GET_LOAN, object :
                     LoanDisbursement {
@@ -85,11 +95,22 @@ class LoanDisbursementActivity : AppCompatActivity() {
                             loanDisburseItem.totalDisbursed = l.totalDisbursed
                             loans.add(loanDisburseItem)
                         }
+
+                        val loanPreferences = getSharedPreferences("loans", Context.MODE_PRIVATE)
+                        Loan.saveLoans(loanPreferences, result, "loan_disburse")
+
 //                    loan_disbursement.adapter!!.notifyDataSetChanged()
                         loansAdapter.notifyDataSetChanged()
+                        shimmer_view_container.stopShimmerAnimation()
+                        shimmer_view_container.visibility = View.GONE
                     }
                 }
                 , listType = 3)
+        } else {
+            val loanPreferences = getSharedPreferences("loans", Context.MODE_PRIVATE)
+            val loanJson = loanPreferences.getString("loan_disburse", null)!!
+            loans = Gson().fromJson(loanJson)
+            loansAdapter.notifyDataSetChanged()
         }
 
         loan_disbursement.setHasFixedSize(true);
@@ -203,6 +224,7 @@ class LoanDisbursementActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("RestrictedApi")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         Log.d("LoanDisburse", "onActivityResult ${data.toString()}")
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_IMAGE_CAPTURE) {
@@ -228,6 +250,8 @@ class LoanDisbursementActivity : AppCompatActivity() {
                     Log.d("LoanDisburse","File is not deleted" )
                 }
 
+                shimmer_view_container.visibility = View.VISIBLE
+                shimmer_view_container.startShimmerAnimation()
                 authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
                     this, ApiConnections.REQUEST_TYPE_GET_LOAN, object :
                     LoanDisbursement {
@@ -238,19 +262,41 @@ class LoanDisbursementActivity : AppCompatActivity() {
                             Log.d("LoanDisburse", "Loan Size : ${loans.size}")
 //                                loan_disbursement.adapter!!.notifyDataSetChanged()
                             loansAdapter.notifyDataSetChanged()
+                            shimmer_view_container.stopShimmerAnimation()
+                            shimmer_view_container.visibility = View.GONE
                             PeersSnackbar.popUpSnack(activity.window.decorView, "Loan disbursed successfully!")
                         }
                     }
                     , listType = 3)
             } else {
-                val loanPicture = LoanPicture(0, selectedItemLoanId, pictureName)
-                val offlineViewModel: OfflineViewModel = ViewModelProvider(this).get(
-                    OfflineViewModel::class.java)
-                offlineViewModel.insertLoanPictures(loanPicture)
+//                val loanPicture = LoanPicture(0, selectedItemLoanId, pictureName)
+//                val offlineViewModel: OfflineViewModel = ViewModelProvider(this).get(
+//                    OfflineViewModel::class.java)
+//                offlineViewModel.insertLoanPictures(loanPicture)
+
+                val constraints = Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
+                val data1 = Data.Builder()
+                data1.put("image_data", imageData)
+                data1.put("member_id", selectedItemLoanId)
+                data1.put("loan_id", selectedLoan.id)
+                data1.put("file_name", pictureName)
+                val loanPictureWorker = OneTimeWorkRequestBuilder<LoanPictureWorker>()
+                    .setConstraints(constraints)
+                    .setInputData(data1.build())
+                    .build() // or PeriodicWorkRequest
+
+                loans.remove(selectedLoan)
+
+                WorkManager.getInstance(activity).enqueue(loanPictureWorker)
+
                 PeersSnackbar.popUpSnack(activity.window.decorView, "There was no internet access! Data is saved locally")
             }
 //            }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
+
+    inline fun <reified T> Gson.fromJson(json: String): T = fromJson<T>(json, object: TypeToken<T>() {}.type)
 }

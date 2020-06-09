@@ -10,13 +10,13 @@ import com.android.id.peers.loans.dao.LoanDao
 import com.android.id.peers.loans.dao.LoanPictureDao
 import com.android.id.peers.loans.models.Loan
 import com.android.id.peers.loans.models.LoanPicture
-import com.android.id.peers.loans.models.RepaymentCollection
+import com.android.id.peers.loans.models.Collection
 import com.android.id.peers.members.dao.*
 import com.android.id.peers.members.models.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@Database(entities = [Member::class, Loan::class, LoanPicture::class, Province::class, Kabupaten::class, Kecamatan::class, Desa::class, RepaymentCollection::class], version = 1)
+@Database(entities = [Member::class, Loan::class, LoanPicture::class, Province::class, Kabupaten::class, Kecamatan::class, Desa::class, Collection::class], version = 1)
 abstract class OfflineDatabase : RoomDatabase() {
     abstract fun memberDao() : MemberDao
     abstract fun loanDao() : LoanDao

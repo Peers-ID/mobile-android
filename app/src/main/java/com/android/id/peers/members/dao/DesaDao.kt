@@ -9,13 +9,13 @@ interface DesaDao {
     @Query("SELECT * FROM desa")
     fun getAll(): LiveData<List<Desa>>
 
-    @Query("SELECT * FROM desa where id_kecamatan = :idKecamatan ORDER BY nama ASC")
-    fun getByKecamatanId(idKecamatan: Int): List<Desa>
+    @Query("SELECT * FROM desa where kecamatan_id = :kecamatanId ORDER BY name ASC")
+    fun getByKecamatanId(kecamatanId: String): List<Desa>
 
     @Query("DELETE FROM desa")
     suspend fun deleteAll()
 
-    @Insert (onConflict = OnConflictStrategy.IGNORE)
+    @Insert
     suspend fun insertAll(vararg desa: Desa)
 
     @Delete

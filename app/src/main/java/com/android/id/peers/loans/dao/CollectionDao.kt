@@ -5,19 +5,19 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import com.android.id.peers.loans.models.RepaymentCollection
+import com.android.id.peers.loans.models.Collection
 
 @Dao
 interface CollectionDao {
     @Query("SELECT * FROM collections")
-    fun getAll(): LiveData<List<RepaymentCollection>>
+    fun getAll(): LiveData<List<Collection>>
 
     @Query("DELETE FROM collections")
     fun deleteAll()
 
     @Insert
-    fun insertAll(vararg loans: RepaymentCollection)
+    fun insertAll(vararg loans: Collection)
 
     @Delete
-    fun delete(loan: RepaymentCollection)
+    fun delete(loan: Collection)
 }

@@ -108,11 +108,11 @@ class TermsActivity : AppCompatActivity() {
                     intent.putExtra("hand_phone", noHP)
                     startActivity(intent)
                 } else {
-                    val offlineViewModel: OfflineViewModel = ViewModelProvider(this).get(
-                        OfflineViewModel::class.java)
-                    if (member != null) {
-                        offlineViewModel.insertMember(member!!)
-                    }
+//                    val offlineViewModel: OfflineViewModel = ViewModelProvider(this).get(
+//                        OfflineViewModel::class.java)
+//                    if (member != null) {
+//                        offlineViewModel.insertMember(member!!)
+//                    }
                     val constraints = Constraints.Builder()
                         .setRequiredNetworkType(NetworkType.CONNECTED)
                         .build()

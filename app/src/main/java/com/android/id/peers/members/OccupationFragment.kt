@@ -16,10 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.android.id.peers.R
-import com.android.id.peers.members.models.Kabupaten
-import com.android.id.peers.members.models.Kecamatan
-import com.android.id.peers.members.models.Member
-import com.android.id.peers.members.models.Province
+import com.android.id.peers.members.models.*
 import com.android.id.peers.util.CurrencyFormat
 import com.android.id.peers.util.communication.MemberViewModel
 import com.android.id.peers.util.database.OfflineViewModel
@@ -55,9 +52,11 @@ class OccupationFragment : Fragment(), CoroutineScope {
     private var provinces: List<Province> = ArrayList()
     private var kabupatens: List<Kabupaten> = ArrayList()
     private var kecamatans: List<Kecamatan> = ArrayList()
+    private var kelurahans: List<Desa> = ArrayList()
     private lateinit var provinceAdapter: ArrayAdapter<Province>
     private lateinit var cityAdapter: ArrayAdapter<Kabupaten>
     private lateinit var kecamatanAdapter: ArrayAdapter<Kecamatan>
+    private lateinit var kelurahanAdapter: ArrayAdapter<Desa>
     private val coroutineScope = this
 
     override val coroutineContext: CoroutineContext =
@@ -158,10 +157,11 @@ class OccupationFragment : Fragment(), CoroutineScope {
             address_rw.visibility = View.GONE
             address_rw_container.visibility = View.GONE
         }
-        if (configPreferences.getInt("alamat_kantor_kelurahan", 1) == 0) {
-            address_kelurahan.visibility = View.GONE
-            address_kelurahan_container.visibility = View.GONE
-        }
+//        if (configPreferences.getInt("alamat_kantor_kelurahan", 1) == 0) {
+//            address_kelurahan.visibility = View.GONE
+//            address_kelurahan_container.visibility = View.GONE
+//        }
+        if (configPreferences.getInt("alamat_kantor_kelurahan", 1) == 0) address_kelurahan.visibility = View.GONE
         if (configPreferences.getInt("alamat_kantor_kecamatan", 1) == 0) address_kecamatan.visibility = View.GONE
         if (configPreferences.getInt("alamat_kantor_kota", 1) == 0) {
             address_city.visibility = View.GONE
@@ -200,16 +200,17 @@ class OccupationFragment : Fragment(), CoroutineScope {
             address_province.selection = member.provinsiKantorPosisi
             address_city.selection = member.kotaKantorPosisi
             address_kecamatan.selection = member.kecamatanKantorPosisi
-            address_kelurahan.setText(member.kelurahanKantor)
-
+            address_kelurahan.selection = member.kelurahanKantorPosisi
         })
         provinceAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_dropdown_item, provinces)
         cityAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_dropdown_item, kabupatens)
         kecamatanAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_dropdown_item, kecamatans)
+        kelurahanAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_dropdown_item, kelurahans)
 //            val arrayAdapter = RegionAdapter(context!!, provinces, "Province")
         address_province.adapter = provinceAdapter
         address_city.adapter = cityAdapter
         address_kecamatan.adapter = kecamatanAdapter
+        address_kelurahan.adapter = kelurahanAdapter
 
         offlineViewModel.allProvince.observe(viewLifecycleOwner, Observer {provinces ->
             this.provinces = provinces
@@ -225,9 +226,12 @@ class OccupationFragment : Fragment(), CoroutineScope {
                 position: Int,
                 id: Long
             ) {
+                address_city.selection = -1
+                address_kecamatan.selection = -1
+                address_kelurahan.selection = -1
                 coroutineScope.launch(Dispatchers.Main) {
                     if (provinces.isNotEmpty()) {
-                        kabupatens = offlineViewModel.getKabupatenByProvinceId(provinces[position].kodeWilayah)
+                        kabupatens = offlineViewModel.getKabupatenByProvinceId(provinces[position].id)
                         cityAdapter.clear()
                         cityAdapter.addAll(kabupatens)
                         cityAdapter.notifyDataSetChanged()
@@ -248,13 +252,38 @@ class OccupationFragment : Fragment(), CoroutineScope {
                 position: Int,
                 id: Long
             ) {
+                address_kecamatan.selection = -1
+                address_kelurahan.selection = -1
                 coroutineScope.launch(Dispatchers.Main) {
                     if (kabupatens.isNotEmpty()) {
-                        kecamatans = offlineViewModel.getKecamatanByKabupatenId(kabupatens[position].kodeWilayah)
+                        kecamatans = offlineViewModel.getKecamatanByKabupatenId(kabupatens[position].id)
                         kecamatanAdapter.clear()
                         kecamatanAdapter.addAll(kecamatans)
                         kecamatanAdapter.notifyDataSetChanged()
 
+                    }
+                }
+            }
+
+            override fun onNothingSelected(parent: MaterialSpinner) {
+            }
+
+        }
+
+        address_kecamatan.onItemSelectedListener = object: MaterialSpinner.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: MaterialSpinner,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                address_kelurahan.selection = -1
+                coroutineScope.launch(Dispatchers.Main) {
+                    if (kecamatans.isNotEmpty()) {
+                        kelurahans = offlineViewModel.getDesaByKecamatanId(kecamatans[position].id)
+                        kelurahanAdapter.clear()
+                        kelurahanAdapter.addAll(kelurahans)
+                        kelurahanAdapter.notifyDataSetChanged()
                     }
                 }
             }
@@ -352,8 +381,8 @@ class OccupationFragment : Fragment(), CoroutineScope {
             address_rw_container.error = "Alamat Kantor : RW tidak boleh kosong"
             allTrue = false
         }
-        if(configPreferences.getInt("alamat_kantor_kelurahan", 1) == 1 && address_kelurahan.text.toString().isEmpty()) {
-            address_kelurahan_container.error = "Alamat Kantor : Kelurahan tidak boleh kosong"
+        if(configPreferences.getInt("alamat_kantor_kelurahan", 1) == 1 && address_kelurahan.selectedItemId < 0) {
+            address_kelurahan.error = "Alamat Kantor : Kelurahan tidak boleh kosong"
             allTrue = false
         }
         if(configPreferences.getInt("alamat_kantor_kecamatan", 1) == 1 && address_kecamatan.selectedItemId < 0) {
@@ -402,22 +431,22 @@ class OccupationFragment : Fragment(), CoroutineScope {
         member.nomorKantor = address_no.text.toString()
         member.rtKantor = address_rt.text.toString()
         member.rwKantor = address_rw.text.toString()
-        member.kelurahanKantor = address_kelurahan.text.toString()
+        member.kelurahanKantorPosisi = address_kelurahan.selection
         member.kecamatanKantorPosisi = address_kecamatan.selection
         member.kotaKantorPosisi = address_city.selection
         member.provinsiKantorPosisi = address_province.selection
         if(address_kecamatan.selectedItem != null) {
-            member.kecamatanKantor = (address_kecamatan.selectedItem as Kecamatan).nama
+            member.kecamatanKantor = (address_kecamatan.selectedItem as Kecamatan).name
         } else {
             member.kecamatanKantor = ""
         }
         if(address_city.selectedItem != null) {
-            member.kotaKantor = (address_city.selectedItem as Kabupaten).nama
+            member.kotaKantor = (address_city.selectedItem as Kabupaten).name
         } else {
             member.kotaKantor = ""
         }
         if(address_province.selectedItem != null) {
-            member.provinsiKantor = (address_province.selectedItem as Province).nama
+            member.provinsiKantor = (address_province.selectedItem as Province).name
         } else {
             member.provinsiKantor = ""
         }

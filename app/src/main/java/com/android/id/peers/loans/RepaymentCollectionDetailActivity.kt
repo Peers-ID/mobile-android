@@ -1,5 +1,6 @@
 package com.android.id.peers.loans
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
@@ -11,9 +12,11 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.work.*
 import com.android.id.peers.MainActivity
 import com.android.id.peers.R
 import com.android.id.peers.loans.adapters.RcdTablePagerAdapter
+import com.android.id.peers.loans.models.Loan
 import com.android.id.peers.members.models.Member
 import com.android.id.peers.util.CurrencyFormat
 import com.android.id.peers.util.PeersSnackbar
@@ -23,14 +26,19 @@ import com.android.id.peers.util.connection.ApiConnections
 import com.android.id.peers.util.connection.ApiConnections.Companion.authenticate
 import com.android.id.peers.util.connection.ConnectionStateMonitor
 import com.android.id.peers.util.database.OfflineViewModel
+import com.android.id.peers.util.workers.CollectionWorker
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_repayment_collection_detail.*
 
 class RepaymentCollectionDetailActivity : AppCompatActivity() {
     private var memberViewModel = MemberViewModel()
-    private var collection = com.android.id.peers.loans.models.RepaymentCollection()
+    private var collection = com.android.id.peers.loans.models.Collection()
+    private lateinit var loan: Loan
 
     var connected: Boolean = true
 
+    @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_repayment_collection_detail)
@@ -50,6 +58,8 @@ class RepaymentCollectionDetailActivity : AppCompatActivity() {
 //        val loanDisbursed = intent.getLongExtra("loan_disbursed", 0)
         collection.cicilanJumlah = intent.getLongExtra("loan_cicilan", 0)
         collection.cicilanKe = intent.getIntExtra("cicilan_ke", 0)
+
+        loan = intent.getParcelableExtra("loan")!!
 
         cicilan.setText(CurrencyFormat.formatAmount(collection.cicilanJumlah.toString()))
 
@@ -150,20 +160,48 @@ class RepaymentCollectionDetailActivity : AppCompatActivity() {
 
                 connected = activeNetwork?.isConnectedOrConnecting == true
 
+                val intent = Intent(this, MainActivity::class.java)
+
                 if (connected) {
                     authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
                         this, ApiConnections.REQUEST_TYPE_POST_COLLECTION, collection)
                     intent.putExtra("message", "Collection data has been successfully submitted")
                 } else {
-                    val offlineViewModel: OfflineViewModel = ViewModelProvider(this).get(
-                        OfflineViewModel::class.java)
-                    offlineViewModel.insertCollection(collection)
+//                    val offlineViewModel: OfflineViewModel = ViewModelProvider(this).get(
+//                        OfflineViewModel::class.java)
+//                    offlineViewModel.insertCollection(collection)
+                    val loanPreferences = getSharedPreferences("loans", Context.MODE_PRIVATE)
+                    val loanJson = loanPreferences.getString("repayment_collection", null)!!
+                    val loans = Gson().fromJson<List<Loan>>(loanJson)
+                    val l = ArrayList<Loan>(loans)
+                    l.remove(loan)
+                    Loan.saveLoans(loanPreferences, l, "repayment_collection")
+
+                    val constraints = Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .build()
+                    val data = Data.Builder()
+                    data.put("koperasi_id", collection.koperasiId)
+                    data.put("member_id", collection.memberId)
+                    data.put("ao_id", collection.aoId)
+                    data.put("loan_id", collection.loanId)
+                    data.put("loan_cicilan", collection.cicilanJumlah)
+                    data.put("cicilan_ke", collection.cicilanKe)
+                    val collectionWorker = OneTimeWorkRequestBuilder<CollectionWorker>()
+                        .setConstraints(constraints)
+                        .setInputData(data.build())
+                        .build() // or PeriodicWorkRequest
+
+                    WorkManager.getInstance(this).enqueue(collectionWorker)
+
                     intent.putExtra("message", "There was no internet access! Data is saved locally")
                 }
-                val intent = Intent(this, MainActivity::class.java)
+
                 finishAffinity()
                 startActivity(intent)
             }
         }
     }
+
+    inline fun <reified T> Gson.fromJson(json: String): T = fromJson<T>(json, object: TypeToken<T>() {}.type)
 }

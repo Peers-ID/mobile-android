@@ -1,363 +1,382 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".members.OccupationFragment">
-
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-        android:orientation="vertical">
-
-        <com.tiper.MaterialSpinner
-            android:id="@+id/npwp_exist"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:entries="@array/npwp_exist"
-            android:layout_marginBottom="8dp"
-            android:hint="@string/npwp_exist"
-            android:prompt="@string/npwp_exist"
-			android:layout_marginTop="@dimen/margin_between"
-			app:errorEnabled="true" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/npwp_no_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/margin_between"
-			app:errorEnabled="true" >
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/npwp_no"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/npwp_no"
-                android:inputType="number"
-                android:selectAllOnFocus="true" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-
-        <com.tiper.MaterialSpinner
-            android:id="@+id/occupation_status"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:entries="@array/occupation_status"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:hint="@string/occupation_status"
-            android:prompt="@string/occupation_status"
-            app:errorEnabled="true" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/occupation_field_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/margin_between"
-			app:errorEnabled="true" >
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/occupation_field"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/occupation_field"
-                android:inputType="text"
-                android:selectAllOnFocus="true" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/occupation_position_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/margin_between"
-			app:errorEnabled="true" >
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/occupation_position"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/occupation_position"
-                android:inputType="text"
-                android:selectAllOnFocus="true" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/company_name_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/margin_between"
-			app:errorEnabled="true" >
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/company_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/company_name"
-                android:inputType="text"
-                android:selectAllOnFocus="true" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <TextView
-            android:id="@+id/work_how_long_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/occupation_how_long" />
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp" >
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:orientation="vertical">
 
-            <Spinner
-                android:id="@+id/work_how_long_year"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:entries="@array/how_long_year" />
-
-            <Spinner
-                android:id="@+id/work_how_long_month"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:entries="@array/how_long_month" />
-
-        </LinearLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/occupation_revenue_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/margin_between"
-			app:errorEnabled="true" >
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/occupation_revenue"
+            <com.tiper.MaterialSpinner
+                android:id="@+id/npwp_exist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/occupation_revenue"
-                android:inputType="number"
-                android:selectAllOnFocus="true" />
+                android:entries="@array/npwp_exist"
+                android:layout_marginBottom="8dp"
+                android:hint="@string/npwp_exist"
+                android:prompt="@string/npwp_exist"
+                android:layout_marginTop="@dimen/margin_between"
+                app:errorEnabled="true" />
 
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/address_street_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/margin_between"
-			app:errorEnabled="true" >
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/address_street"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/npwp_no_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/office_address_street"
-                android:inputType="text"
-                android:selectAllOnFocus="true" />
+                android:layout_marginTop="@dimen/margin_between"
+                app:errorEnabled="true" >
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/npwp_no"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/npwp_no"
+                    android:inputType="number"
+                    android:selectAllOnFocus="true" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/address_no_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/margin_between"
-			app:errorEnabled="true" >
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/address_no"
+
+            <com.tiper.MaterialSpinner
+                android:id="@+id/occupation_status"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/office_address_no"
-                android:inputType="textPostalAddress"
-                android:selectAllOnFocus="true" />
+                android:entries="@array/occupation_status"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:hint="@string/occupation_status"
+                android:prompt="@string/occupation_status"
+                app:errorEnabled="true" />
 
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/address_rt_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/margin_between"
-			app:errorEnabled="true" >
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/address_rt"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/occupation_field_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/office_address_rt"
-                android:inputType="number"
-                android:selectAllOnFocus="true" />
+                android:layout_marginTop="@dimen/margin_between"
+                app:errorEnabled="true" >
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/occupation_field"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/occupation_field"
+                    android:inputType="text"
+                    android:selectAllOnFocus="true" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/address_rw_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/margin_between"
-			app:errorEnabled="true" >
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/address_rw"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/occupation_position_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/office_address_rw"
-                android:inputType="number"
-                android:selectAllOnFocus="true" />
+                android:layout_marginTop="@dimen/margin_between"
+                app:errorEnabled="true" >
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/occupation_position"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/occupation_position"
+                    android:inputType="text"
+                    android:selectAllOnFocus="true" />
 
-        <com.tiper.MaterialSpinner
-            android:id="@+id/address_province"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:hint="@string/office_address_province"
-            android:prompt="@string/office_address_province"
-            app:errorEnabled="true" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <com.tiper.MaterialSpinner
-            android:id="@+id/address_city"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:hint="@string/office_address_city"
-            android:prompt="@string/office_address_city"
-            app:errorEnabled="true" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/company_name_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_between"
+                app:errorEnabled="true" >
 
-        <com.tiper.MaterialSpinner
-            android:id="@+id/address_kecamatan"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:hint="@string/office_address_kecamatan"
-            android:prompt="@string/office_address_kecamatan"
-            app:errorEnabled="true" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/company_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/company_name"
+                    android:inputType="text"
+                    android:selectAllOnFocus="true" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/address_kelurahan_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/margin_between"
-			app:errorEnabled="true" >
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
+            <TextView
+                android:id="@+id/work_how_long_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/occupation_how_long" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp" >
+
+                <Spinner
+                    android:id="@+id/work_how_long_year"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:entries="@array/how_long_year" />
+
+                <Spinner
+                    android:id="@+id/work_how_long_month"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:entries="@array/how_long_month" />
+
+            </LinearLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/occupation_revenue_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_between"
+                app:errorEnabled="true" >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/occupation_revenue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/occupation_revenue"
+                    android:inputType="number"
+                    android:selectAllOnFocus="true" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/address_street_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_between"
+                app:errorEnabled="true" >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/address_street"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/office_address_street"
+                    android:inputType="text"
+                    android:selectAllOnFocus="true" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/address_no_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_between"
+                app:errorEnabled="true" >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/address_no"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/office_address_no"
+                    android:inputType="textPostalAddress"
+                    android:selectAllOnFocus="true" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/address_rt_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_between"
+                app:errorEnabled="true" >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/address_rt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/office_address_rt"
+                    android:inputType="number"
+                    android:selectAllOnFocus="true" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/address_rw_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_between"
+                app:errorEnabled="true" >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/address_rw"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/office_address_rw"
+                    android:inputType="number"
+                    android:selectAllOnFocus="true" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.tiper.MaterialSpinner
+                android:id="@+id/address_province"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:hint="@string/office_address_province"
+                android:prompt="@string/office_address_province"
+                app:errorEnabled="true" />
+
+            <com.tiper.MaterialSpinner
+                android:id="@+id/address_city"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:hint="@string/office_address_city"
+                android:prompt="@string/office_address_city"
+                app:errorEnabled="true" />
+
+            <com.tiper.MaterialSpinner
+                android:id="@+id/address_kecamatan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:hint="@string/office_address_kecamatan"
+                android:prompt="@string/office_address_kecamatan"
+                app:errorEnabled="true" />
+
+            <com.tiper.MaterialSpinner
                 android:id="@+id/address_kelurahan"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
                 android:hint="@string/office_address_kelurahan"
-                android:inputType="text"
-                android:selectAllOnFocus="true" />
+                android:prompt="@string/office_address_kelurahan"
+                app:errorEnabled="true" />
 
-        </com.google.android.material.textfield.TextInputLayout>
-
-<!--        <com.google.android.material.textfield.TextInputLayout-->
-<!--            android:id="@+id/address_kecamatan_container"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--			android:layout_marginTop="@dimen/margin_between"-->
-<!--			app:errorEnabled="true" >-->
-
-<!--            <com.google.android.material.textfield.TextInputEditText-->
-<!--                android:id="@+id/address_kecamatan"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:hint="@string/office_address_kecamatan"-->
-<!--                android:inputType="text"-->
-<!--                android:selectAllOnFocus="true" />-->
-
-<!--        </com.google.android.material.textfield.TextInputLayout>-->
-
-<!--        <com.google.android.material.textfield.TextInputLayout-->
-<!--            android:id="@+id/address_city_container"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--			android:layout_marginTop="@dimen/margin_between"-->
-<!--			app:errorEnabled="true" >-->
-
-<!--            <com.google.android.material.textfield.TextInputEditText-->
-<!--                android:id="@+id/address_city"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:hint="@string/office_address_city"-->
-<!--                android:inputType="text"-->
-<!--                android:selectAllOnFocus="true" />-->
-
-<!--        </com.google.android.material.textfield.TextInputLayout>-->
-
-<!--        <com.google.android.material.textfield.TextInputLayout-->
-<!--            android:id="@+id/address_province_container"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--			android:layout_marginTop="@dimen/margin_between"-->
-<!--			app:errorEnabled="true" >-->
-
-<!--            <com.google.android.material.textfield.TextInputEditText-->
-<!--                android:id="@+id/address_province"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:hint="@string/office_address_province"-->
-<!--                android:inputType="text"-->
-<!--                android:selectAllOnFocus="true" />-->
-
-<!--        </com.google.android.material.textfield.TextInputLayout>-->
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingBottom="@dimen/activity_vertical_margin">
-
-            <Button
-                android:id="@+id/back"
-                android:layout_width="wrap_content"
+            <!--<com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/address_kelurahan_container"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:background="@color/colorWhite"
-                android:text="@string/back"
-                android:textColor="@color/colorDarkButton"
-                android:theme="@style/PeersButton"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_bias="0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_marginTop="@dimen/margin_between"
+                app:errorEnabled="true" >
 
-            <Button
-                android:id="@+id/next"
-                android:layout_width="wrap_content"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/address_kelurahan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/office_address_kelurahan"
+                    android:inputType="text"
+                    android:selectAllOnFocus="true" />
+
+            </com.google.android.material.textfield.TextInputLayout>-->
+
+    <!--        <com.google.android.material.textfield.TextInputLayout-->
+    <!--            android:id="@+id/address_kecamatan_container"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--			android:layout_marginTop="@dimen/margin_between"-->
+    <!--			app:errorEnabled="true" >-->
+
+    <!--            <com.google.android.material.textfield.TextInputEditText-->
+    <!--                android:id="@+id/address_kecamatan"-->
+    <!--                android:layout_width="match_parent"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:hint="@string/office_address_kecamatan"-->
+    <!--                android:inputType="text"-->
+    <!--                android:selectAllOnFocus="true" />-->
+
+    <!--        </com.google.android.material.textfield.TextInputLayout>-->
+
+    <!--        <com.google.android.material.textfield.TextInputLayout-->
+    <!--            android:id="@+id/address_city_container"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--			android:layout_marginTop="@dimen/margin_between"-->
+    <!--			app:errorEnabled="true" >-->
+
+    <!--            <com.google.android.material.textfield.TextInputEditText-->
+    <!--                android:id="@+id/address_city"-->
+    <!--                android:layout_width="match_parent"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:hint="@string/office_address_city"-->
+    <!--                android:inputType="text"-->
+    <!--                android:selectAllOnFocus="true" />-->
+
+    <!--        </com.google.android.material.textfield.TextInputLayout>-->
+
+    <!--        <com.google.android.material.textfield.TextInputLayout-->
+    <!--            android:id="@+id/address_province_container"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--			android:layout_marginTop="@dimen/margin_between"-->
+    <!--			app:errorEnabled="true" >-->
+
+    <!--            <com.google.android.material.textfield.TextInputEditText-->
+    <!--                android:id="@+id/address_province"-->
+    <!--                android:layout_width="match_parent"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:hint="@string/office_address_province"-->
+    <!--                android:inputType="text"-->
+    <!--                android:selectAllOnFocus="true" />-->
+
+    <!--        </com.google.android.material.textfield.TextInputLayout>-->
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/container"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:background="@color/colorWhite"
-                android:text="@string/next"
-                android:textColor="@color/colorDarkButton"
-                android:theme="@style/PeersButton"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingBottom="@dimen/activity_vertical_margin">
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <Button
+                    android:id="@+id/back"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@color/colorWhite"
+                    android:text="@string/back"
+                    android:textColor="@color/colorDarkButton"
+                    android:theme="@style/PeersButton"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-    </LinearLayout>
+                <Button
+                    android:id="@+id/next"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@color/colorWhite"
+                    android:text="@string/next"
+                    android:textColor="@color/colorDarkButton"
+                    android:theme="@style/PeersButton"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-</ScrollView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+</LinearLayout>

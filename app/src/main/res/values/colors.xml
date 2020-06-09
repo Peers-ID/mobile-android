@@ -16,4 +16,6 @@
     <color name="colorGreyText">#FF666666</color>
     <color name="colorEnabled">#609B07A8</color>
     <color name="colorDisabled">#909B07A8</color>
+
+    <color name="background">#dddddd</color>
 </resources>

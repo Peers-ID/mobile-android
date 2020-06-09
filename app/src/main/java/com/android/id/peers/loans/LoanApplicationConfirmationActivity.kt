@@ -118,10 +118,10 @@ class LoanApplicationConfirmationActivity : AppCompatActivity() {
                     .build()
                 val data = Loan.putLoanOnDataBuilder(loan!!)
 
-                val offlineViewModel: OfflineViewModel = ViewModelProvider(this).get(OfflineViewModel::class.java)
+//                val offlineViewModel: OfflineViewModel = ViewModelProvider(this).get(OfflineViewModel::class.java)
                 if (member != null) {
                     val data2 = Member.putMemberOnDataBuilder(member!!)
-                    offlineViewModel.insertMember(member!!)
+//                    offlineViewModel.insertMember(member!!)
                     val memberWorker = OneTimeWorkRequestBuilder<MemberWorker>()
                         .setConstraints(constraints)
                         .setInputData(data2.build())
@@ -144,7 +144,7 @@ class LoanApplicationConfirmationActivity : AppCompatActivity() {
 
                     WorkManager.getInstance(context).enqueue(loanWorker)
                 }
-                offlineViewModel.insertLoan(loan!!)
+//                offlineViewModel.insertLoan(loan!!)
 
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)

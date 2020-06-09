@@ -54,6 +54,7 @@ data class Member constructor (
     @ColumnInfo(name = "alamat_ktp_nomer") var nomorSesuaiKtp : String = "",
     @ColumnInfo(name = "alamat_ktp_rt") var rtSesuaiKtp : String = "",
     @ColumnInfo(name = "alamat_ktp_rw") var rwSesuaiKtp : String = "",
+    @ColumnInfo(name = "alamat_ktp_kelurahan_posisi") var kelurahanSesuaiKtpPosisi : Int = -1,
     @ColumnInfo(name = "alamat_ktp_kelurahan") var kelurahanSesuaiKtp : String = "",
     @ColumnInfo(name = "alamat_ktp_kecamatan_posisi") var kecamatanSesuaiKtpPosisi : Int = -1,
     @ColumnInfo(name = "alamat_ktp_kecamatan") var kecamatanSesuaiKtp : String = "",
@@ -69,6 +70,7 @@ data class Member constructor (
     @ColumnInfo(name = "alamat_domisili_nomer") var nomorDomisili : String = "",
     @ColumnInfo(name = "alamat_domisili_rt") var rtDomisili : String = "",
     @ColumnInfo(name = "alamat_domisili_rw") var rwDomisili : String = "",
+    @ColumnInfo(name = "alamat_domisili_kelurahan_posisi") var kelurahanDomisiliPosisi : Int = -1,
     @ColumnInfo(name = "alamat_domisili_kelurahan") var kelurahanDomisili : String = "",
     @ColumnInfo(name = "alamat_domisili_kecamatan_posisi") var kecamatanDomisiliPosisi : Int = -1,
     @ColumnInfo(name = "alamat_domisili_kecamatan") var kecamatanDomisili: String = "",
@@ -94,6 +96,7 @@ data class Member constructor (
     @ColumnInfo(name = "alamat_kantor_nomer") var nomorKantor : String = "",
     @ColumnInfo(name = "alamat_kantor_rt") var rtKantor : String = "",
     @ColumnInfo(name = "alamat_kantor_rw") var rwKantor : String = "",
+    @ColumnInfo(name = "alamat_kantor_kelurahan_posisi") var kelurahanKantorPosisi : Int = -1,
     @ColumnInfo(name = "alamat_kantor_kelurahan") var kelurahanKantor : String = "",
     @ColumnInfo(name = "alamat_kantor_kecamatan_posisi") var kecamatanKantorPosisi : Int = -1,
     @ColumnInfo(name = "alamat_kantor_kecamatan") var kecamatanKantor: String = "",
@@ -690,7 +693,7 @@ data class Member constructor (
             params["no_hp"] = member.noHpEmergency
             params["hubungan"] = member.hubunganEmergencyString()
 
-            params["is_verified"] = member.isVerified.toString()
+            params["is_verified"] = (if(member.isVerified) 1 else 0).toString()
 
             val parameters = JSONObject(params as Map<*, *>)
             val jsonObjectRequest = object: JsonObjectRequest(

@@ -1,9 +1,10 @@
 package com.android.id.peers.util.database
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import com.android.id.peers.loans.models.Loan
 import com.android.id.peers.loans.models.LoanPicture
-import com.android.id.peers.loans.models.RepaymentCollection
+import com.android.id.peers.loans.models.Collection
 import com.android.id.peers.members.models.*
 
 class OfflineRepository(private val offlineDatabase: OfflineDatabase) {
@@ -20,9 +21,9 @@ class OfflineRepository(private val offlineDatabase: OfflineDatabase) {
         offlineDatabase.loanDao().insertAll(loan)
     }
 
-    val allCollections: LiveData<List<RepaymentCollection>> = offlineDatabase.collectionDao().getAll()
+    val allCollections: LiveData<List<Collection>> = offlineDatabase.collectionDao().getAll()
 
-    suspend fun insertCollection(collection: RepaymentCollection) {
+    suspend fun insertCollection(collection: Collection) {
         offlineDatabase.collectionDao().insertAll(collection)
     }
 
@@ -60,11 +61,11 @@ class OfflineRepository(private val offlineDatabase: OfflineDatabase) {
 
     val allDesa: LiveData<List<Desa>> = offlineDatabase.desaDao().getAll()
 
-    fun getDesaByKecamatanId(idKecamatan: Int): List<Desa> {
+    fun getDesaByKecamatanId(idKecamatan: String): List<Desa> {
         return offlineDatabase.desaDao().getByKecamatanId(idKecamatan)
     }
 
-    suspend fun insertDesa(desa: Desa) {
-        offlineDatabase.desaDao().insertAll(desa)
+    suspend fun insertDesa(desas: List<Desa>) {
+        offlineDatabase.desaDao().insertAll(*desas.toTypedArray())
     }
 }
