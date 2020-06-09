@@ -181,27 +181,6 @@ class OccupationFragment : Fragment(), CoroutineScope {
         occupationStatusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         occupation_status.adapter = occupationStatusAdapter
 
-        /* Member View Model */
-        memberViewModel.member.observe(viewLifecycleOwner, Observer<Member> {
-                member ->
-            npwp_exist.selection = member.memilikiNpwp
-            npwp_no.setText(member.nomorNpwp)
-            occupation_status.selection = member.pekerjaan
-            occupation_field.setText(member.bidangPekerjaan)
-            occupation_position.setText(member.posisiPekerjaan)
-            company_name.setText(member.namaPerusahaan)
-            work_how_long_month.setSelection(member.lamaBulanBekerja)
-            work_how_long_year.setSelection(member.lamaTahunBekerja)
-            occupation_revenue.setText(CurrencyFormat.formatRupiah.format(member.penghasilan).toString())
-            address_street.setText(member.jalanKantor)
-            address_no.setText(member.nomorKantor)
-            address_rt.setText(member.rtKantor)
-            address_rw.setText(member.rwKantor)
-            address_province.selection = member.provinsiKantorPosisi
-            address_city.selection = member.kotaKantorPosisi
-            address_kecamatan.selection = member.kecamatanKantorPosisi
-            address_kelurahan.selection = member.kelurahanKantorPosisi
-        })
         provinceAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_dropdown_item, provinces)
         cityAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_dropdown_item, kabupatens)
         kecamatanAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_dropdown_item, kecamatans)
@@ -292,6 +271,28 @@ class OccupationFragment : Fragment(), CoroutineScope {
             }
 
         }
+
+        /* Member View Model */
+        memberViewModel.member.observe(viewLifecycleOwner, Observer<Member> {
+                member ->
+            npwp_exist.selection = member.memilikiNpwp
+            npwp_no.setText(member.nomorNpwp)
+            occupation_status.selection = member.pekerjaan
+            occupation_field.setText(member.bidangPekerjaan)
+            occupation_position.setText(member.posisiPekerjaan)
+            company_name.setText(member.namaPerusahaan)
+            work_how_long_month.setSelection(member.lamaBulanBekerja)
+            work_how_long_year.setSelection(member.lamaTahunBekerja)
+            occupation_revenue.setText(CurrencyFormat.formatRupiah.format(member.penghasilan).toString())
+            address_street.setText(member.jalanKantor)
+            address_no.setText(member.nomorKantor)
+            address_rt.setText(member.rtKantor)
+            address_rw.setText(member.rwKantor)
+            address_province.selection = member.provinsiKantorPosisi
+            address_city.selection = member.kotaKantorPosisi
+            address_kecamatan.selection = member.kecamatanKantorPosisi
+            address_kelurahan.selection = member.kelurahanKantorPosisi
+        })
 
     }
 

@@ -297,6 +297,8 @@ class LoanApplicationActivity : AppCompatActivity() {
                         } else {
                             goToConfirmationPage(otherFees, formulaId, loanDisbursement, cicilanPerBulan, serviceFeeAmount)
                         }
+                    } else {
+                        goToConfirmationPage(otherFees, formulaId, loanDisbursement, cicilanPerBulan, serviceFeeAmount)
                     }
                 }
             }

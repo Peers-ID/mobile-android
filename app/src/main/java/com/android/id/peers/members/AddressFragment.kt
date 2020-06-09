@@ -173,33 +173,6 @@ class AddressFragment : Fragment(), CoroutineScope {
         addressStatusDomisiliAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         address_status_domisili.adapter = addressStatusDomisiliAdapter
         /* Member View Model */
-        memberViewModel.member.observe(viewLifecycleOwner, Observer<Member> {
-                member ->
-            address_street.setText(member.jalanSesuaiKtp)
-            address_no.setText(member.nomorSesuaiKtp)
-            address_rt.setText(member.rtSesuaiKtp)
-            address_rw.setText(member.rwSesuaiKtp)
-            address_province.selection = member.provinsiSesuaiKtpPosisi
-            address_city.selection = member.kotaSesuaiKtpPosisi
-            address_kecamatan.selection = member.kecamatanSesuaiKtpPosisi
-            address_kelurahan.selection = member.kelurahanSesuaiKtpPosisi
-
-            address_status.selection = member.statusTempatTinggalSesuaiKtp
-            address_how_long_month.setSelection(member.lamaBulanTinggalSesuaiKtp)
-            address_how_long_year.setSelection(member.lamaTahunTinggalSesuaiKtp)
-            address_domisili_equal_ktp.isChecked = member.domisiliSesuaiKtp
-            address_street_domisili.setText(member.jalanDomisili)
-            address_no_domisili.setText(member.nomorDomisili)
-            address_rt_domisili.setText(member.rtDomisili)
-            address_rw_domisili.setText(member.rwDomisili)
-            address_province_domisili.selection = member.provinsiDomisiliPosisi
-            address_city_domisili.selection = member.kotaDomisiliPosisi
-            address_kecamatan_domisili.selection = member.kecamatanDomisiliPosisi
-            address_kelurahan_domisili.selection = member.kelurahanDomisiliPosisi
-            address_status_domisili.selection = member.statusTempatTinggalDomisili
-            address_how_long_domisili_month.setSelection(member.lamaBulanTinggalDomisili)
-            address_how_long_domisili_year.setSelection(member.lamaTahunTinggalDomisili)
-        })
 
         address_province.adapter = provinceAdapter
         address_province_domisili.adapter = provinceAdapter
@@ -361,6 +334,34 @@ class AddressFragment : Fragment(), CoroutineScope {
             }
 
         }
+
+        memberViewModel.member.observe(viewLifecycleOwner, Observer<Member> {
+                member ->
+            address_street.setText(member.jalanSesuaiKtp)
+            address_no.setText(member.nomorSesuaiKtp)
+            address_rt.setText(member.rtSesuaiKtp)
+            address_rw.setText(member.rwSesuaiKtp)
+            address_province.selection = member.provinsiSesuaiKtpPosisi
+            address_city.selection = member.kotaSesuaiKtpPosisi
+            address_kecamatan.selection = member.kecamatanSesuaiKtpPosisi
+            address_kelurahan.selection = member.kelurahanSesuaiKtpPosisi
+
+            address_status.selection = member.statusTempatTinggalSesuaiKtp
+            address_how_long_month.setSelection(member.lamaBulanTinggalSesuaiKtp)
+            address_how_long_year.setSelection(member.lamaTahunTinggalSesuaiKtp)
+            address_domisili_equal_ktp.isChecked = member.domisiliSesuaiKtp
+            address_street_domisili.setText(member.jalanDomisili)
+            address_no_domisili.setText(member.nomorDomisili)
+            address_rt_domisili.setText(member.rtDomisili)
+            address_rw_domisili.setText(member.rwDomisili)
+            address_province_domisili.selection = member.provinsiDomisiliPosisi
+            address_city_domisili.selection = member.kotaDomisiliPosisi
+            address_kecamatan_domisili.selection = member.kecamatanDomisiliPosisi
+            address_kelurahan_domisili.selection = member.kelurahanDomisiliPosisi
+            address_status_domisili.selection = member.statusTempatTinggalDomisili
+            address_how_long_domisili_month.setSelection(member.lamaBulanTinggalDomisili)
+            address_how_long_domisili_year.setSelection(member.lamaTahunTinggalDomisili)
+        })
 
         val nextButton = view.findViewById<Button>(R.id.next)
         nextButton.setOnClickListener { onNextButtonClicked(view) }
