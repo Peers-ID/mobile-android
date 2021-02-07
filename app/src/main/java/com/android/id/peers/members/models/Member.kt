@@ -1059,7 +1059,7 @@ data class Member constructor (
                     memberNikStatus.status = status
                     memberNikStatus.message = message
                     val member = when (status) {
-                        202 -> getMemberFromJsonObject(data)
+                        203 -> getMemberFromJsonObject(data)
                         else -> null
                     }
                     memberNikStatus.member = member
@@ -1389,7 +1389,7 @@ data class Member constructor (
                     val loginStatus = jsonObj.getInt("status")
                     Log.d("postMember", strResp)
                     if (loginStatus == 201) {
-                        val data = jsonObj.getJSONObject("data")
+//                        val data = jsonObj.getJSONObject("data")
 //                        pinjaman.idMember = data.getInt("member_id")
 
                         pinjaman.idMember = member.memberId

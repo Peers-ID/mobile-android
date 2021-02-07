@@ -45,7 +45,7 @@ class VerificationActivity : AppCompatActivity() {
 //    var loan : Loan? = null
     var pinjaman : Pinjaman? = null
     val context = this
-    var isExisting = false
+    var isExistingMember = false
     var idPinjaman = 0
 
     var connected: Boolean = true
@@ -99,14 +99,14 @@ class VerificationActivity : AppCompatActivity() {
 
                     preferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)
                     val memberPreferences = getSharedPreferences("member_mode", Context.MODE_PRIVATE)
-                    val isExistingMember = memberPreferences.getBoolean("existing_member", false)
+                    isExistingMember = memberPreferences.getBoolean("existing_member", false)
 
                     Log.d("VerificationActivity", "IS EXISTING : $isExistingMember")
 
 //                    postPictures(member)
 
-                    val intent = Intent(this, MainActivity::class.java)
-                    postMemberAndPicturesAndLoan(member!!, preferences, isExistingMember)
+//                    val intent = Intent(this, MainActivity::class.java)
+                    postMemberAndPicturesAndLoan(member!!, preferences)
 
 //                    if(loan != null) {
 //                        if(member != null) {
@@ -242,7 +242,7 @@ class VerificationActivity : AppCompatActivity() {
         }
     }
 
-    private fun postMemberAndPicturesAndLoan(member : Member, preferences : SharedPreferences, isExisting : Boolean) {
+    private fun postMemberAndPicturesAndLoan(member : Member, preferences : SharedPreferences) {
         if (member.dokumenKtp.isNotEmpty()) {
             threshold++
             authenticate(preferences, this, REQUEST_TYPE_POST_MEMBER_PICTURE, object : PostPictureCallback {
@@ -338,7 +338,7 @@ class VerificationActivity : AppCompatActivity() {
 
     var done: Int by Delegates.observable(0) { _, _, newValue ->
         if (newValue == threshold)
-            if (isExisting)
+            if (isExistingMember)
                 authenticate(preferences, context, REQUEST_TYPE_PUT_MEMBER_AND_LOAN, object : PinjamanResponseCallback {
                     override fun onSuccess(result: PinjamanResponse) {
                         responseHandling(result)

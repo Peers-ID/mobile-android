@@ -126,7 +126,7 @@ class PersonalInformationFragment : Fragment() {
                                 /**
                                  * Continue to show the pre-filled form
                                  */
-                                202 -> {
+                                203 -> {
                                     memberViewModel.setMember(result.member!!)
                                     presetText(result.member!!)
                                     Log.d("PersonalInfo", result.member!!.noHp)
