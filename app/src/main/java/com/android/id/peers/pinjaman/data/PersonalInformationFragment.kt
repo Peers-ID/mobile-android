@@ -122,6 +122,8 @@ class PersonalInformationFragment : Fragment() {
                                     periksa.visibility = View.GONE
                                     form_container.visibility = View.VISIBLE
                                     identity_no.isEnabled = false
+                                    val memberPreferences = context!!.getSharedPreferences("member_mode", Context.MODE_PRIVATE)
+                                    memberPreferences.edit().putBoolean("existing_member", false).apply()
                                 }
                                 /**
                                  * Continue to show the pre-filled form

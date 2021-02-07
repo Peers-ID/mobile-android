@@ -1387,7 +1387,7 @@ data class Member constructor (
 //                    memberPreferences.edit().putString("no_hp", member.noHp).apply()
                     val jsonObj = JSONObject(strResp)
                     val loginStatus = jsonObj.getInt("status")
-                    Log.d("postMember", strResp)
+                    Log.d("putMember", strResp)
                     if (loginStatus == 201) {
 //                        val data = jsonObj.getJSONObject("data")
 //                        pinjaman.idMember = data.getInt("member_id")
@@ -1402,7 +1402,7 @@ data class Member constructor (
 
                 },
                 Response.ErrorListener { error ->
-                    Log.e("postMember", error.toString())
+                    Log.e("putMember", error.toString())
                 }
             )
             {

@@ -15,6 +15,7 @@ import com.android.id.peers.util.connection.ApiConnections.Companion.REQUEST_TYP
 import com.android.id.peers.util.connection.ApiConnections.Companion.authenticate
 import kotlinx.android.synthetic.main.activity_loan_disbursement.*
 import kotlinx.android.synthetic.main.activity_status_pinjaman_anggota.*
+import kotlinx.android.synthetic.main.layout_empty_data.*
 
 class StatusPinjamanAnggotaActivity : AppCompatActivity() {
     var pinjaman = ArrayList<StatusPinjaman>()
@@ -42,25 +43,40 @@ class StatusPinjamanAnggotaActivity : AppCompatActivity() {
         val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
         connected = activeNetwork?.isConnectedOrConnecting == true
 
-        if (connected) {
-            shimmer_view_container.visibility = View.VISIBLE
-            shimmer_view_container.startShimmerAnimation()
-            val preferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)
+        reload.setOnClickListener {
+            error_container.visibility = View.GONE
+            loadData()
+        }
 
-            authenticate(preferences, this, REQUEST_TYPE_GET_PINJAMAN_MEMBER_STATUS, object :
-                StatusPinjamanCallback {
-                override fun onSuccess(result: List<StatusPinjaman>) {
+        if (connected) {
+            loadData()
+        }
+    }
+
+    private fun loadData() {
+        shimmer_view_container.visibility = View.VISIBLE
+        shimmer_view_container.startShimmerAnimation()
+        val preferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)
+
+        authenticate(preferences, this, REQUEST_TYPE_GET_PINJAMAN_MEMBER_STATUS, object :
+            StatusPinjamanCallback {
+            override fun onSuccess(result: List<StatusPinjaman>) {
 //                    pinjaman = ArrayList(result)
-                    Log.d("StatusPinjaman", "LENGTH : ${result.size}")
-                    pinjaman.clear()
-                    pinjaman.addAll(result)
-                    Log.d("StatusPinjaman", "LENGTH(2) : ${pinjaman.size}")
-                    statusPinjamanAdapter.notifyDataSetChanged()
-                    shimmer_view_container.visibility = View.GONE
-                    shimmer_view_container.stopShimmerAnimation()
+                Log.d("StatusPinjaman", "LENGTH : ${result.size}")
+                pinjaman.clear()
+                pinjaman.addAll(result)
+                Log.d("StatusPinjaman", "LENGTH(2) : ${pinjaman.size}")
+                statusPinjamanAdapter.notifyDataSetChanged()
+                shimmer_view_container.visibility = View.GONE
+                shimmer_view_container.stopShimmerAnimation()
+                if (pinjaman.isEmpty()) {
+                    error_container.visibility = View.VISIBLE
+                    status_pinjaman_anggota.visibility = View.GONE
+                } else {
+                    error_container.visibility = View.GONE
                     status_pinjaman_anggota.visibility = View.VISIBLE
                 }
-            })
-        }
+            }
+        })
     }
 }

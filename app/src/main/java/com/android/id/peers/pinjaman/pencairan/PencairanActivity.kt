@@ -16,6 +16,7 @@ import com.android.id.peers.anggota.StatusPinjaman
 import com.android.id.peers.util.callback.StatusPinjamanCallback
 import com.android.id.peers.util.connection.ApiConnections
 import kotlinx.android.synthetic.main.activity_pencairan.*
+import kotlinx.android.synthetic.main.layout_empty_data.*
 import kotlinx.android.synthetic.main.layout_shimmer.*
 
 class PencairanActivity : AppCompatActivity() {
@@ -44,29 +45,44 @@ class PencairanActivity : AppCompatActivity() {
         val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
         connected = activeNetwork?.isConnectedOrConnecting == true
 
-        if (connected) {
-            shimmer_view_container.visibility = View.VISIBLE
-            shimmer_view_container.startShimmerAnimation()
-            val preferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)
+        reload.setOnClickListener {
+            error_container.visibility = View.GONE
+            loadData()
+        }
 
-            ApiConnections.authenticate(
-                preferences,
-                this,
-                ApiConnections.REQUEST_TYPE_GET_PENCAIRAN_PINJAMAN,
-                object :
-                    StatusPinjamanCallback {
-                    override fun onSuccess(result: List<StatusPinjaman>) {
-                        Log.d("StatusPinjaman", "LENGTH : ${result.size}")
-                        pinjaman.clear()
-                        pinjaman.addAll(result)
-                        Log.d("StatusPinjaman", "LENGTH(2) : ${pinjaman.size}")
-                        statusPinjamanAdapter.notifyDataSetChanged()
-                        shimmer_view_container.visibility = View.GONE
-                        shimmer_view_container.stopShimmerAnimation()
+        if (connected) {
+            loadData()
+        }
+    }
+
+    private fun loadData() {
+        shimmer_view_container.visibility = View.VISIBLE
+        shimmer_view_container.startShimmerAnimation()
+        val preferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)
+
+        ApiConnections.authenticate(
+            preferences,
+            this,
+            ApiConnections.REQUEST_TYPE_GET_PENCAIRAN_PINJAMAN,
+            object :
+                StatusPinjamanCallback {
+                override fun onSuccess(result: List<StatusPinjaman>) {
+                    Log.d("StatusPinjaman", "LENGTH : ${result.size}")
+                    pinjaman.clear()
+                    pinjaman.addAll(result)
+                    Log.d("StatusPinjaman", "LENGTH(2) : ${pinjaman.size}")
+                    statusPinjamanAdapter.notifyDataSetChanged()
+                    shimmer_view_container.visibility = View.GONE
+                    shimmer_view_container.stopShimmerAnimation()
+                    if (pinjaman.isEmpty()) {
+                        error_container.visibility = View.VISIBLE
+                        pencairan_pinjaman.visibility = View.GONE
+                    } else {
+                        error_container.visibility = View.GONE
                         pencairan_pinjaman.visibility = View.VISIBLE
                     }
-                })
-        }
+                }
+            })
     }
 
     private fun pencairanItemClickListener(pinjaman : StatusPinjaman) {

@@ -11,6 +11,7 @@ import com.android.id.peers.R
 import com.android.id.peers.util.callback.SimpananItemCallback
 import com.android.id.peers.util.connection.ApiConnections
 import kotlinx.android.synthetic.main.activity_simpanan.*
+import kotlinx.android.synthetic.main.layout_empty_data.*
 import kotlinx.android.synthetic.main.layout_shimmer2.shimmer_view_container
 
 class SimpananActivity : AppCompatActivity() {
@@ -32,34 +33,49 @@ class SimpananActivity : AppCompatActivity() {
         val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
         connected = activeNetwork?.isConnectedOrConnecting == true
 
-        if (connected) {
-            shimmer_view_container.visibility = View.VISIBLE
-            shimmer_view_container.startShimmerAnimation()
-            val preferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)
+        reload.setOnClickListener {
+            error_container.visibility = View.GONE
+            loadData()
+        }
 
-            ApiConnections.authenticate(
-                preferences,
-                this,
-                ApiConnections.REQUEST_TYPE_GET_SIMPANAN,
-                object : SimpananItemCallback {
-                    override fun onSuccess(result: ArrayList<Simpanan>) {
-                        val simpanan = ArrayList<Simpanan>(result)
-                        if (result.size > 0) {
-                            if (result[0].namaMember.isNotEmpty()) {
-                                Log.d("SimpananActivity", "SIMPANAN : ${simpanan[0].simpananPokok}")
-                                val member = Member(result[0].namaMember, simpanan)
-                                memberItemList.add(member)
-                                Log.d("SimpananActivity", "Member LIST SIZE : ${memberItemList.size}")
-                                simpananItemAdapter.notifyDataSetChanged()
-                            }
-                            if (result[0].length == 0) {
-                                shimmer_view_container.visibility = View.GONE
-                                shimmer_view_container.stopShimmerAnimation()
+        if (connected) {
+            loadData()
+        }
+    }
+
+    private fun loadData() {
+        shimmer_view_container.visibility = View.VISIBLE
+        shimmer_view_container.startShimmerAnimation()
+        val preferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)
+
+        ApiConnections.authenticate(
+            preferences,
+            this,
+            ApiConnections.REQUEST_TYPE_GET_SIMPANAN,
+            object : SimpananItemCallback {
+                override fun onSuccess(result: ArrayList<Simpanan>) {
+                    val simpanan = ArrayList<Simpanan>(result)
+                    if (result.size > 0) {
+                        if (result[0].namaMember.isNotEmpty()) {
+                            Log.d("SimpananActivity", "SIMPANAN : ${simpanan[0].simpananPokok}")
+                            val member = Member(result[0].namaMember, simpanan)
+                            memberItemList.add(member)
+                            Log.d("SimpananActivity", "Member LIST SIZE : ${memberItemList.size}")
+                            simpananItemAdapter.notifyDataSetChanged()
+                        }
+                        if (result[0].length == 0) {
+                            shimmer_view_container.visibility = View.GONE
+                            shimmer_view_container.stopShimmerAnimation()
+                            if (memberItemList.isEmpty()) {
+                                simpanan_item_rv.visibility = View.GONE
+                                error_container.visibility = View.VISIBLE
+                            } else {
                                 simpanan_item_rv.visibility = View.VISIBLE
+                                error_container.visibility = View.GONE
                             }
                         }
                     }
-                })
-        }
+                }
+            })
     }
 }

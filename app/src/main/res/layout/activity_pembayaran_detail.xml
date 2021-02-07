@@ -101,6 +101,8 @@
 
     </com.facebook.shimmer.ShimmerFrameLayout>
 
+    <include layout="@layout/layout_empty_data"/>
+
     <LinearLayout
         android:id="@+id/pembayaran_detail_container"
         android:layout_width="match_parent"

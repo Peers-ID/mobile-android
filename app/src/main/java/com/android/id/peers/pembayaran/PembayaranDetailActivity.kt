@@ -22,6 +22,7 @@ import com.android.id.peers.util.connection.ApiConnections.Companion.REQUEST_TYP
 import com.android.id.peers.util.connection.ApiConnections.Companion.authenticate
 import com.android.id.peers.util.connection.NetworkConnectivity
 import kotlinx.android.synthetic.main.activity_pembayaran_detail.*
+import kotlinx.android.synthetic.main.layout_empty_data.*
 
 class PembayaranDetailActivity : AppCompatActivity() {
     var idMember = 0
@@ -43,33 +44,13 @@ class PembayaranDetailActivity : AppCompatActivity() {
         val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
         NetworkConnectivity.connected = activeNetwork?.isConnectedOrConnecting == true
 
-        val preferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)
+        reload.setOnClickListener {
+            error_container.visibility = View.GONE
+            loadData()
+        }
 
         if (NetworkConnectivity.connected) {
-            shimmer_view_container.visibility = View.VISIBLE
-            shimmer_view_container.startShimmerAnimation()
-            ApiConnections.authenticate(
-                preferences,
-                this,
-                ApiConnections.REQUEST_TYPE_GET_DETAIL_CICILAN,
-                object : CicilanCallback {
-                    override fun onSuccess(result: Cicilan) {
-                        pembayaranCicilan = result
-                        nama_anggota.text = result.namaAnggota
-                        nama_product.text = result.namaProduct
-                        sisa_pinjaman.text = CurrencyFormat.formatRupiah.format(result.sisaPinjaman)
-                        tanggal.text = result.jatuhTempo
-                        angsuran.text = CurrencyFormat.formatRupiah.format(result.pokok + result.bunga)
-                        simpanan_wajib.text = CurrencyFormat.formatRupiah.format(result.simpananWajib)
-                        denda.text = CurrencyFormat.formatRupiah.format(result.denda)
-                        total_pembayaran.text = CurrencyFormat.formatRupiah.format(result.totalPembayaran)
-                        shimmer_view_container.visibility = View.GONE
-                        shimmer_view_container.stopShimmerAnimation()
-                        pembayaran_detail_container.visibility = View.VISIBLE
-                    }
-                },
-                memberId = idMember, angsuran = angsuranKe
-            )
+            loadData()
         }
 
         var textBefore = ""
@@ -138,6 +119,41 @@ class PembayaranDetailActivity : AppCompatActivity() {
             val cicilanBayar = calculateDetailPembayaran(pembayaranCicilan, 1)
             if (validateInput()) showDialog(cicilanBayar)
         }
+    }
+
+    private fun loadData() {
+        shimmer_view_container.visibility = View.VISIBLE
+        shimmer_view_container.startShimmerAnimation()
+        val preferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)
+
+        authenticate(
+            preferences,
+            this,
+            ApiConnections.REQUEST_TYPE_GET_DETAIL_CICILAN,
+            object : CicilanCallback {
+                override fun onSuccess(result: Cicilan) {
+                    pembayaranCicilan = result
+                    nama_anggota.text = result.namaAnggota
+                    nama_product.text = result.namaProduct
+                    sisa_pinjaman.text = CurrencyFormat.formatRupiah.format(result.sisaPinjaman)
+                    tanggal.text = result.jatuhTempo
+                    angsuran.text = CurrencyFormat.formatRupiah.format(result.pokok + result.bunga)
+                    simpanan_wajib.text = CurrencyFormat.formatRupiah.format(result.simpananWajib)
+                    denda.text = CurrencyFormat.formatRupiah.format(result.denda)
+                    total_pembayaran.text = CurrencyFormat.formatRupiah.format(result.totalPembayaran)
+                    shimmer_view_container.visibility = View.GONE
+                    shimmer_view_container.stopShimmerAnimation()
+                    if (pembayaranCicilan.idAnggota == 0) {
+                        pembayaran_detail_container.visibility = View.GONE
+                        error_container.visibility = View.VISIBLE
+                    } else {
+                        pembayaran_detail_container.visibility = View.VISIBLE
+                        error_container.visibility = View.GONE
+                    }
+                }
+            },
+            memberId = idMember, angsuran = angsuranKe
+        )
     }
 
     private fun validateInput() : Boolean {

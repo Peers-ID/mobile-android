@@ -236,5 +236,7 @@ Ut at nulla turpis. Maecenas scelerisque felis ut gravida ornare. Integer urna l
     <string name="produk_pinjaman">Produk Pinjaman</string>
     <string name="total_simpanan">Total Simpanan</string>
     <string name="kirim">Kirim</string>
+    <string name="error_icon">Error Icon</string>
+    <string name="error_empty_data">Data tidak ditemukan\ncoba ulangi atau\nhubungi admin koperasi anda</string>
     <!--    <string name="tenor">Tenor</string>-->
 </resources>

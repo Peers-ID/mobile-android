@@ -8,6 +8,8 @@
     tools:context=".simpanan.SimpananActivity">
 
     <include layout="@layout/layout_shimmer2"/>
+
+    <include layout="@layout/layout_empty_data"/>
     
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/simpanan_item_rv"
