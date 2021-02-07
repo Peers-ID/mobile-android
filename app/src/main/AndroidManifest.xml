@@ -4,12 +4,14 @@
     android:targetSandboxVersion="1">
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="18" />
+        android:maxSdkVersion="28" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -25,9 +27,31 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:windowSoftInputMode="stateHidden"
-        android:usesCleartextTraffic="true">
-        <activity android:name=".TransitionActivity"></activity>
+        android:usesCleartextTraffic="true"
+        android:windowSoftInputMode="stateHidden">
+        <activity android:name=".simpanan.SimpananActivity"></activity>
+        <activity
+            android:name=".pembayaran.PembayaranDetailActivity"
+            android:theme="@style/PengajuanPinjamanStyle" />
+        <activity android:name=".pembayaran.PembayaranActivity" />
+        <activity android:name=".pinjaman.pencairan.PencairanFotoActivity" />
+        <activity
+            android:name=".pinjaman.pencairan.PencairanDetailActivity"
+            android:theme="@style/PengajuanPinjamanStyle" />
+        <activity android:name=".anggota.StatusPinjamanAnggotaActivity" />
+        <activity
+            android:name=".pinjaman.pengajuan.KalkulasiPinjamanActivity"
+            android:theme="@style/PengajuanPinjamanStyle" />
+        <activity android:name=".LoadingActivity" />
+        <activity
+            android:name=".pinjaman.pengajuan.PengajuanPinjamanActivity"
+            android:theme="@style/PengajuanPinjamanStyle" />
+        <activity android:name=".pinjaman.pencairan.PencairanActivity" />
+        <activity
+            android:name=".pinjaman.data.DataAnggotaActivity"
+            android:theme="@style/PengajuanPinjamanStyle" />
+        <activity android:name=".pinjaman.MenuPinjamanActivity" />
+        <activity android:name=".TransitionActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -49,19 +73,21 @@
             </intent-filter>
         </activity>
         <activity android:name=".auth.ChangePasswordActivity" />
-        <activity android:name=".loans.RepaymentCollectionDetailActivity" />
-        <activity android:name=".VerificationActivity" />
+        <activity android:name=".loans_unused.RepaymentCollectionDetailActivity" />
         <activity
-            android:name=".loans.LoanApplicationConfirmationActivity"
+            android:name=".VerificationActivity"
+            android:theme="@style/PengajuanPinjamanStyle" />
+        <activity
+            android:name=".loans_unused.LoanApplicationConfirmationActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".loans.RepaymentCollectionActivity"
+            android:name=".loans_unused.RepaymentCollectionActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".loans.LoanDisbursementActivity"
+            android:name=".loans_unused.LoanDisbursementActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".loans.LoanApplicationActivity"
+            android:name=".loans_unused.LoanApplicationActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".TermsActivity"

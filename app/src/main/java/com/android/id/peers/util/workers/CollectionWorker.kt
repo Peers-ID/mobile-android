@@ -3,7 +3,7 @@ package com.android.id.peers.util.workers
 import android.content.Context
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.android.id.peers.loans.models.Collection
+import com.android.id.peers.loans_unused.models.Collection
 import com.android.id.peers.util.connection.ApiConnections
 
 class CollectionWorker(appContext: Context, workerParams: WorkerParameters)

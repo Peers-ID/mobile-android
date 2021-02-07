@@ -4,12 +4,12 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="margin">16dp</dimen>
     <dimen name="margin_between">8dp</dimen>
-    <dimen name="title">24sp</dimen>
+    <dimen name="title">20sp</dimen>
     <dimen name="url_nav">18sp</dimen>
     <dimen name="margin_between_section">16sp</dimen>
 
     <dimen name="activityPadding">16dp</dimen>
     <dimen name="placeholderImage">60dp</dimen>
-    <dimen name="placeholderTextHeight">14dp</dimen>
+    <dimen name="placeholderTextHeight">19dp</dimen>
     <dimen name="padding_10">10dp</dimen>
 </resources>

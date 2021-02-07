@@ -8,7 +8,7 @@
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:orientation="vertical"
-    tools:context=".loans.LoanApplicationActivity">
+    tools:context=".loans_unused.LoanApplicationActivity">
 
     <ScrollView
         android:id="@+id/scroll_view"
@@ -194,7 +194,7 @@
                         android:text="@string/loan_disbursement" />
 
                     <TextView
-                        android:id="@+id/loan_disbursement"
+                        android:id="@+id/pembayaran_cicilan"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1" />

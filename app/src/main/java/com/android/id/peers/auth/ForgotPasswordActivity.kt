@@ -17,7 +17,10 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.android.synthetic.main.activity_forgot_password.*
 import org.json.JSONObject
+
+const val API_HOSTNAME = "http://api.peers.id/api/v1/"
 
 class ForgotPasswordActivity : AppCompatActivity() {
 
@@ -32,25 +35,19 @@ class ForgotPasswordActivity : AppCompatActivity() {
     }
 
     private fun submit(view: View) {
-        val username = findViewById<TextInputEditText>(R.id.username)
-        val birthDate = findViewById<TextInputEditText>(R.id.birth_date)
-        val usernameC = findViewById<TextInputLayout>(R.id.username_container)
-        val birthDateC = findViewById<TextInputLayout>(R.id.birth_date_container)
         var allTrue = true
         if(username.text.toString().isEmpty()) {
-            usernameC.error = "Username cannot be empty"
+            username.error = "Alamat Email tidak boleh kosong"
             allTrue = false
         }
-        if(birthDate.text.toString().isEmpty()) {
-            birthDateC.error = "Birth date cannot be empty"
-            allTrue = false
-        }
+//        if(birthDate.text.toString().isEmpty()) {
+//            birthDateC.error = "Birth date cannot be empty"
+//            allTrue = false
+//        }
         if (allTrue) {
             forgotPassword(view, username.text.toString())
         }
     }
-
-    val API_HOSTNAME = "http://api.peers.id/api/v1/"
 
     private fun forgotPassword(view: View, username: String) {
         val url = "${API_HOSTNAME}forgot_password"
@@ -70,10 +67,10 @@ class ForgotPasswordActivity : AppCompatActivity() {
                 val responseStatus = jsonObj.getString("status")
 //                Log.d("LoginActivity", strResp)
                 if (responseStatus.toInt() == 400 || responseStatus.toInt() == 401) {
-                    PeersSnackbar.popUpSnack(this.window.decorView, "Invalid input!")
+                    PeersSnackbar.popUpSnack(this.window.decorView, "Input tidak valid!")
                 } else if (responseStatus.toInt() == 201) {
                     val intent = Intent(this, LoginActivity::class.java)
-                    intent.putExtra("message", "Link to reset password has been sent to email address")
+                    intent.putExtra("message", "Link untuk mereset kata sandi telah dikirim")
                     startActivity(intent)
                     finishAffinity()
                 }

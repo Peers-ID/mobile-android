@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".loans.RcAddressFragment">
+    tools:context=".loans_unused.RcAddressFragment">
 
     <TableLayout
         android:layout_width="match_parent"

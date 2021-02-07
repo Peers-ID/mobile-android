@@ -6,19 +6,13 @@ import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.android.id.peers.auth.LoginActivity
-import com.android.id.peers.loans.models.Loan
-import com.android.id.peers.loans.models.Loan.Companion.saveLoans
-import com.android.id.peers.loans.models.LoanFormulaConfig
-import com.android.id.peers.loans.models.LoanFormulaConfig.Companion.saveLoanFormula
-import com.android.id.peers.loans.models.OtherFees
-import com.android.id.peers.loans.models.OtherFees.Companion.saveOtherFees
 import com.android.id.peers.members.models.*
 import com.android.id.peers.members.models.MemberAcquisitionConfig.Companion.saveConfig
+import com.android.id.peers.pinjaman.pengajuan.ParameterKoperasi
 import com.android.id.peers.util.callback.*
 import com.android.id.peers.util.connection.ApiConnections
 import com.android.id.peers.util.connection.ApiConnections.Companion.authenticate
@@ -58,14 +52,14 @@ class SplashScreenActivity : AppCompatActivity(), CoroutineScope {
     var done: Int by Delegates.observable(0) { property, oldValue, newValue ->
         Log.d("SplashScreen", "done Value : $done")
         if (skipping) {
-            if(newValue == 5) {
+            if(newValue == 2) {
                 dot_progress_bar.stopAnimation()
                 val intent = Intent(activity, MainActivity::class.java)
                 startActivity(intent)
                 finish()
             }
         } else {
-            if(newValue == (5 + threshold)) {
+            if(newValue == (2 + threshold)) {
                 dot_progress_bar.stopAnimation()
                 val intent = Intent(activity, MainActivity::class.java)
                 startActivity(intent)
@@ -107,6 +101,7 @@ class SplashScreenActivity : AppCompatActivity(), CoroutineScope {
         })
 
         val preferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)
+        val paramPreferences = getSharedPreferences("parameter_koperasi", Context.MODE_PRIVATE)
 
         val username = preferences.getString("email", null)
         if (username == null) {
@@ -126,6 +121,9 @@ class SplashScreenActivity : AppCompatActivity(), CoroutineScope {
 
         if (connected) {
             Log.d("SplashScreen", "Network is connected")
+//            authenticate(preferences, this, ApiConnections.REQUEST_TYPE_GET_CONFIG, object: SplashScreen {
+//
+//            })
             authenticate(preferences, this, ApiConnections.REQUEST_TYPE_GET_CONFIG,
                 object :
                     SplashScreen {
@@ -135,40 +133,58 @@ class SplashScreenActivity : AppCompatActivity(), CoroutineScope {
                         done += 1
                     }
 
-                    override fun onSuccess(result: LoanFormulaConfig) {
-                        val loanPreferences = getSharedPreferences("loan_config", Context.MODE_PRIVATE)
-                        saveLoanFormula(loanPreferences, result)
-                        done += 1
-                    }
-
-                    override fun onSuccess(result: List<OtherFees>) {
-                        val feePreferences = getSharedPreferences("fee_config", Context.MODE_PRIVATE)
-                        saveOtherFees(feePreferences, result)
-                        done += 1
-                    }
+//                    override fun onSuccess2(result: LoanFormulaConfig) {
+//                        val loanPreferences = getSharedPreferences("loan_config", Context.MODE_PRIVATE)
+//                        saveLoanFormula(loanPreferences, result)
+//                        done += 1
+//                    }
+//
+//                    override fun onSuccess3(result: List<OtherFees>) {
+//                        val feePreferences = getSharedPreferences("fee_config", Context.MODE_PRIVATE)
+//                        saveOtherFees(feePreferences, result)
+//                        done += 1
+//                    }
                 })
 
-            authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
-                this, ApiConnections.REQUEST_TYPE_GET_LOAN, object :
-                    LoanDisbursement {
-                    override fun onSuccess(result: List<Loan>) {
-                        val loanPreferences = getSharedPreferences("loans", Context.MODE_PRIVATE)
-                        saveLoans(loanPreferences, result, "loan_disburse")
+            authenticate(preferences, this, ApiConnections.REQUEST_TYPE_GET_PARAMETER_KOPERASI,
+                object : ParameterCallback {
+                    override fun onSuccess(result: ParameterKoperasi) {
+                        paramPreferences.edit()
+                            .putInt("hari_per_bulan", result.hariPerBulan)
+                            .putInt("id_angsuran_sebagian", result.idAngsuranSebagian)
+                            .putInt("masa_tenggang", result.masaTenggang)
+                            .putString("type_denda_keterlambatan", result.typeDendaKeterlambatan)
+                            .putInt("id_dasar_denda", result.idDasarDenda)
+                            .putString("type_pelunasan_dipercepat", result.typePelunasanDipercepat)
+                            .putInt("id_dasar_pelunasan", result.idDasarPelunasan)
+                            .putString("id_urutan_simpanan", result.idUrutanSimpanan)
+                            .apply()
                         done += 1
                     }
-                }
-                , listType = 3)
 
-            authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
-                this, ApiConnections.REQUEST_TYPE_GET_LOAN, object :
-                    LoanDisbursement {
-                    override fun onSuccess(result: List<Loan>) {
-                        val loanPreferences = getSharedPreferences("loans", Context.MODE_PRIVATE)
-                        saveLoans(loanPreferences, result, "repayment_collection")
-                        done += 1
-                    }
-                }
-                , listType = 1)
+                })
+
+//            authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
+//                this, ApiConnections.REQUEST_TYPE_GET_LOAN, object :
+//                    LoanDisbursement {
+//                    override fun onSuccess(result: List<Loan>) {
+//                        val loanPreferences = getSharedPreferences("loans", Context.MODE_PRIVATE)
+//                        saveLoans(loanPreferences, result, "loan_disburse")
+//                        done += 1
+//                    }
+//                }
+//                , listType = 3)
+//
+//            authenticate(getSharedPreferences("login_data", Context.MODE_PRIVATE),
+//                this, ApiConnections.REQUEST_TYPE_GET_LOAN, object :
+//                    LoanDisbursement {
+//                    override fun onSuccess(result: List<Loan>) {
+//                        val loanPreferences = getSharedPreferences("loans", Context.MODE_PRIVATE)
+//                        saveLoans(loanPreferences, result, "repayment_collection")
+//                        done += 1
+//                    }
+//                }
+//                , listType = 1)
 
             val regionPreferences = getSharedPreferences("regions", Context.MODE_PRIVATE)
 //                Log.d("SplashScreen", "Is filled: ${regionPreferences.getBoolean("is_filled", false)}")
@@ -178,7 +194,7 @@ class SplashScreenActivity : AppCompatActivity(), CoroutineScope {
 //                    ApiConnections.getWilayah(activity, activity, wCallback)
 //                    done +=1
 //                }
-                coroutineScope.launch {
+                coroutineScope.async {
                     ApiConnections.getWilayah(activity, activity, wCallback)
                     done +=1
                 }

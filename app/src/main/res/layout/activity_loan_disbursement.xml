@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".loans.LoanDisbursementActivity">
+    tools:context=".loans_unused.LoanDisbursementActivity">
 
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmer_view_container"
@@ -71,7 +71,7 @@
     </com.facebook.shimmer.ShimmerFrameLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/loan_disbursement"
+        android:id="@+id/pembayaran_cicilan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

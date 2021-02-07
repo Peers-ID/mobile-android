@@ -8,6 +8,11 @@
     android:layout_height="match_parent"
     tools:context=".SplashScreenActivity">
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/bg_splash_screen"
+        android:scaleType="centerCrop"/>
 
     <ImageView
         android:id="@+id/peers_logo"
@@ -19,7 +24,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/peers_logo_light" />
+        app:srcCompat="@drawable/logo_splash_screen" />
 
     <com.android.id.peers.util.DotProgressBar
         android:id="@+id/dot_progress_bar"

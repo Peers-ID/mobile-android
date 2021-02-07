@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#f1f2f2"
+    tools:context=".pinjaman.data.DataAnggotaActivity">
+
+
+    <HorizontalScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <com.shuhart.stepview.StepView
+                android:id="@+id/step_view"
+                android:layout_width="600dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:padding="16dp"
+                app:sv_steps="@array/status"
+                app:sv_animationType="None"
+                app:sv_doneCircleColor="@color/colorSelectedStep"
+                app:sv_doneCircleRadius="14dp"
+                app:sv_doneStepLineColor="@color/colorSelectedStep"
+                app:sv_doneStepMarkColor="@color/colorWhite"
+                app:sv_nextStepLineColor="@color/colorNextText"
+                app:sv_nextTextColor="@color/colorNextText"
+                app:sv_selectedCircleColor="@color/colorSelectedStep"
+                app:sv_selectedCircleRadius="14dp"
+                app:sv_selectedStepNumberColor="@color/colorWhite"
+                app:sv_selectedTextColor="@color/colorSelectedText"
+                app:sv_nextStepCircleEnabled="true"
+                app:sv_nextStepCircleColor="@color/colorNextStep"
+                app:sv_stepLineWidth="1dp"
+                app:sv_stepNumberTextSize="12sp"
+                app:sv_stepPadding="4dp"
+                app:sv_stepViewStyle="@style/StepView" />
+        </FrameLayout>
+    </HorizontalScrollView>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/member_acquisition_fragment_container"
+        android:name="com.android.id.peers.pinjaman.data.PersonalInformationFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

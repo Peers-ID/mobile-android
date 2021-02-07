@@ -5,7 +5,7 @@
     <color name="colorDarkButton">#00574B</color>
     <color name="colorPrimary">#7F4DBC</color>
     <color name="colorPrimaryDark">#6F40A8</color>
-    <color name="colorAccent">#D81B60</color>
+<!--    <color name="colorAccent">#D81B60</color>-->
     <color name="colorPeers">#C219D1</color>
 <!--    <color name="colorPeers">#EB48FA</color>-->
     <color name="colorCircle">#3AC425</color>
@@ -16,6 +16,15 @@
     <color name="colorGreyText">#FF666666</color>
     <color name="colorEnabled">#609B07A8</color>
     <color name="colorDisabled">#909B07A8</color>
+    <color name="colorMenuBar">#124691</color>
+    <color name="colorAccent">#f1f2f2</color>
+    <color name="colorDoneStep">#153084</color>
+    <color name="colorSelectedStep">#153084</color>
+    <color name="colorSelectedText">#114a94</color>
+    <color name="colorNextStep">#e0f0ff</color>
+    <color name="colorNextText">#64acd8</color>
+    <color name="colorNoActionBarMenu">#1275c1</color>
+    <color name="colorText">#3a89c5</color>
 
     <color name="background">#dddddd</color>
 </resources>

@@ -20,4 +20,7 @@ interface ProvinceDao {
 
     @Delete
     suspend fun delete(province: Province)
+
+    @Query("SELECT * FROM provinces WHERE name = :name")
+    fun getProvinceByName(name: String): Province
 }

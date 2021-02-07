@@ -15,6 +15,9 @@ interface KabupatenDao {
     @Query("SELECT * FROM kabupaten WHERE province_id = :provinceId ORDER BY name ASC")
     fun getByProvinceId(provinceId: String): List<Kabupaten>
 
+    @Query("SELECT * FROM kabupaten WHERE name = :name AND province_id = :provinceId")
+    fun getKabupatenByNameAndProvinceId(name: String, provinceId: String): Kabupaten
+
     @Query("DELETE FROM kabupaten")
     suspend fun deleteAll()
 

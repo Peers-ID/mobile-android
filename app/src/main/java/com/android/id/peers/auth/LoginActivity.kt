@@ -17,6 +17,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import kotlinx.android.synthetic.main.activity_login.*
 import org.json.JSONObject
+//const val API_HOSTNAME = "http://api.peers.id/api/v1/"
 
 class LoginActivity : AppCompatActivity() {
 
@@ -33,11 +34,11 @@ class LoginActivity : AppCompatActivity() {
     private fun login(view: View) {
         var allTrue = true
         if(username.text.toString().isEmpty()) {
-            username_container.error = "Username cannot be empty"
+            username.error = "Alamat Email tidak boleh kosong"
             allTrue = false
         }
         if(password.text.toString().isEmpty()) {
-            password_container.error = "Password cannot be empty"
+            password.error = "Kata Sandi tidak boleh kosong"
             allTrue = false
         }
         if(allTrue){
@@ -51,7 +52,7 @@ class LoginActivity : AppCompatActivity() {
         finish()
     }
 
-    val API_HOSTNAME = "http://api.peers.id/api/v1/"
+
 
     private fun authenticate(view: View, username: String, password: String) {
         val url = "${API_HOSTNAME}login"
@@ -85,7 +86,7 @@ class LoginActivity : AppCompatActivity() {
                     val akId = userJsonObj.getString("ak_id")
                     val status = userJsonObj.getString("status")
 
-                    if (role != "Admin AO") {
+                    if (role != "AO/CMO/Sales") {
                         PeersSnackbar.popUpSnack(mainView, "Only AO can access!!")
                     } else {
                         val preferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)

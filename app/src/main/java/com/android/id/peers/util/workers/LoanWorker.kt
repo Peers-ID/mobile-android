@@ -1,10 +1,9 @@
 package com.android.id.peers.util.workers
 
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.android.id.peers.loans.models.Loan
+import com.android.id.peers.loans_unused.models.Loan
 import com.android.id.peers.util.callback.LoanApplicationCallback
 import com.android.id.peers.util.connection.ApiConnections
 

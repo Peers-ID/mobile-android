@@ -1,10 +1,9 @@
 package com.android.id.peers.util.database
 
-import android.util.Log
 import androidx.lifecycle.LiveData
-import com.android.id.peers.loans.models.Loan
-import com.android.id.peers.loans.models.LoanPicture
-import com.android.id.peers.loans.models.Collection
+import com.android.id.peers.loans_unused.models.Loan
+import com.android.id.peers.loans_unused.models.LoanPicture
+import com.android.id.peers.loans_unused.models.Collection
 import com.android.id.peers.members.models.*
 
 class OfflineRepository(private val offlineDatabase: OfflineDatabase) {
@@ -39,6 +38,14 @@ class OfflineRepository(private val offlineDatabase: OfflineDatabase) {
         offlineDatabase.provinceDao().insertAll(*provinces.toTypedArray())
     }
 
+    fun getProvinceByName(name: String): Province {
+        return offlineDatabase.provinceDao().getProvinceByName(name)
+    }
+
+    fun getKabupatenByNameAndProvinceId(name: String, provinceId: String): Kabupaten {
+        return offlineDatabase.kabupatenDao().getKabupatenByNameAndProvinceId(name, provinceId)
+    }
+
     val allKabupaten: LiveData<List<Kabupaten>> = offlineDatabase.kabupatenDao().getAll()
 
     fun getKabupatenByProvinceId(idProvince: String): List<Kabupaten> {
@@ -59,6 +66,10 @@ class OfflineRepository(private val offlineDatabase: OfflineDatabase) {
         offlineDatabase.kecamatanDao().insertAll(*kecamatans.toTypedArray())
     }
 
+    fun getKecamatanByNameAndKabupatenId(name: String, kabupatenId: String): Kecamatan {
+        return offlineDatabase.kecamatanDao().getKecamatanByNameAndKabupatenId(name, kabupatenId)
+    }
+
     val allDesa: LiveData<List<Desa>> = offlineDatabase.desaDao().getAll()
 
     fun getDesaByKecamatanId(idKecamatan: String): List<Desa> {
@@ -67,5 +78,9 @@ class OfflineRepository(private val offlineDatabase: OfflineDatabase) {
 
     suspend fun insertDesa(desas: List<Desa>) {
         offlineDatabase.desaDao().insertAll(*desas.toTypedArray())
+    }
+
+    fun getDesaByNameAndKecamatanId(name: String, kecamatanId: String): Desa {
+        return offlineDatabase.desaDao().getDesaByNameAndKecamatanId(name, kecamatanId)
     }
 }

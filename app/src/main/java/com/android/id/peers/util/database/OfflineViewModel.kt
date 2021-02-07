@@ -4,9 +4,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
-import com.android.id.peers.loans.models.Collection
-import com.android.id.peers.loans.models.Loan
-import com.android.id.peers.loans.models.LoanPicture
+import com.android.id.peers.loans_unused.models.Collection
+import com.android.id.peers.loans_unused.models.Loan
+import com.android.id.peers.loans_unused.models.LoanPicture
 import com.android.id.peers.members.models.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -56,6 +56,18 @@ class OfflineViewModel(application: Application) : AndroidViewModel(application)
             repository.insertProvince(provinces)
         }
 
+    suspend fun getProvinceByName(name: String): Province {
+        return withContext(viewModelScope.coroutineContext + Dispatchers.IO) {
+            repository.getProvinceByName(name)
+        }
+    }
+
+    suspend fun getKabupatenByNameAndProvinceId(name: String, provinceId: String): Kabupaten {
+        return withContext(viewModelScope.coroutineContext + Dispatchers.IO) {
+            repository.getKabupatenByNameAndProvinceId(name, provinceId)
+        }
+    }
+
     suspend fun getKabupatenByProvinceId(idProvince: String): List<Kabupaten> {
         return viewModelScope.async(Dispatchers.IO) {
             repository.getKabupatenByProvinceId(idProvince)
@@ -67,6 +79,12 @@ class OfflineViewModel(application: Application) : AndroidViewModel(application)
             repository.insertKabupaten(kabupatens)
         }
 
+    suspend fun getKecamatanByNameAndKabupatenId(name: String, kabupatenId: String): Kecamatan {
+        return withContext(viewModelScope.coroutineContext + Dispatchers.IO) {
+            repository.getKecamatanByNameAndKabupatenId(name, kabupatenId)
+        }
+    }
+
     suspend fun getKecamatanByKabupatenId(idKabupaten: String): List<Kecamatan> {
         return viewModelScope.async(Dispatchers.IO) {
             repository.getKecamatanByKabupatenId(idKabupaten)
@@ -75,6 +93,12 @@ class OfflineViewModel(application: Application) : AndroidViewModel(application)
 
     fun insertKecamatan(kecamatans: List<Kecamatan>) = viewModelScope.launch(Dispatchers.IO) {
         repository.insertKecamatan(kecamatans)
+    }
+
+    suspend fun getDesaByNameAndKecamatanId(name: String, kabupatenId: String): Desa {
+        return withContext(viewModelScope.coroutineContext + Dispatchers.IO) {
+            repository.getDesaByNameAndKecamatanId(name, kabupatenId)
+        }
     }
 
     suspend fun getDesaByKecamatanId(idKecamatan: String): List<Desa> {

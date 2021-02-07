@@ -4,16 +4,17 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/colorMenuBar</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="logo">@drawable/peers_logo_dark</item>
+<!--        <item name="logo">@drawable/peers_logo_dark</item>-->
+        <item name="actionBarStyle">@style/PeersActionBar</item>
     </style>
 
     <style name="NoActionBarTheme" parent="Theme.AppCompat.Light.NoActionBar">
 <!--        <item name="colorControlNormal">#c5c5c5</item>-->
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorWhite</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimaryDark">@color/colorNoActionBarMenu</item>
+        <item name="colorAccent">@color/colorWhite</item>
     </style>
 
     <style name="Peers" parent="android:Theme">
@@ -31,5 +32,43 @@
 <!--        <item name="android:background">@drawable/front_button</item>-->
         <item name="android:background">@color/colorPeers</item>
     </style>
+
+    <style name="PeersActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@drawable/bg_action_bar</item>
+        <!-- Support library compatibility -->
+        <item name="background">@drawable/bg_action_bar</item>
+    </style>
+
+    <style name="PengajuanPinjamanStyle" parent="AppTheme">
+        <item name="android:textViewStyle">@style/PinjamanTextViewStyle</item>
+        <item name="android:spinnerStyle">@style/PinjamanSpinnerStyle</item>
+        <item name="textInputStyle">@style/PinjamanTextInputLayout</item>
+        <item name="colorAccent">@color/colorText</item>
+    </style>
+
+    <style name="PinjamanTextViewStyle" parent="Widget.AppCompat.TextView">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="PinjamanSpinnerStyle" parent="Widget.AppCompat.Spinner">
+        <item name="android:textColorHint">@color/colorText</item>
+    </style>
+
+    <style name="PinjamanTextInputLayout" parent="Widget.Design.TextInputLayout">
+        <item name="android:textColorHint">@color/colorText</item>
+    </style>
+
+    <style name="PinjamanStyle" parent="Widget.AppCompat.Button">
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+<!--        <item name="android:windowBackground">@drawable/ic_button_bawah</item>-->
+        <item name="android:paddingStart">32dp</item>
+        <item name="android:paddingEnd">32dp</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+    </style>
+
 
 </resources>

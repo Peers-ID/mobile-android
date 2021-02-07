@@ -5,46 +5,50 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
-import com.android.id.peers.loans.models.Loan
-import com.android.id.peers.loans.models.Loan.Companion.getCanApprove
-import com.android.id.peers.loans.models.Loan.Companion.getLoan
-import com.android.id.peers.loans.models.Loan.Companion.getLoanApproval
-import com.android.id.peers.loans.models.Loan.Companion.postCollection
-import com.android.id.peers.loans.models.Loan.Companion.postLoan
-import com.android.id.peers.loans.models.LoanFormulaConfig.Companion.getLoanFormula
-import com.android.id.peers.loans.models.Collection
+import com.android.id.peers.loans_unused.models.Loan
+import com.android.id.peers.loans_unused.models.Loan.Companion.getLoan
+import com.android.id.peers.loans_unused.models.Loan.Companion.postCollection
+import com.android.id.peers.loans_unused.models.Loan.Companion.postLoan
+import com.android.id.peers.loans_unused.models.LoanFormulaConfig.Companion.getLoanFormula
+import com.android.id.peers.loans_unused.models.Collection
 import com.android.id.peers.members.models.*
 import com.android.id.peers.members.models.Member.Companion.getConfig
 import com.android.id.peers.members.models.Member.Companion.getMember
-import com.android.id.peers.members.models.Member.Companion.getMemberByPhone
+import com.android.id.peers.members.models.Member.Companion.getMemberByNik
 import com.android.id.peers.members.models.Member.Companion.postMember
+import com.android.id.peers.members.models.Member.Companion.postMemberPicture
 import com.android.id.peers.members.models.Member.Companion.postPicture
+import com.android.id.peers.members.models.Member.Companion.putMember
+import com.android.id.peers.pembayaran.Cicilan
+import com.android.id.peers.pembayaran.Cicilan.Companion.getDetailCicilan
+import com.android.id.peers.pembayaran.Cicilan.Companion.postPembayaranCicilan
+import com.android.id.peers.pinjaman.pengajuan.ParameterKoperasi.Companion.getParameterKoperasi
+import com.android.id.peers.pinjaman.pengajuan.Pinjaman
+import com.android.id.peers.pinjaman.pengajuan.Pinjaman.Companion.getDetailPencairan
+import com.android.id.peers.pinjaman.pengajuan.Pinjaman.Companion.getPembayaranCicilan
+import com.android.id.peers.pinjaman.pengajuan.Pinjaman.Companion.getPencairanPinjaman
+import com.android.id.peers.pinjaman.pengajuan.Pinjaman.Companion.getPinjamanMemberStatus
+import com.android.id.peers.pinjaman.pengajuan.Pinjaman.Companion.putStatusPencairan
+import com.android.id.peers.pinjaman.pengajuan.Product.Companion.getActiveProducts
 import com.android.id.peers.util.callback.*
 import com.android.id.peers.util.database.OfflineViewModel
-import com.android.volley.AuthFailureError
 import com.android.volley.Request.Method
 import com.android.volley.Response
-import com.android.volley.ServerError
-import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.JsonObjectRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import org.json.JSONArray
-import org.json.JSONException
 import org.json.JSONObject
-import java.io.UnsupportedEncodingException
 import java.net.URL
-import java.nio.charset.Charset
-import com.android.id.peers.util.callback.RepaymentCollection as RepaymentCollection1
+import com.android.id.peers.util.callback.MemberCallback
 
 
 class ApiConnections {
     companion object {
         const val REQUEST_TYPE_PLAIN = 0
         const val REQUEST_TYPE_GET_CONFIG = 1
-        const val REQUEST_TYPE_GET_MEMBER = 2
+        private const val REQUEST_TYPE_GET_MEMBER = 2
         const val REQUEST_TYPE_POST_MEMBER = 3
         const val REQUEST_TYPE_CHECK_PHONE_NUMBER = 4
         const val REQUEST_TYPE_GET_LOAN_FORMULA = 5
@@ -55,11 +59,25 @@ class ApiConnections {
         const val REQUEST_TYPE_POST_PICTURE = 10
         const val REQUEST_TYPE_POST_COLLECTION = 11
         const val REQUEST_TYPE_POST_CITCALL = 12
-
+        const val REQUEST_TYPE_GET_CHECK_MEMBER_BY_NIK = 13
+        const val REQUEST_TYPE_GET_ACTIVE_PRODUCTS = 14
+        const val REQUEST_TYPE_GET_PARAMETER_KOPERASI = 15
+        const val REQUEST_TYPE_GET_PINJAMAN_MEMBER_STATUS = 16
+        const val REQUEST_TYPE_POST_MEMBER_PICTURE = 17
+        const val REQUEST_TYPE_POST_MEMBER_AND_LOAN = 18
+        const val REQUEST_TYPE_PUT_MEMBER_AND_LOAN = 19
+        const val REQUEST_TYPE_GET_PENCAIRAN_PINJAMAN = 20
+        const val REQUEST_TYPE_GET_DETAIL_PENCAIRAN = 21
+        const val REQUEST_TYPE_PUT_STATUS_PENCAIRAN = 22
+        const val REQUEST_TYPE_GET_PEMBAYARAN_CICILAN = 23
+        const val REQUEST_TYPE_GET_DETAIL_CICILAN = 24
+        const val REQUEST_TYPE_POST_PEMBAYARAN_CICILAN = 25
+        const val REQUEST_TYPE_GET_SIMPANAN = 26
         const val API_HOSTNAME = "http://api.peers.id/api/v1/"
 
         fun authenticate(preferences: SharedPreferences, context: Context, requestType: Int, mParam: Any? = null,
-                                memberId: Int = 0, loanId: Int = 0, memberPhone: String = "", listType: Int = 0, fileName: String = "", loan: Loan? = null) {
+                                memberId: Int = 0, loanId: Int = 0, memberPhone: String = "", listType: Int = 0, fileName: String = "", loan: Loan? = null,
+                                nik: String = "", pinjaman: Pinjaman? = null, member: Member? = null, imageData: ByteArray? = null, angsuran: Int = 0, cicilan: Cicilan? = null) {
             val url = "${API_HOSTNAME}login"
 
             if (NetworkConnectivity.isConnectedOverWifi(context)) {
@@ -89,25 +107,42 @@ class ApiConnections {
                             {
                                 val param = mParam as SplashScreen
                                 getConfig(preferences, context, param)
-                                getCanApprove(preferences, context)
-                                getLoanFormula(preferences, context, param)
+//                                getCanApprove(preferences, context)
+//                                getLoanFormula(preferences, context, param)
                             }
                             REQUEST_TYPE_GET_LOAN_FORMULA ->
                             {
                                 val param = mParam as LoanFormulaCallback
                                 getLoanFormula(preferences, context, param)
                             }
-                            REQUEST_TYPE_GET_MEMBER -> getMember(preferences, context, mParam as RepaymentCollection1, memberId)
-                            REQUEST_TYPE_GET_MEMBER_BY_PHONE -> getMemberByPhone(preferences, context, mParam as RepaymentCollection1, memberPhone)
-                            REQUEST_TYPE_POST_MEMBER -> postMember(mParam as Member, preferences, context, loan)
+                            REQUEST_TYPE_GET_MEMBER -> getMember(preferences, context, false, mParam as MembersCallback)
+//                            REQUEST_TYPE_GET_MEMBER_BY_PHONE -> getMemberByPhone(preferences, context, mParam as RepaymentCollection1, memberPhone)
+                            REQUEST_TYPE_POST_MEMBER -> postMember(member!!, preferences, context, mParam as PinjamanResponseCallback, pinjaman!!)
+//                            REQUEST_TYPE_PUT_MEMBER -> putMember(member!!, preferences, context, mParam as PinjamanResponseCallback, pinjaman!!)
                             REQUEST_TYPE_GET_LOAN -> getLoan(preferences, context, mParam as LoanDisbursement, listType)
                             REQUEST_TYPE_POST_LOAN -> postLoan(loan!!, preferences, context, mParam as LoanApplicationCallback)
                             REQUEST_TYPE_POST_PICTURE -> {
-                                getLoanApproval(preferences, context, loanId, 1)
-                                postPicture(mParam as ByteArray, preferences, context, memberId, fileName)
+//                                getLoanApproval(preferences, context, loanId, 1)
+                                postPicture(imageData!!, preferences, context, memberId, fileName)
+                            }
+                            REQUEST_TYPE_POST_MEMBER_AND_LOAN -> postMember(member!!, preferences, context, mParam as PinjamanResponseCallback, pinjaman!!)
+                            REQUEST_TYPE_PUT_MEMBER_AND_LOAN -> putMember(member!!, preferences, context, mParam as PinjamanResponseCallback, pinjaman!!)
+                            REQUEST_TYPE_POST_MEMBER_PICTURE -> {
+                                postMemberPicture(imageData!!, preferences, context, fileName, mParam as PostPictureCallback)
                             }
                             REQUEST_TYPE_POST_COLLECTION -> postCollection(mParam as Collection, preferences, context)
                             REQUEST_TYPE_POST_CITCALL -> postCitcall(memberPhone, preferences, context, mParam as CitcallCallback)
+                            REQUEST_TYPE_GET_CHECK_MEMBER_BY_NIK -> getMemberByNik(preferences, context, mParam as MemberCallback, nik)
+                            REQUEST_TYPE_GET_ACTIVE_PRODUCTS -> getActiveProducts(preferences, context, mParam as ProductCallback)
+                            REQUEST_TYPE_GET_PARAMETER_KOPERASI -> getParameterKoperasi(preferences, context, mParam as ParameterCallback)
+                            REQUEST_TYPE_GET_PINJAMAN_MEMBER_STATUS -> getPinjamanMemberStatus(preferences, context, mParam as StatusPinjamanCallback)
+                            REQUEST_TYPE_GET_PENCAIRAN_PINJAMAN -> getPencairanPinjaman(preferences, context, mParam as StatusPinjamanCallback)
+                            REQUEST_TYPE_GET_DETAIL_PENCAIRAN -> getDetailPencairan(preferences, context, mParam as PencairanCallback, loanId)
+                            REQUEST_TYPE_PUT_STATUS_PENCAIRAN -> putStatusPencairan(preferences, context, memberId, loanId)
+                            REQUEST_TYPE_GET_PEMBAYARAN_CICILAN -> getPembayaranCicilan(preferences, context, mParam as StatusPinjamanCallback)
+                            REQUEST_TYPE_GET_DETAIL_CICILAN -> getDetailCicilan(preferences, context, mParam as CicilanCallback, memberId, angsuran)
+                            REQUEST_TYPE_POST_PEMBAYARAN_CICILAN -> postPembayaranCicilan(preferences, context, cicilan!!)
+                            REQUEST_TYPE_GET_SIMPANAN -> getMember(preferences, context, true, simpananItemCallback = mParam as SimpananItemCallback)
                         }
 
 //                    popUpSnack(view, "Login Success!")

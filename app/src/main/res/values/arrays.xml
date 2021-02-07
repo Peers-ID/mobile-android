@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="status">
-        <item>Personal Information</item>
-        <item>Address</item>
-        <item>Occupation</item>
-        <item>Emergency Contact</item>
+        <item>Data Pribadi</item>
+        <item>Alamat</item>
+        <item>Pekerjaan</item>
+        <item>Kontak Darurat</item>
+        <item>Data Pasangan</item>
+        <item>Data Penjamin</item>
+        <item>Dokumen</item>
+        <item>Survey</item>
     </string-array>
     <string-array name="identity">
         <item>KTP</item>
@@ -103,11 +107,13 @@
         <item>Pegawai Swasta</item>
         <item>Pegawai Negri</item>
         <item>Guru/Dosen</item>
-        <item>TNI/POLRI</item>
         <item>Pensiunan</item>
         <item>Wiraswasta</item>
-        <item>Profesional Lainnya</item>
+        <item>UMKM</item>
+        <item>Pekerja Lepas/Harian</item>
         <item>Ibu Rumah Tangga</item>
+        <item>Tidak Bekerja</item>
+        <item>Lainnya</item>
     </string-array>
     <string-array name="relationship">
         <item>Suami/Istri</item>
@@ -115,5 +121,77 @@
         <item>Anak</item>
         <item>Orang Tua</item>
         <item>Lainnya</item>
+    </string-array>
+    
+    <string-array name="luas_rumah">
+        <item>Besar Sekali</item>
+        <item>Sedang</item>
+        <item>Kecil</item>
+    </string-array>
+
+    <string-array name="jenis_atap">
+        <item>Genteng</item>
+        <item>Seng Karat</item>
+        <item>Rumbia</item>
+    </string-array>
+    <string-array name="jenis_dinding">
+        <item>Tembok</item>
+        <item>Papan</item>
+        <item>Bambu</item>
+    </string-array>
+    <string-array name="kondisi_rumah">
+        <item>Baik Sekali</item>
+        <item>Sedang</item>
+        <item>Rusak</item>
+    </string-array>
+    <string-array name="letak_rumah">
+        <item>Jalan Aspal</item>
+        <item>Jalan Setapak</item>
+        <item>Tidak Jelas</item>
+    </string-array>
+    <string-array name="fisik_perabot_elektronik">
+        <item>Baik</item>
+        <item>Kurang Baik</item>
+        <item>Tidak Ada</item>
+    </string-array>
+    <string-array name="akses_lembaga_keuangan">
+        <item>Sering</item>
+        <item>Jarang</item>
+        <item>Tidak Ada</item>
+    </string-array>
+    <string-array name="info_ttg_usaha">
+        <item>Berjalan</item>
+        <item>Sudah berhenti</item>
+        <item>Tidak ada usaha</item>
+    </string-array>
+    <string-array name="indeks_rumah">
+        <item>&lt; 18</item>
+        <item>18 s/d 24</item>
+        <item>25 s/d 28</item>
+    </string-array>
+    <string-array name="indeks_asset">
+        <item>&lt; 15</item>
+        <item>15 s/d 18</item>
+        <item>18 s/d 20</item>
+    </string-array>
+    <string-array name="kepemilikan_asset">
+        <item>Mobil</item>
+        <item>Sepeda Motor</item>
+        <item>Perabot &amp; TV</item>
+    </string-array>
+    <string-array name="pendapatan_luar_usaha">
+        <item>Meningkat</item>
+        <item>Menurun</item>
+        <item>Tetap</item>
+    </string-array>
+    <string-array name="perkembangan_asset">
+        <item>Meningkat</item>
+        <item>Menurun</item>
+        <item>Tetap</item>
+    </string-array>
+    <string-array name="perkembangan_usaha">
+        <item>Meningkat</item>
+        <item>Menurun</item>
+        <item>Tetap</item>
     </string-array>
 </resources>

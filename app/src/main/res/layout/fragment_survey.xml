@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".pinjaman.data.SurveyFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:padding="@dimen/activity_vertical_margin"
+        android:background="@drawable/bg_body_peers"
+        android:orientation="vertical">
+
+        <com.tiper.MaterialSpinner
+            android:id="@+id/luas_rumah"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/luas_rumah"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:hint="@string/luas_rumah"
+            android:prompt="@string/luas_rumah"
+            android:focusable="false" android:focusableInTouchMode="false"
+            app:errorEnabled="true" />
+
+        <com.tiper.MaterialSpinner
+            android:id="@+id/jenis_atap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/jenis_atap"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:hint="@string/jenis_atap"
+            android:prompt="@string/jenis_atap"
+            android:focusable="false" android:focusableInTouchMode="false"
+            app:errorEnabled="true" />
+
+        <com.tiper.MaterialSpinner
+            android:id="@+id/jenis_dinding"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/jenis_dinding"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:hint="@string/jenis_dinding"
+            android:prompt="@string/jenis_dinding"
+            android:focusable="false" android:focusableInTouchMode="false"
+            app:errorEnabled="true" />
+
+        <com.tiper.MaterialSpinner
+            android:id="@+id/kondisi_rumah"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/kondisi_rumah"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:hint="@string/kondisi_rumah"
+            android:prompt="@string/kondisi_rumah"
+            android:focusable="false" android:focusableInTouchMode="false"
+            app:errorEnabled="true" />
+
+        <com.tiper.MaterialSpinner
+            android:id="@+id/letak_rumah"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/letak_rumah"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:hint="@string/letak_rumah"
+            android:prompt="@string/letak_rumah"
+            android:focusable="false" android:focusableInTouchMode="false"
+            app:errorEnabled="true" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tanggungan_keluarga_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_between"
+            app:errorEnabled="true" >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tanggungan_keluarga"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/tanggungan_keluarga"
+                android:inputType="number"
+                android:selectAllOnFocus="true" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.tiper.MaterialSpinner
+            android:id="@+id/data_fisik_perabot"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/fisik_perabot_elektronik"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:hint="@string/data_fisik_perabot"
+            android:prompt="@string/data_fisik_perabot"
+            android:focusable="false" android:focusableInTouchMode="false"
+            app:errorEnabled="true" />
+
+        <com.tiper.MaterialSpinner
+            android:id="@+id/akses_lembaga_keuangan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/akses_lembaga_keuangan"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:hint="@string/akses_lembaga_keuangan"
+            android:prompt="@string/akses_lembaga_keuangan"
+            android:focusable="false" android:focusableInTouchMode="false"
+            app:errorEnabled="true" />
+
+        <com.tiper.MaterialSpinner
+            android:id="@+id/info_ttg_usaha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/info_ttg_usaha"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:hint="@string/info_ttg_usaha"
+            android:prompt="@string/info_ttg_usaha"
+            android:focusable="false" android:focusableInTouchMode="false"
+            app:errorEnabled="true" />
+
+        <com.tiper.MaterialSpinner
+            android:id="@+id/indeks_rumah"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/indeks_rumah"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:hint="@string/indeks_rumah"
+            android:prompt="@string/indeks_rumah"
+            android:focusable="false" android:focusableInTouchMode="false"
+            app:errorEnabled="true" />
+
+        <com.tiper.MaterialSpinner
+            android:id="@+id/indeks_asset"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/indeks_asset"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:hint="@string/indeks_asset"
+            android:prompt="@string/indeks_asset"
+            android:focusable="false" android:focusableInTouchMode="false"
+            app:errorEnabled="true" />
+
+        <com.tiper.MaterialSpinner
+            android:id="@+id/kepemilikan_asset"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/kepemilikan_asset"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:hint="@string/kepemilikan_asset"
+            android:prompt="@string/kepemilikan_asset"
+            android:focusable="false" android:focusableInTouchMode="false"
+            app:errorEnabled="true" />
+
+        <com.tiper.MaterialSpinner
+            android:id="@+id/pendapatan_luar_usaha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/pendapatan_luar_usaha"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:hint="@string/pendapatan_luar_usaha"
+            android:prompt="@string/pendapatan_luar_usaha"
+            android:focusable="false" android:focusableInTouchMode="false"
+            app:errorEnabled="true" />
+
+        <com.tiper.MaterialSpinner
+            android:id="@+id/perkembangan_asset"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/perkembangan_asset"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:hint="@string/perkembangan_asset"
+            android:prompt="@string/perkembangan_asset"
+            android:focusable="false" android:focusableInTouchMode="false"
+            app:errorEnabled="true" />
+
+        <com.tiper.MaterialSpinner
+            android:id="@+id/perkembangan_usaha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/perkembangan_usaha"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:hint="@string/perkembangan_usaha"
+            android:prompt="@string/perkembangan_usaha"
+            android:focusable="false" android:focusableInTouchMode="false"
+            app:errorEnabled="true" />
+
+        <include layout="@layout/button_bottom" />
+
+    </LinearLayout>
+
+</ScrollView>

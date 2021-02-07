@@ -13,18 +13,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.android.id.peers.anggota.StatusPinjamanAnggotaActivity
 import com.android.id.peers.auth.ChangePasswordActivity
 import com.android.id.peers.auth.LoginActivity
-import com.android.id.peers.loans.LoanApplicationActivity
-import com.android.id.peers.loans.LoanDisbursementActivity
-import com.android.id.peers.loans.RepaymentCollectionActivity
-import com.android.id.peers.loans.models.Loan
-import com.android.id.peers.members.MemberAcquisitionActivity
+import com.android.id.peers.loans_unused.models.Loan
+import com.android.id.peers.pembayaran.PembayaranActivity
+import com.android.id.peers.pinjaman.MenuPinjamanActivity
+import com.android.id.peers.simpanan.SimpananActivity
 import com.android.id.peers.util.PeersSnackbar
 import com.android.id.peers.util.connection.ConnectionStateMonitor
-import com.android.id.peers.util.connection.NetworkConnectivity
 import com.android.id.peers.util.database.OfflineViewModel
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -39,6 +39,12 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        supportActionBar!!.elevation = 0F
+
+        val preferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)
+        val greet = "Hi, Akun Officer ${preferences.getString("full_name", "")}"
+        greeting.text = greet
 
         val connectionStateMonitor = ConnectionStateMonitor(application)
         connectionStateMonitor.observe(this, Observer { isConnected ->
@@ -86,33 +92,33 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
 
 
         val memberAcquisition = findViewById<CardView>(R.id.member_acquisition)
-        val loanApplication = findViewById<CardView>(R.id.loan_application)
-        val loanDisbursement = findViewById<CardView>(R.id.loan_disbursement)
-        val repaymentCollection = findViewById<CardView>(R.id.repayment_collection)
-        memberAcquisition.setOnClickListener { memberAcquisition(it) }
-        loanApplication.setOnClickListener { loanApplication() }
-        loanDisbursement.setOnClickListener { loanDisbursement() }
-        repaymentCollection.setOnClickListener { repaymentCollection() }
+        val loanApplication = findViewById<CardView>(R.id.anggota)
+        val loanDisbursement = findViewById<CardView>(R.id.pembayaran_cicilan)
+        val repaymentCollection = findViewById<CardView>(R.id.simpanan_anggota)
+        memberAcquisition.setOnClickListener { memberAcquisition() }
+        loanApplication.setOnClickListener { statusPinjamanAnggota() }
+        loanDisbursement.setOnClickListener { pembayaranCicilan() }
+        repaymentCollection.setOnClickListener { simpanan() }
     }
 
-    private fun memberAcquisition(view: View) {
+    private fun memberAcquisition() {
 //        val intent = Intent(this, TermsActivity::class.java)
-        val intent = Intent(this, MemberAcquisitionActivity::class.java)
+        val intent = Intent(this, MenuPinjamanActivity::class.java)
         startActivity(intent)
     }
 
-    private fun loanApplication() {
-        val intent = Intent(this, LoanApplicationActivity::class.java)
+    private fun statusPinjamanAnggota() {
+        val intent = Intent(this, StatusPinjamanAnggotaActivity::class.java)
         startActivity(intent)
     }
 
-    private fun loanDisbursement() {
-        val intent = Intent(this, LoanDisbursementActivity::class.java)
+    private fun pembayaranCicilan() {
+        val intent = Intent(this, PembayaranActivity::class.java)
         startActivity(intent)
     }
 
-    private fun repaymentCollection() {
-        val intent = Intent(this, RepaymentCollectionActivity::class.java)
+    private fun simpanan() {
+        val intent = Intent(this, SimpananActivity::class.java)
 //        val intent = Intent(this, TestActivity::class.java)
         startActivity(intent)
     }
@@ -137,9 +143,9 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
                 finish()
 //                Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show()
             }
-            R.id.submit_data -> {
-
-            }
+//            R.id.submit_data -> {
+//
+//            }
             else -> {
 //                Toast.makeText(this, item.itemId, Toast.LENGTH_SHORT).show()
             }

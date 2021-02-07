@@ -16,6 +16,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.work.*
 import com.android.id.peers.members.models.Member
+import com.android.id.peers.pinjaman.pengajuan.Pinjaman
 import com.android.id.peers.util.PeersSnackbar
 import com.android.id.peers.util.connection.ConnectionStateMonitor
 import com.android.id.peers.util.connection.NetworkConnectivity
@@ -32,6 +33,7 @@ class TermsActivity : AppCompatActivity() {
 
     private var noHP = ""
     var member: Member? = null
+    var pinjaman: Pinjaman? = null
     val context = this
 
     var connected: Boolean = true
@@ -46,14 +48,19 @@ class TermsActivity : AppCompatActivity() {
             connected = isConnected
         })
 
-        if (intent.extras != null) {
-            if (intent.getParcelableExtra<Member>("member") != null) {
-                member = (intent.getParcelableExtra("member"))!!
-            }
-            if (intent.getStringExtra("member_handphone") != null) {
-                noHP = (intent.getStringExtra("member_handphone"))!!
-            }
+//        if (intent.extras != null) {
+        if (intent.getParcelableExtra<Member>("member") != null) {
+            member = intent.getParcelableExtra("member")
         }
+        if (intent.getParcelableExtra<Pinjaman>("pinjaman") != null) {
+            pinjaman = intent.getParcelableExtra("pinjaman")
+        }
+//            if (intent.getStringExtra("member_handphone") != null) {
+//                noHP = (intent.getStringExtra("member_handphone"))!!
+//            }
+//        }
+
+        Log.d("TermsActivity", "NO HP : ${member!!.noHp}")
 
         var parsedText = ""
 
@@ -102,30 +109,31 @@ class TermsActivity : AppCompatActivity() {
 
                 if (connected) {
                     val intent = Intent(this, VerificationActivity::class.java)
-                    if (member != null) {
-                        intent.putExtra("member", member)
-                    }
-                    intent.putExtra("hand_phone", noHP)
+//                    if (member != null) {
+                    intent.putExtra("member", member)
+                    intent.putExtra("pinjaman", pinjaman)
+//                    }
+//                    intent.putExtra("hand_phone", noHP)
                     startActivity(intent)
-                } else {
+                }/* else {*/
 //                    val offlineViewModel: OfflineViewModel = ViewModelProvider(this).get(
 //                        OfflineViewModel::class.java)
 //                    if (member != null) {
 //                        offlineViewModel.insertMember(member!!)
 //                    }
-                    val constraints = Constraints.Builder()
-                        .setRequiredNetworkType(NetworkType.CONNECTED)
-                        .build()
-                    val data = Member.putMemberOnDataBuilder(member!!)
-                    val memberWorker = OneTimeWorkRequestBuilder<MemberWorker>()
-                        .setConstraints(constraints)
-                        .setInputData(data.build())
-                        .build() // or PeriodicWorkRequest
-                    WorkManager.getInstance(context).enqueue(memberWorker)
-                    val intent = Intent(this, MainActivity::class.java)
-                    intent.putExtra("message", "There was no internet access! Data is saved locally")
-                    startActivity(intent)
-                }
+//                    val constraints = Constraints.Builder()
+//                        .setRequiredNetworkType(NetworkType.CONNECTED)
+//                        .build()
+//                    val data = Member.putMemberOnDataBuilder(member!!)
+//                    val memberWorker = OneTimeWorkRequestBuilder<MemberWorker>()
+//                        .setConstraints(constraints)
+//                        .setInputData(data.build())
+//                        .build() // or PeriodicWorkRequest
+//                    WorkManager.getInstance(context).enqueue(memberWorker)
+//                    val intent = Intent(this, MainActivity::class.java)
+//                    intent.putExtra("message", "There was no internet access! Data is saved locally")
+//                    startActivity(intent)
+//                }
             }
         }
     }
