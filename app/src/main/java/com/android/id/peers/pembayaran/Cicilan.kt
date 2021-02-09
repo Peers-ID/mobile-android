@@ -75,7 +75,7 @@ class Cicilan {
                         cicilan.bunga = cicilanJsonObject.getLong("bunga")
                         cicilan.angsuran = cicilanJsonObject.getInt("angsuran")
                         cicilan.pembayaranKe = cicilanJsonObject.getInt("pembayaran_ke")
-                        cicilan.totalPembayaran = cicilan.totalTagihan + cicilan.simpananWajib + cicilan.denda
+                        cicilan.totalPembayaran = cicilan.pokok + cicilan.bunga + cicilan.simpananWajib + cicilan.denda
 
                         callback.onSuccess(cicilan)
                     }

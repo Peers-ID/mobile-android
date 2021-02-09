@@ -62,7 +62,7 @@ data class Product(
                     if (status == 200) {
                         val products = ArrayList<Product>()
                         val data = jsonObj.getJSONArray("data")
-                        Log.d("Product", "JUMLAH PRODUK : ${data.length()}")
+                        Log.d("ActiveProduct", "JUMLAH PRODUK : ${data.length()}")
                         for (idx in 0 until data.length()) {
                             val productJson = data.getJSONObject(idx)
                             val product = Product()
@@ -105,7 +105,7 @@ data class Product(
                             )
                             // Now you can use any deserializer to make sense of data
 //                        val obj = JSONObject(res);
-                            Log.d("getMember", "RES : $res")
+                            Log.d("ActiveProduct", "RES : $res")
                         } catch (e1: UnsupportedEncodingException) {
                             // Couldn't properly decode data to string
                             e1.printStackTrace()

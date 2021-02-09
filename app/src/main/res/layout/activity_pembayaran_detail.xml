@@ -34,11 +34,11 @@
                     android:layout_height="@dimen/placeholderTextHeight"
                     android:layout_marginTop="@dimen/margin_between"
                     android:background="@color/background" />
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/placeholderTextHeight"
-                    android:layout_marginTop="@dimen/margin_between"
-                    android:background="@color/background" />
+<!--                <View-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="@dimen/placeholderTextHeight"-->
+<!--                    android:layout_marginTop="@dimen/margin_between"-->
+<!--                    android:background="@color/background" />-->
             </LinearLayout>
 
             <LinearLayout
@@ -153,24 +153,24 @@
                     android:layout_weight="1"
                     android:layout_margin="4dp"/>
             </TableRow>
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_margin="4dp"
-                    android:textColor="@color/colorText"
-                    android:textStyle="bold"
-                    android:text="@string/sisa_pinjaman"/>
-                <TextView
-                    android:id="@+id/sisa_pinjaman"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_margin="4dp"/>
-            </TableRow>
+<!--            <TableRow-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content">-->
+<!--                <TextView-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:layout_margin="4dp"-->
+<!--                    android:textColor="@color/colorText"-->
+<!--                    android:textStyle="bold"-->
+<!--                    android:text="@string/sisa_pinjaman"/>-->
+<!--                <TextView-->
+<!--                    android:id="@+id/sisa_pinjaman"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:layout_margin="4dp"/>-->
+<!--            </TableRow>-->
         </TableLayout>
 
         <TableLayout

@@ -51,7 +51,7 @@ data class Pinjaman (
 //                    memberPreferences.edit().putString("no_hp", member.noHp).apply()
                     val jsonObj = JSONObject(strResp)
                     val loginStatus = jsonObj.getInt("status")
-                    Log.d("postMember", strResp)
+                    Log.d("postPinjaman", strResp)
                     if (loginStatus == 201) {
                         val data = jsonObj.getJSONObject("data")
                         val pinjamanResponse = PinjamanResponse()
@@ -69,7 +69,7 @@ data class Pinjaman (
 
                 },
                 Response.ErrorListener { error ->
-                    Log.e("postMember", error.toString())
+                    Log.e("postPinjaman", error.toString())
                 }
             )
             {
@@ -97,7 +97,7 @@ data class Pinjaman (
 //                    memberPreferences.edit().putString("no_hp", member.noHp).apply()
                     val jsonObj = JSONObject(strResp)
                     val status = jsonObj.getInt("status")
-                    Log.d("postMember", strResp)
+                    Log.d("PinjamanStatus", strResp)
                     if (status == 200) {
                         val data = jsonObj.getJSONArray("data")
                         val statusList = ArrayList<StatusPinjaman>()
@@ -131,7 +131,7 @@ data class Pinjaman (
 
                 },
                 Response.ErrorListener { error ->
-                    Log.e("postMember", error.toString())
+                    Log.e("PinjamanStatus", error.toString())
                 }
             )
             {
@@ -157,7 +157,7 @@ data class Pinjaman (
 //                    memberPreferences.edit().putString("no_hp", member.noHp).apply()
                     val jsonObj = JSONObject(strResp)
                     val status = jsonObj.getInt("status")
-                    Log.d("postMember", strResp)
+                    Log.d("PencairanPinjaman", strResp)
                     if (status == 200) {
                         val data = jsonObj.getJSONArray("data")
                         val statusList = ArrayList<StatusPinjaman>()
@@ -191,7 +191,7 @@ data class Pinjaman (
 
                 },
                 Response.ErrorListener { error ->
-                    Log.e("postMember", error.toString())
+                    Log.e("PencairanPinjaman", error.toString())
                 }
             )
             {
@@ -217,7 +217,7 @@ data class Pinjaman (
 //                    memberPreferences.edit().putString("no_hp", member.noHp).apply()
                     val jsonObj = JSONObject(strResp)
                     val status = jsonObj.getInt("status")
-                    Log.d("postMember", strResp)
+                    Log.d("getDetailPencairan", strResp)
                     if (status == 200) {
                         val data = jsonObj.getJSONObject("data")
                         val pinjamanJsonObject = data.getJSONObject("loan")
@@ -260,7 +260,7 @@ data class Pinjaman (
 
                 },
                 Response.ErrorListener { error ->
-                    Log.e("postMember", error.toString())
+                    Log.e("getDetailPencairan", error.toString())
                 }
             )
             {
@@ -310,7 +310,7 @@ data class Pinjaman (
 
                 },
                 Response.ErrorListener { error ->
-                    Log.e("postMember", error.toString())
+                    Log.e("putStatusPencairan", error.toString())
                 }
             )
             {
@@ -374,7 +374,7 @@ data class Pinjaman (
 
                 },
                 Response.ErrorListener { error ->
-                    Log.e("postMember", error.toString())
+                    Log.e("pembayaranCicilan", error.toString())
                 }
             )
             {

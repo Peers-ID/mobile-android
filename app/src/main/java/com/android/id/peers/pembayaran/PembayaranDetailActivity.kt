@@ -135,7 +135,7 @@ class PembayaranDetailActivity : AppCompatActivity() {
                     pembayaranCicilan = result
                     nama_anggota.text = result.namaAnggota
                     nama_product.text = result.namaProduct
-                    sisa_pinjaman.text = CurrencyFormat.formatRupiah.format(result.sisaPinjaman)
+//                    sisa_pinjaman.text = CurrencyFormat.formatRupiah.format(result.sisaPinjaman)
                     tanggal.text = result.jatuhTempo
                     angsuran.text = CurrencyFormat.formatRupiah.format(result.pokok + result.bunga)
                     simpanan_wajib.text = CurrencyFormat.formatRupiah.format(result.simpananWajib)
@@ -196,7 +196,7 @@ class PembayaranDetailActivity : AppCompatActivity() {
 
     private fun calculateDetailPembayaran(cicilan: Cicilan, bayarDenganSimpanan: Int) : Cicilan {
         cicilan.jumlahSetoran = CurrencyFormat.removeCurrencyFormat(jumlah_setoran.text.toString()).toLong()
-        cicilan.totalPembayaran = cicilan.totalTagihan + cicilan.simpananWajib + cicilan.denda
+        cicilan.totalPembayaran = cicilan.pokok + cicilan.bunga + cicilan.simpananWajib + cicilan.denda
 
         val cicilanBayar = bayar(cicilan)
         cicilanBayar.idAnggota = cicilan.idAnggota

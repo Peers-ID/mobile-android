@@ -24,7 +24,16 @@ import com.android.id.peers.util.database.OfflineViewModel
 import com.shuhart.stepview.StepView
 import com.tiper.MaterialSpinner
 import kotlinx.android.synthetic.main.button_bottom.*
+import kotlinx.android.synthetic.main.fragment_address.*
 import kotlinx.android.synthetic.main.fragment_occupation.*
+import kotlinx.android.synthetic.main.fragment_occupation.address_city
+import kotlinx.android.synthetic.main.fragment_occupation.address_kecamatan
+import kotlinx.android.synthetic.main.fragment_occupation.address_kelurahan
+import kotlinx.android.synthetic.main.fragment_occupation.address_kode_pos
+import kotlinx.android.synthetic.main.fragment_occupation.address_kode_pos_container
+import kotlinx.android.synthetic.main.fragment_occupation.address_province
+import kotlinx.android.synthetic.main.fragment_occupation.address_street
+import kotlinx.android.synthetic.main.fragment_occupation.address_street_container
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
@@ -525,6 +534,9 @@ class OccupationFragment : Fragment(), CoroutineScope {
         member.kotaKantorPosisi = address_city.selection
         member.provinsiKantorPosisi = address_province.selection
         member.kodePosKantor = address_kode_pos.text.toString().toInt()
+        if(address_kelurahan.selectedItem != null) {
+            member.kelurahanKantor = (address_kelurahan.selectedItem as Desa).name
+        }
         if(address_kecamatan.selectedItem != null) {
             member.kecamatanKantor = (address_kecamatan.selectedItem as Kecamatan).name
         } else {

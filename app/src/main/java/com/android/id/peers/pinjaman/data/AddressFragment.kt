@@ -517,6 +517,9 @@ class AddressFragment : Fragment(), CoroutineScope {
 //        member.kotaSesuaiKtp = if (address_city.selectedItem != null) (address_city.selectedItem as Kabupaten).name else ""
         member.provinsiSesuaiKtpPosisi = address_province.selection
 //        member.provinsiSesuaiKtp = if (address_province.selectedItem != null) (address_province.selectedItem as Province).name else ""
+        if(address_kelurahan.selectedItem != null) {
+            member.kelurahanSesuaiKtp = (address_kelurahan.selectedItem as Desa).name
+        }
         if(address_kecamatan.selectedItem != null) {
             member.kecamatanSesuaiKtp = (address_kecamatan.selectedItem as Kecamatan).name
         } else {
@@ -549,6 +552,9 @@ class AddressFragment : Fragment(), CoroutineScope {
 //        member.kotaDomisili = if (address_city_domisili.selectedItem != null) (address_city_domisili.selectedItem as Kabupaten).name else ""
         member.provinsiDomisiliPosisi = address_province_domisili.selection
 //        member.provinsiDomisili = if (address_province_domisili.selectedItem != null) (address_province_domisili.selectedItem as Province).name else ""
+        if(address_kelurahan_domisili.selectedItem != null) {
+            member.kelurahanDomisili = (address_kelurahan_domisili.selectedItem as Desa).name
+        }
         if(address_kecamatan_domisili.selectedItem != null) {
             member.kecamatanDomisili = (address_kecamatan_domisili.selectedItem as Kecamatan).name
         } else {

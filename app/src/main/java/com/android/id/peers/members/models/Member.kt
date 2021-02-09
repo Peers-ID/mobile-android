@@ -1239,7 +1239,7 @@ data class Member constructor (
 //            params["alamat_ktp_rt"] = member.rtSesuaiKtp
 //            params["alamat_ktp_rw"] = member.rwSesuaiKtp
             params["alamat_ktp_kelurahan"] = member.kelurahanSesuaiKtp
-            params["alamat_ktp_kecamatan"] = member.kecamatanSesuaiKtp //tidak ada di API
+            params["alamat_ktp_kecamatan"] = member.kecamatanSesuaiKtp
 //        params["alamat_ktp_kota_provinsi"] = member.kotaSesuaiKtp //tidak ada di API
             params["alamat_ktp_kota"] = member.kotaSesuaiKtp
             params["alamat_ktp_provinsi"] = member.provinsiSesuaiKtp
