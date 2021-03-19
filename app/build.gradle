@@ -39,6 +39,7 @@ android {
 }
 
 dependencies {
+
     def work_version = "2.3.4"
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -68,4 +69,8 @@ dependencies {
 
     // Kotlin + coroutines
     implementation "androidx.work:work-runtime-ktx:$work_version"
+
+//    Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation "com.squareup.retrofit2:converter-gson:2.4.0"
 }

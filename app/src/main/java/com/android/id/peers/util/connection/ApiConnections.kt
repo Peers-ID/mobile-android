@@ -91,7 +91,7 @@ class ApiConnections {
             val parameters = JSONObject(params as Map<*, *>);
             val jsonObjectRequest = JsonObjectRequest(
                 Method.POST, url, parameters,
-                Response.Listener { response ->
+                { response ->
                     val strResp = response.toString()
                     val jsonObj = JSONObject(strResp)
                     val loginStatus = jsonObj.getString("status")
@@ -148,7 +148,7 @@ class ApiConnections {
 //                    popUpSnack(view, "Login Success!")
                     }
                 },
-                Response.ErrorListener { error ->
+                { error ->
                     Log.e("authenticate", error.toString())
                 }
             )

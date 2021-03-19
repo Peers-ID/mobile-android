@@ -31,7 +31,7 @@ class KalkulasiPinjamanActivity : AppCompatActivity() {
         val product = intent.getParcelableExtra<Product>("product")!!
         val jumlahPinjaman = intent.getLongExtra("jumlah_pinjaman", 0)
 
-        Log.d("KalkulasiPinjaman", "NO HP : ${member.noHp}")
+        Log.d("KalkulasiPinjamanActivity", "NO HP : ${member.noHp}")
 
         nama_product.text = product.namaProduct
         jumlah_pinjaman.text = jumlahPinjaman.toString()
@@ -55,8 +55,8 @@ class KalkulasiPinjamanActivity : AppCompatActivity() {
         }
 
         val totalBunga : Long = (product.bunga * product.tenor * pengaliBunga / pengaliTenor * jumlahPinjaman / 100).toLong()
-        Log.d("KalkulasiPinjaman", "BUNGA : ${product.bunga}, TENOR : ${product.tenor}, PENGALI BUNGA : ${pengaliBunga}, PENGALI TENOR : ${pengaliTenor}, JUMLAH PINJAMAN : $jumlahPinjaman")
-        Log.d("KalkulasiPinjaman", "TOTAL BUNGA : $totalBunga")
+        Log.d("KalkulasiPinjamanActivity", "BUNGA : ${product.bunga}, TENOR : ${product.tenor}, PENGALI BUNGA : ${pengaliBunga}, PENGALI TENOR : ${pengaliTenor}, JUMLAH PINJAMAN : $jumlahPinjaman")
+        Log.d("KalkulasiPinjamanActivity", "TOTAL BUNGA : $totalBunga")
         val totalPinjaman = jumlahPinjaman + totalBunga
 
         val cicilanPerTenor = totalPinjaman / product.tenor
@@ -88,7 +88,7 @@ class KalkulasiPinjamanActivity : AppCompatActivity() {
         }
         val bungaPerBulan = cicilanPerBulan - pokokPerBulan
 
-        Log.d("KalkulasiPinjaman", "Pokok Per Bulan $bungaPerBulan, Bunga Per Bulan $bungaPerBulan")
+        Log.d("KalkulasiPinjamanActivity", "Pokok Per Bulan $bungaPerBulan, Bunga Per Bulan $bungaPerBulan")
 
         val biayaAdmin = if (product.typeAdmin.toLowerCase(Locale.ROOT) == "fix") product.admin else product.admin * jumlahPinjaman / 100
         val adminText =  CurrencyFormat.formatRupiah.format(biayaAdmin)
@@ -110,7 +110,14 @@ class KalkulasiPinjamanActivity : AppCompatActivity() {
         val dendaPelunasanDipercepatText = CurrencyFormat.formatRupiah.format(dendaPelunasanDipercepat)
         denda_pelunasan_dipercepat.text = dendaPelunasanDipercepatText
 
-        val pengurang = (biayaAdmin + biayaProvisi + product.simpananPokok).toLong()
+        val biayaAsuransi = if (product.typeAsuransi.toLowerCase(Locale.ROOT) == "fix") product.asuransi else product.asuransi * jumlahPinjaman / 100
+        val danaJpk = if (product.typeJpk.toLowerCase(Locale.ROOT) == "fix") product.jpk else product.jpk * jumlahPinjaman / 100
+
+        asuransi.text = CurrencyFormat.formatRupiah.format(biayaAsuransi)
+        jpk.text = CurrencyFormat.formatRupiah.format(danaJpk)
+
+        val pengurang = (biayaAdmin + biayaProvisi + product.simpananPokok + biayaAsuransi + danaJpk).toLong()
+
         val jumlahPencairan = jumlahPinjaman - pengurang
         jumlah_pencairan.text = CurrencyFormat.formatRupiah.format(jumlahPencairan)
         cicilan.text = CurrencyFormat.formatRupiah.format(cicilanPerBulan)

@@ -93,8 +93,16 @@ class PengajuanPinjamanActivity : AppCompatActivity() {
                 bunga.text = bungaText
                 val adminText = if (selectedProduct.typeAdmin.toLowerCase(Locale.ROOT) == "fix") CurrencyFormat.formatRupiah.format(selectedProduct.admin) else "${selectedProduct.admin}%"
                 admin.text = adminText
+
                 val provisiText = if (selectedProduct.typeProvisi.toLowerCase(Locale.ROOT) == "fix") CurrencyFormat.formatRupiah.format(selectedProduct.provisi) else "${selectedProduct.provisi}%"
                 provisi.text = provisiText
+
+                val asuransiText = if (selectedProduct.typeAsuransi.toLowerCase(Locale.ROOT) == "fix") CurrencyFormat.formatRupiah.format(selectedProduct.asuransi) else "${selectedProduct.asuransi}%"
+                asuransi.text = asuransiText
+
+                val jpkText = if (selectedProduct.typeJpk.toLowerCase(Locale.ROOT) == "fix") CurrencyFormat.formatRupiah.format(selectedProduct.jpk) else "${selectedProduct.jpk}%"
+                jpk.text = jpkText
+
                 simpanan_pokok.text = CurrencyFormat.formatRupiah.format(selectedProduct.simpananPokok)
                 simpanan_wajib.text = CurrencyFormat.formatRupiah.format(selectedProduct.simpananWajib)
                 val dendaKeterlambatanText = if (selectedProduct.typeDendaKeterlambatan.toLowerCase(Locale.ROOT) == "fix") CurrencyFormat.formatRupiah.format(selectedProduct.dendaKeterlambatan) else "${selectedProduct.dendaKeterlambatan}%"

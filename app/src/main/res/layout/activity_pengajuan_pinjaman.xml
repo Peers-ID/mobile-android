@@ -19,6 +19,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:indeterminate="true" />
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <LinearLayout
         android:id="@+id/pengajuan_container"
         android:layout_width="match_parent"
@@ -148,6 +152,44 @@
                     android:layout_weight="1"
                     android:textStyle="bold"
                     android:textColor="@color/colorText"
+                    android:text="@string/biaya_asuransi"/>
+                <TextView
+                    android:id="@+id/asuransi"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_between"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorText"
+                    android:text="@string/dana_jpk"/>
+                <TextView
+                    android:id="@+id/jpk"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_between"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorText"
                     android:text="@string/simpanan_pokok"/>
                 <TextView
                     android:id="@+id/simpanan_pokok"
@@ -241,5 +283,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
+
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,11 +6,17 @@ import android.util.Log
 import com.android.id.peers.util.callback.CicilanCallback
 import com.android.id.peers.util.connection.ApiConnections
 import com.android.id.peers.util.connection.VolleyRequestSingleton
+import com.android.id.peers.util.repository.CollectionRepository
+import com.android.id.peers.util.response.ApiResponse
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
+import org.json.JSONArray
 import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 class Cicilan {
@@ -34,71 +40,68 @@ class Cicilan {
 
     companion object {
         fun getDetailCicilan(preferences: SharedPreferences, context: Context, callback: CicilanCallback, idMember: Int, angsuran: Int) {
-            val url = "${ApiConnections.API_HOSTNAME}collection/member"
 
             Log.d("getDetailCicilan", "ID MEMBER : $idMember")
 
             val params = HashMap<String, Any>()
             params["id_member"] = idMember
             params["angsuran"] = angsuran
-            val parameters = JSONObject(params as Map<*, *>)
-            val jsonObjectRequest = object: JsonObjectRequest(
-                Method.POST, url, parameters,
-                Response.Listener { response ->
-                    val strResp = response.toString()
-//                    val memberPreferences = context.getSharedPreferences("member", Context.MODE_PRIVATE)
-//                    memberPreferences.edit().putString("no_hp", member.noHp).apply()
-                    val jsonObj = JSONObject(strResp)
-                    val status = jsonObj.getInt("status")
-                    Log.d("getDetailCicilan", strResp)
-                    if (status == 200) {
-                        val data = jsonObj.getJSONArray("data")
 
-                        val cicilan = Cicilan()
-                        val cicilanJsonObject = data.getJSONObject(data.length() - 1)
-                        cicilan.idLoan = cicilanJsonObject.getInt("id_loan")
-                        cicilan.idAnggota = cicilanJsonObject.getInt("id_member")
-                        cicilan.namaAnggota = cicilanJsonObject.getString("nama_lengkap")
-                        cicilan.namaProduct = cicilanJsonObject.getString("nama_produk")
-                        val oldPattern = "yyyy-MM-dd"
-                        val pattern = "dd MMM yyyy"
-                        val oldDateFormat = SimpleDateFormat(oldPattern, Locale.US)
-//                            oldDateFormat.timeZone = TimeZone.getTimeZone("GMT+7")
-                        val simpleDateFormat = SimpleDateFormat(pattern, Locale.US)
-                        val oldDate: Date = oldDateFormat.parse(cicilanJsonObject.getString("loan_due_date").substring(0, 10))!!
-                        val date: String = simpleDateFormat.format(oldDate)
-                        cicilan.jatuhTempo = date
-                        cicilan.totalTagihan = cicilanJsonObject.getLong("total_tagihan")
-                        cicilan.simpananWajib = cicilanJsonObject.getLong("simpanan_wajib")
-                        cicilan.denda = cicilanJsonObject.getLong("denda")
-                        cicilan.pokok = cicilanJsonObject.getLong("pokok")
-                        cicilan.bunga = cicilanJsonObject.getLong("bunga")
-                        cicilan.angsuran = cicilanJsonObject.getInt("angsuran")
-                        cicilan.pembayaranKe = cicilanJsonObject.getInt("pembayaran_ke")
-                        cicilan.totalPembayaran = cicilan.pokok + cicilan.bunga + cicilan.simpananWajib + cicilan.denda
+            val token = "Bearer " + preferences.getString("token", null)!!
 
-                        callback.onSuccess(cicilan)
+            val collectionRepository = CollectionRepository.create()
+
+            collectionRepository.member(token,params).enqueue(object : Callback<ApiResponse>{
+                override fun onResponse(
+                    call: Call<ApiResponse>,
+                    response: retrofit2.Response<ApiResponse>
+                ) {
+                    val res = response.body()
+
+                    res.let {
+
+                        val status = it!!.status
+
+                        Log.d("getDetailCicilan", it.toString())
+
+                        if (status == 200) {
+
+                            val d = it!!.data as ArrayList<Any>
+                            val data = JSONArray(d)
+
+                            val cicilan = Cicilan()
+                            val cicilanJsonObject = data.getJSONObject(data.length() - 1)
+                            cicilan.idLoan = cicilanJsonObject.getInt("id_loan")
+                            cicilan.idAnggota = cicilanJsonObject.getInt("id_member")
+                            cicilan.namaAnggota = cicilanJsonObject.getString("nama_lengkap")
+                            cicilan.namaProduct = cicilanJsonObject.getString("nama_produk")
+                            val oldPattern = "yyyy-MM-dd"
+                            val pattern = "dd MMM yyyy"
+                            val oldDateFormat = SimpleDateFormat(oldPattern, Locale.US)
+    //                            oldDateFormat.timeZone = TimeZone.getTimeZone("GMT+7")
+                            val simpleDateFormat = SimpleDateFormat(pattern, Locale.US)
+                            val oldDate: Date = oldDateFormat.parse(cicilanJsonObject.getString("loan_due_date").substring(0, 10))!!
+                            val date: String = simpleDateFormat.format(oldDate)
+                            cicilan.jatuhTempo = date
+                            cicilan.totalTagihan = cicilanJsonObject.getLong("total_tagihan")
+                            cicilan.simpananWajib = cicilanJsonObject.getLong("simpanan_wajib")
+                            cicilan.denda = cicilanJsonObject.getLong("denda")
+                            cicilan.pokok = cicilanJsonObject.getLong("pokok")
+                            cicilan.bunga = cicilanJsonObject.getLong("bunga")
+                            cicilan.angsuran = cicilanJsonObject.getInt("angsuran")
+                            cicilan.pembayaranKe = cicilanJsonObject.getInt("pembayaran_ke")
+                            cicilan.totalPembayaran = cicilan.pokok + cicilan.bunga + cicilan.simpananWajib + cicilan.denda
+
+                            callback.onSuccess(cicilan)
+                        }
                     }
-//                if (loginStatus.toInt() == 400 || loginStatus.toInt() == 401) {
-//                    popUpSnack(view, "Login Failed!")
-//                } else if (loginStatus.toInt() == 201) {
-//                }
+                }
 
-                },
-                Response.ErrorListener { error ->
-                    Log.e("postMember", error.toString())
+                override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                    Log.e("postMember", t.message.toString())
                 }
-            )
-            {
-                override fun getHeaders(): Map<String, String> {
-                    val headers = HashMap<String, String>()
-                    val container = "Bearer " + preferences.getString("token", null)!!
-                    headers["Authorization"] = container
-                    //..add other headers
-                    return headers
-                }
-            }
-            VolleyRequestSingleton.getInstance(context).addToRequestQueue(jsonObjectRequest)
+
+            })
         }
 
         fun postPembayaranCicilan(preferences: SharedPreferences, context: Context, cicilan: Cicilan) {
@@ -121,42 +124,7 @@ class Cicilan {
                 Method.POST, url, parameters,
                 Response.Listener { response ->
                     val strResp = response.toString()
-//                    val memberPreferences = context.getSharedPreferences("member", Context.MODE_PRIVATE)
-//                    memberPreferences.edit().putString("no_hp", member.noHp).apply()
-//                    val jsonObj = JSONObject(strResp)
-//                    val status = jsonObj.getInt("status")
                     Log.d("postPembayaranCicilan", strResp)
-//                    if (status == 200) {
-//                        val data = jsonObj.getJSONArray("data")
-//
-//                        val cicilan = Cicilan()
-//                        val cicilanJsonObject = data.getJSONObject(data.length() - 1)
-//                        cicilan.idAnggota = cicilanJsonObject.getInt("id_member")
-//                        cicilan.namaAnggota = cicilanJsonObject.getString("nama_lengkap")
-//                        cicilan.namaProduct = cicilanJsonObject.getString("nama_produk")
-//                        val oldPattern = "yyyy-MM-dd"
-//                        val pattern = "dd MMM yyyy"
-//                        val oldDateFormat = SimpleDateFormat(oldPattern, Locale.US)
-////                            oldDateFormat.timeZone = TimeZone.getTimeZone("GMT+7")
-//                        val simpleDateFormat = SimpleDateFormat(pattern, Locale.US)
-//                        val oldDate: Date = oldDateFormat.parse(cicilanJsonObject.getString("loan_due_date").substring(0, 10))!!
-//                        val date: String = simpleDateFormat.format(oldDate)
-//                        cicilan.jatuhTempo = date
-//                        cicilan.totalTagihan = cicilanJsonObject.getLong("total_tagihan")
-//                        cicilan.simpananWajib = cicilanJsonObject.getLong("simpanan_wajib")
-//                        cicilan.denda = cicilanJsonObject.getLong("denda")
-//                        cicilan.pokok = cicilanJsonObject.getLong("pokok")
-//                        cicilan.bunga = cicilanJsonObject.getLong("bunga")
-//                        cicilan.angsuran = cicilanJsonObject.getInt("angsuran")
-//                        cicilan.pembayaranKe = cicilanJsonObject.getInt("pembayaran_ke")
-//                        cicilan.totalPembayaran = cicilan.totalTagihan + cicilan.simpananWajib + cicilan.denda
-//
-//                        callback.onSuccess(cicilan)
-//                    }
-//                if (loginStatus.toInt() == 400 || loginStatus.toInt() == 401) {
-//                    popUpSnack(view, "Login Failed!")
-//                } else if (loginStatus.toInt() == 201) {
-//                }
 
                 },
                 Response.ErrorListener { error ->

@@ -11,12 +11,21 @@ import com.android.id.peers.util.callback.PinjamanResponseCallback
 import com.android.id.peers.util.callback.StatusPinjamanCallback
 import com.android.id.peers.util.connection.ApiConnections
 import com.android.id.peers.util.connection.VolleyRequestSingleton
+import com.android.id.peers.util.repository.ApiRepository
+import com.android.id.peers.util.repository.CollectionRepository
+import com.android.id.peers.util.repository.LoanRepository
+import com.android.id.peers.util.response.ApiResponse
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
+import com.google.gson.Gson
 import kotlinx.android.parcel.Parcelize
+import org.json.JSONArray
 import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 @Parcelize
@@ -42,108 +51,91 @@ data class Pinjaman (
             params["jumlah_cicilan"] = pinjaman.jumlahCicilan
             params["utang_pokok"] = pinjaman.utangPokok
             params["bunga_pinjaman"] = pinjaman.bungaPinjaman
-            val parameters = JSONObject(params as Map<*, *>)
-            val jsonObjectRequest = object: JsonObjectRequest(
-                Method.POST, url, parameters,
-                Response.Listener { response ->
-                    val strResp = response.toString()
-//                    val memberPreferences = context.getSharedPreferences("member", Context.MODE_PRIVATE)
-//                    memberPreferences.edit().putString("no_hp", member.noHp).apply()
-                    val jsonObj = JSONObject(strResp)
-                    val loginStatus = jsonObj.getInt("status")
-                    Log.d("postPinjaman", strResp)
-                    if (loginStatus == 201) {
-                        val data = jsonObj.getJSONObject("data")
-                        val pinjamanResponse = PinjamanResponse()
-                        pinjamanResponse.codePengajuan = data.getInt("code_pengajuan")
-                        pinjamanResponse.descPengajuan = data.getString("desc_pengajuan")
-                        pinjamanResponse.codePencairan = data.getInt("code_pencairan")
-                        pinjamanResponse.descPencairan = data.getString("desc_pencairan")
-                        pinjamanResponse.idLoan = data.getJSONObject("loan").getInt("id")
-                        callback.onSuccess(pinjamanResponse)
-                    }
-//                if (loginStatus.toInt() == 400 || loginStatus.toInt() == 401) {
-//                    popUpSnack(view, "Login Failed!")
-//                } else if (loginStatus.toInt() == 201) {
-//                }
 
-                },
-                Response.ErrorListener { error ->
-                    Log.e("postPinjaman", error.toString())
+            val token = "Bearer " + preferences.getString("token", null)!!
+
+            val loanRepository = LoanRepository.create()
+
+            loanRepository.add(token,params).enqueue(object : Callback<ApiResponse>{
+                override fun onResponse(
+                    call: Call<ApiResponse>,
+                    response: retrofit2.Response<ApiResponse>
+                ) {
+                    val res = response.body()
+
+                    res.let {
+                        val status = it!!.status
+                        Log.d("postPinjaman", it.toString())
+                        if (status == 201) {
+                            val gson = Gson()
+                            val data = JSONObject(gson.toJson(it!!.data))
+                            val pinjamanResponse = PinjamanResponse()
+                            pinjamanResponse.codePengajuan = data.getInt("code_pengajuan")
+                            pinjamanResponse.descPengajuan = data.getString("desc_pengajuan")
+                            pinjamanResponse.codePencairan = data.getInt("code_pencairan")
+                            pinjamanResponse.descPencairan = data.getString("desc_pencairan")
+                            pinjamanResponse.idLoan = data.getJSONObject("loan").getInt("id")
+                            callback.onSuccess(pinjamanResponse)
+                        }
+                    }
                 }
-            )
-            {
-                override fun getHeaders(): Map<String, String> {
-                    val headers = HashMap<String, String>()
-                    val container = "Bearer " + preferences.getString("token", null)!!
-                    headers["Authorization"] = container
-                    //..add other headers
-                    return headers
+
+                override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                    Log.e("postPinjaman", t.message)
                 }
-            }
-            VolleyRequestSingleton.getInstance(context).addToRequestQueue(jsonObjectRequest)
+
+            })
         }
 
         fun getPinjamanMemberStatus(preferences: SharedPreferences, context: Context, callback: StatusPinjamanCallback) {
             val idKoperasi = preferences.getInt("koperasi_id", 0)
             val idAo = preferences.getInt("id", 0)
-            val url = "${ApiConnections.API_HOSTNAME}loan/status/${idKoperasi}/${idAo}"
 
-            val jsonObjectRequest = object: JsonObjectRequest(
-                Method.GET, url, null,
-                Response.Listener { response ->
-                    val strResp = response.toString()
-//                    val memberPreferences = context.getSharedPreferences("member", Context.MODE_PRIVATE)
-//                    memberPreferences.edit().putString("no_hp", member.noHp).apply()
-                    val jsonObj = JSONObject(strResp)
-                    val status = jsonObj.getInt("status")
-                    Log.d("PinjamanStatus", strResp)
-                    if (status == 200) {
-                        val data = jsonObj.getJSONArray("data")
-                        val statusList = ArrayList<StatusPinjaman>()
-                        for (i in 0 until data.length()) {
-                            val pinjamanJsonObject = data.getJSONObject(i)
-                            val pinjamanMemberStatus = StatusPinjaman()
-                            pinjamanMemberStatus.id = pinjamanJsonObject.getInt("id")
-                            pinjamanMemberStatus.namaLengkap = pinjamanJsonObject.getString("nama_member")
-                            pinjamanMemberStatus.status = pinjamanJsonObject.getString("nama_status")
-//                            var temp = LocalDateTime.parse(pinjamanJsonObject.getString("createdAt"))
-//                            val oldPattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-                            val oldPattern = "yyyy-MM-dd"
-                            val pattern = "dd MMM `yy"
-                            val oldDateFormat = SimpleDateFormat(oldPattern, Locale.US)
-//                            oldDateFormat.timeZone = TimeZone.getTimeZone("GMT+7")
-                            val simpleDateFormat = SimpleDateFormat(pattern, Locale.US)
-                            val oldDate: Date = oldDateFormat.parse(pinjamanJsonObject.getString("createdAt").substring(0, 10))!!
-                            val date: String = simpleDateFormat.format(oldDate)
-                            pinjamanMemberStatus.tanggal = date
-//                            Log.d("Pinjaman", "OLD DATE : ${pinjamanJsonObject.getString("createdAt").substring(0, 10)}")
-//                            Log.d("Pinjaman", "NEW DATE : $date")
-                            statusList.add(pinjamanMemberStatus)
+            val token = "Bearer " + preferences.getString("token", null)!!
+
+            val loanRepository = LoanRepository.create()
+
+            loanRepository.status(token,idKoperasi,idAo).enqueue(object : Callback<ApiResponse>{
+                override fun onResponse(
+                    call: Call<ApiResponse>,
+                    response: retrofit2.Response<ApiResponse>
+                ) {
+                    val res = response.body()
+
+                    res.let{
+                        val status = it!!.status
+                        Log.d("PinjamanStatus", it.toString())
+
+                        if (status == 200) {
+                            val d = it!!.data as ArrayList<Any>
+                            val data = JSONArray(d)
+                            val statusList = ArrayList<StatusPinjaman>()
+                            for (i in 0 until data.length()) {
+                                val pinjamanJsonObject = data.getJSONObject(i)
+                                val pinjamanMemberStatus = StatusPinjaman()
+                                pinjamanMemberStatus.id = pinjamanJsonObject.getInt("id")
+                                pinjamanMemberStatus.namaLengkap = pinjamanJsonObject.getString("nama_member")
+                                pinjamanMemberStatus.status = pinjamanJsonObject.getString("nama_status")
+                                val oldPattern = "yyyy-MM-dd"
+                                val pattern = "dd MMM `yy"
+                                val oldDateFormat = SimpleDateFormat(oldPattern, Locale.US)
+                                val simpleDateFormat = SimpleDateFormat(pattern, Locale.US)
+                                val oldDate: Date = oldDateFormat.parse(pinjamanJsonObject.getString("createdAt").substring(0, 10))!!
+                                val date: String = simpleDateFormat.format(oldDate)
+                                pinjamanMemberStatus.tanggal = date
+                                statusList.add(pinjamanMemberStatus)
+                            }
+
+                            callback.onSuccess(statusList)
                         }
-
-                        callback.onSuccess(statusList)
                     }
-//                if (loginStatus.toInt() == 400 || loginStatus.toInt() == 401) {
-//                    popUpSnack(view, "Login Failed!")
-//                } else if (loginStatus.toInt() == 201) {
-//                }
+                }
 
-                },
-                Response.ErrorListener { error ->
-                    Log.e("PinjamanStatus", error.toString())
+                override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                    Log.e("PinjamanStatus", t.message.toString())
                 }
-            )
-            {
-                override fun getHeaders(): Map<String, String> {
-                    val headers = HashMap<String, String>()
-                    val container = "Bearer " + preferences.getString("token", null)!!
-                    headers["Authorization"] = container
-                    //..add other headers
-                    return headers
-                }
-            }
-            VolleyRequestSingleton.getInstance(context).addToRequestQueue(jsonObjectRequest)
+
+            })
         }
 
         fun getPencairanPinjaman(preferences: SharedPreferences, context: Context, callback: StatusPinjamanCallback) {
@@ -326,67 +318,57 @@ data class Pinjaman (
         }
 
         fun getPembayaranCicilan(preferences: SharedPreferences, context: Context, callback: StatusPinjamanCallback) {
-            val url = "${ApiConnections.API_HOSTNAME}collection"
+            val token = "Bearer " + preferences.getString("token", null)!!
 
-            val jsonObjectRequest = object: JsonObjectRequest(
-                Method.GET, url, null,
-                Response.Listener { response ->
-                    val strResp = response.toString()
-//                    val memberPreferences = context.getSharedPreferences("member", Context.MODE_PRIVATE)
-//                    memberPreferences.edit().putString("no_hp", member.noHp).apply()
-                    val jsonObj = JSONObject(strResp)
-                    val status = jsonObj.getInt("status")
-                    Log.d("pembayaranCicilan", strResp)
-                    if (status == 200) {
-                        val data = jsonObj.getJSONArray("data")
-                        val statusList = ArrayList<StatusPinjaman>()
-                        for (i in 0 until data.length()) {
-                            val pinjamanJsonObject = data.getJSONObject(i)
-                            val pinjamanMemberStatus = StatusPinjaman()
-                            pinjamanMemberStatus.id = pinjamanJsonObject.getInt("id")
-                            pinjamanMemberStatus.idMember = pinjamanJsonObject.getInt("id_member")
-                            pinjamanMemberStatus.idLoan = pinjamanJsonObject.getInt("id_loan")
-                            pinjamanMemberStatus.angsuran = pinjamanJsonObject.getInt("angsuran")
-                            Log.d("pembayaranCicilan", "Member ID : ")
-                            pinjamanMemberStatus.namaLengkap = pinjamanJsonObject.getString("nama_lengkap")
-//                            pinjamanMemberStatus.status = pinjamanJsonObject.getString("nama_status")
-//                            var temp = LocalDateTime.parse(pinjamanJsonObject.getString("createdAt"))
-//                            val oldPattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-                            val oldPattern = "yyyy-MM-dd"
-                            val pattern = "dd MMMM yyyy"
-                            val oldDateFormat = SimpleDateFormat(oldPattern, Locale.US)
-//                            oldDateFormat.timeZone = TimeZone.getTimeZone("GMT+7")
-                            val simpleDateFormat = SimpleDateFormat(pattern, Locale.US)
-                            val oldDate: Date = oldDateFormat.parse(pinjamanJsonObject.getString("loan_due_date").substring(0, 10))!!
-                            val date: String = simpleDateFormat.format(oldDate)
-                            pinjamanMemberStatus.tanggal = date
-//                            Log.d("Pinjaman", "OLD DATE : ${pinjamanJsonObject.getString("createdAt").substring(0, 10)}")
-//                            Log.d("Pinjaman", "NEW DATE : $date")
-                            statusList.add(pinjamanMemberStatus)
+            val collectionRepository = CollectionRepository.create()
+
+            collectionRepository.get(token).enqueue(object: Callback<ApiResponse>{
+                override fun onResponse(
+                    call: Call<ApiResponse>,
+                    response: retrofit2.Response<ApiResponse>
+                ) {
+                    val res = response.body()
+
+                    res.let {
+                        val status = it!!.status
+
+                        Log.d("pembayaranCicilan", it.toString())
+
+                        if (status == 200) {
+                            val d = it!!.data as ArrayList<Any>
+                            var data = JSONArray(d)
+
+                            val statusList = ArrayList<StatusPinjaman>()
+                            for (i in 0 until data.length()) {
+                                val pinjamanJsonObject = data.getJSONObject(i)
+                                val pinjamanMemberStatus = StatusPinjaman()
+                                pinjamanMemberStatus.id = pinjamanJsonObject.getInt("id")
+                                pinjamanMemberStatus.idMember = pinjamanJsonObject.getInt("id_member")
+                                pinjamanMemberStatus.idLoan = pinjamanJsonObject.getInt("id_loan")
+                                pinjamanMemberStatus.angsuran = pinjamanJsonObject.getInt("angsuran")
+                                Log.d("pembayaranCicilan", "Member ID : ")
+                                pinjamanMemberStatus.namaLengkap = pinjamanJsonObject.getString("nama_lengkap")
+                                val oldPattern = "yyyy-MM-dd"
+                                val pattern = "dd MMMM yyyy"
+                                val oldDateFormat = SimpleDateFormat(oldPattern, Locale.US)
+                                val simpleDateFormat = SimpleDateFormat(pattern, Locale.US)
+                                val oldDate: Date = oldDateFormat.parse(pinjamanJsonObject.getString("loan_due_date").substring(0, 10))!!
+                                val date: String = simpleDateFormat.format(oldDate)
+                                pinjamanMemberStatus.tanggal = date
+                                statusList.add(pinjamanMemberStatus)
+                            }
+
+                            callback.onSuccess(statusList)
                         }
-
-                        callback.onSuccess(statusList)
                     }
-//                if (loginStatus.toInt() == 400 || loginStatus.toInt() == 401) {
-//                    popUpSnack(view, "Login Failed!")
-//                } else if (loginStatus.toInt() == 201) {
-//                }
 
-                },
-                Response.ErrorListener { error ->
-                    Log.e("pembayaranCicilan", error.toString())
                 }
-            )
-            {
-                override fun getHeaders(): Map<String, String> {
-                    val headers = HashMap<String, String>()
-                    val container = "Bearer " + preferences.getString("token", null)!!
-                    headers["Authorization"] = container
-                    //..add other headers
-                    return headers
+
+                override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                    Log.e("pembayaranCicilan", t.message.toString())
                 }
-            }
-            VolleyRequestSingleton.getInstance(context).addToRequestQueue(jsonObjectRequest)
+
+            })
         }
     }
 }

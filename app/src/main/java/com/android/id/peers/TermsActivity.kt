@@ -88,6 +88,7 @@ class TermsActivity : AppCompatActivity() {
         terms_text_area.movementMethod = ScrollingMovementMethod()
         terms_text_area.requestLayout()
 
+
         lanjutkan.viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 lanjutkan.viewTreeObserver.removeOnGlobalLayoutListener(this)

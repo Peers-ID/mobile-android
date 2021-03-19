@@ -74,6 +74,7 @@ class PembayaranActivity : AppCompatActivity() {
                     statusPinjamanAdapter.notifyDataSetChanged()
                     shimmer_view_container.visibility = View.GONE
                     shimmer_view_container.stopShimmerAnimation()
+
                     if (pinjaman.isEmpty()) {
                         error_container.visibility = View.VISIBLE
                         pembayaran_cicilan.visibility = View.GONE

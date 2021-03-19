@@ -107,7 +107,22 @@ class OccupationFragment : Fragment(), CoroutineScope {
 
         val configPreferences: SharedPreferences = activity!!.getSharedPreferences("member_config", Context.MODE_PRIVATE)
 
+        Log.d("OccupationFragment",configPreferences.all.toString())
+
+        if(configPreferences.getInt("memiliki_npwp",1) == 0) {
+            npwp_no_container.visibility = View.VISIBLE
+        }else {
+            npwp_no_container.visibility = View.GONE
+        }
+
+        if(configPreferences.getInt("pekerja_usaha",1) == 6) {
+            jenis_umkm_container.visibility = View.VISIBLE
+        }else {
+            jenis_umkm_container.visibility = View.GONE
+        }
+
         if (configPreferences.getInt("memiliki_npwp", 1) == 0) npwp_exist.visibility = View.GONE
+
         if (configPreferences.getInt("nomer_npwp", 1) == 0) {
             npwp_no.visibility = View.GONE
             npwp_no_container.visibility = View.GONE
@@ -234,7 +249,7 @@ class OccupationFragment : Fragment(), CoroutineScope {
                 position: Int,
                 id: Long
             ) {
-                npwp_no.isEnabled = position == 0
+                npwp_no_container.visibility = if(position == 0) View.VISIBLE else View.GONE
             }
 
             override fun onNothingSelected(parent: MaterialSpinner) {
@@ -249,7 +264,7 @@ class OccupationFragment : Fragment(), CoroutineScope {
                 position: Int,
                 id: Long
             ) {
-                jenis_umkm.isEnabled = position == 6
+                jenis_umkm_container.visibility = if(position == 6) View.VISIBLE else View.GONE
             }
 
             override fun onNothingSelected(parent: MaterialSpinner) {
@@ -435,7 +450,7 @@ class OccupationFragment : Fragment(), CoroutineScope {
 //            occupation_field_container.error = "Bidang Pekerjaan/Usaha tidak boleh kosong"
 //            allTrue = false
 //        }
-        if(jenis_umkm.isEnabled && configPreferences.getInt("jenis_umkm", 1) == 1 && jenis_umkm.text.toString().isEmpty()) {
+        if(configPreferences.getInt("jenis_umkm", 1) == 1 && configPreferences.getInt("pekerja_usaha", 1) == 6 && jenis_umkm.text.toString().isEmpty()) {
             jenis_umkm_container.error = "Jenis UMKM tidak boleh kosong"
             allTrue = false
         }

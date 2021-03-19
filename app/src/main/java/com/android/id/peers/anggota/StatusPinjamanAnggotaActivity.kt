@@ -1,6 +1,7 @@
 package com.android.id.peers.anggota
 
 import android.content.Context
+import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import androidx.appcompat.app.AppCompatActivity
@@ -9,6 +10,7 @@ import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.id.peers.MainActivity
 import com.android.id.peers.R
 import com.android.id.peers.util.callback.StatusPinjamanCallback
 import com.android.id.peers.util.connection.ApiConnections.Companion.REQUEST_TYPE_GET_PINJAMAN_MEMBER_STATUS
@@ -78,5 +80,13 @@ class StatusPinjamanAnggotaActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finishAffinity()
     }
 }

@@ -14,106 +14,111 @@ import com.android.id.peers.util.callback.*
 import com.android.id.peers.util.connection.ApiConnections.Companion.API_HOSTNAME
 import com.android.id.peers.util.connection.FileDataPart
 import com.android.id.peers.util.connection.VolleyFileUploadRequest
-import com.android.id.peers.util.connection.VolleyRequestSingleton
-import com.android.volley.AuthFailureError
+import com.android.id.peers.util.repository.ApiRepository
+import com.android.id.peers.util.repository.LoanRepository
+import com.android.id.peers.util.repository.MemberRepository
+import com.android.id.peers.util.response.ApiResponse
 import com.android.volley.Response
-import com.android.volley.ServerError
-import com.android.volley.toolbox.HttpHeaderParser
-import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.google.gson.Gson
 import kotlinx.android.parcel.Parcelize
-import org.json.JSONException
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import org.json.JSONArray
 import org.json.JSONObject
-import java.io.UnsupportedEncodingException
-import java.nio.charset.Charset
+import retrofit2.Call
+import retrofit2.Callback
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.reflect.typeOf
 
 @Parcelize
 @Entity(tableName = "members")
-data class Member constructor (
+data class Member constructor(
     /* personal */
     @PrimaryKey(autoGenerate = true) var id: Int = 0,
 
 //    @ColumnInfo(name = "jenis_identitas") var jenisIdentitas: Int = -1,
-    @ColumnInfo(name = "member_id") var memberId : Int = 0,
-    @ColumnInfo(name = "no_identitas") var noIdentitas : String = "",
-    @ColumnInfo(name = "member_handphone") var noHp : String = "",
+    @ColumnInfo(name = "member_id") var memberId: Int = 0,
+    @ColumnInfo(name = "no_identitas") var noIdentitas: String = "",
+    @ColumnInfo(name = "member_handphone") var noHp: String = "",
     @ColumnInfo(name = "email") var email: String = "",
-    @ColumnInfo(name = "nama_lengkap") var namaLengkap : String = "",
-    @ColumnInfo(name = "tanggal_lahir") var tanggalLahir : String = "",
-    @ColumnInfo(name = "usia") var usia : String = "",
-    @ColumnInfo(name = "tempat_lahir") var tempatLahir : String = "",
+    @ColumnInfo(name = "nama_lengkap") var namaLengkap: String = "",
+    @ColumnInfo(name = "tanggal_lahir") var tanggalLahir: String = "",
+    @ColumnInfo(name = "usia") var usia: String = "",
+    @ColumnInfo(name = "tempat_lahir") var tempatLahir: String = "",
     @ColumnInfo(name = "jenis_kelamin") var jenisKelamin: Int = -1,
-    @ColumnInfo(name = "status_perkawinan") var statusPerkawinan : Int = -1,
-    @ColumnInfo(name = "pendidikan_terakhir") var pendidikanTerakhir : Int = -1,
-    @ColumnInfo(name = "nama_gadis_ibu") var namaGadisIbuKandung : String = "",
+    @ColumnInfo(name = "status_perkawinan") var statusPerkawinan: Int = -1,
+    @ColumnInfo(name = "pendidikan_terakhir") var pendidikanTerakhir: Int = -1,
+    @ColumnInfo(name = "nama_gadis_ibu") var namaGadisIbuKandung: String = "",
 
     /*address*/
-    @ColumnInfo(name = "alamat_ktp_jalan") var jalanSesuaiKtp : String = "",
+    @ColumnInfo(name = "alamat_ktp_jalan") var jalanSesuaiKtp: String = "",
 //    @ColumnInfo(name = "alamat_ktp_nomer") var nomorSesuaiKtp : String = "",
 //    @ColumnInfo(name = "alamat_ktp_rt") var rtSesuaiKtp : String = "",
 //    @ColumnInfo(name = "alamat_ktp_rw") var rwSesuaiKtp : String = "",
-    @ColumnInfo(name = "alamat_ktp_kelurahan_posisi") var kelurahanSesuaiKtpPosisi : Int = -1,
-    @ColumnInfo(name = "alamat_ktp_kelurahan") var kelurahanSesuaiKtp : String = "",
-    @ColumnInfo(name = "alamat_ktp_kecamatan_posisi") var kecamatanSesuaiKtpPosisi : Int = -1,
-    @ColumnInfo(name = "alamat_ktp_kecamatan") var kecamatanSesuaiKtp : String = "",
-    @ColumnInfo(name = "alamat_ktp_kota_posisi") var kotaSesuaiKtpPosisi : Int = -1,
-    @ColumnInfo(name = "alamat_ktp_kota") var kotaSesuaiKtp : String = "",
-    @ColumnInfo(name = "alamat_ktp_provinsi_posisi") var provinsiSesuaiKtpPosisi : Int = -1,
-    @ColumnInfo(name = "alamat_ktp_provinsi") var provinsiSesuaiKtp : String = "",
+    @ColumnInfo(name = "alamat_ktp_kelurahan_posisi") var kelurahanSesuaiKtpPosisi: Int = -1,
+    @ColumnInfo(name = "alamat_ktp_kelurahan") var kelurahanSesuaiKtp: String = "",
+    @ColumnInfo(name = "alamat_ktp_kecamatan_posisi") var kecamatanSesuaiKtpPosisi: Int = -1,
+    @ColumnInfo(name = "alamat_ktp_kecamatan") var kecamatanSesuaiKtp: String = "",
+    @ColumnInfo(name = "alamat_ktp_kota_posisi") var kotaSesuaiKtpPosisi: Int = -1,
+    @ColumnInfo(name = "alamat_ktp_kota") var kotaSesuaiKtp: String = "",
+    @ColumnInfo(name = "alamat_ktp_provinsi_posisi") var provinsiSesuaiKtpPosisi: Int = -1,
+    @ColumnInfo(name = "alamat_ktp_provinsi") var provinsiSesuaiKtp: String = "",
     @ColumnInfo(name = "alamat_ktp_kode_pos") var kodePosSesuaiKtp: Int = 0,
-    @ColumnInfo(name = "alamat_ktp_status_tempat_tinggal") var statusTempatTinggalSesuaiKtp : Int = -1,
-    @ColumnInfo(name = "alamat_ktp_lama_tinggal_bulan") var lamaBulanTinggalSesuaiKtp : Int = -1,
-    @ColumnInfo(name = "alamat_ktp_lama_tinggal_tahun") var lamaTahunTinggalSesuaiKtp : Int = -1,
-    @ColumnInfo(name = "domisili_sesuai_ktp") var domisiliSesuaiKtp : Boolean = false,
-    @ColumnInfo(name = "alamat_domisili_jalan") var jalanDomisili : String = "",
+    @ColumnInfo(name = "alamat_ktp_status_tempat_tinggal") var statusTempatTinggalSesuaiKtp: Int = -1,
+    @ColumnInfo(name = "alamat_ktp_lama_tinggal_bulan") var lamaBulanTinggalSesuaiKtp: Int = -1,
+    @ColumnInfo(name = "alamat_ktp_lama_tinggal_tahun") var lamaTahunTinggalSesuaiKtp: Int = -1,
+    @ColumnInfo(name = "domisili_sesuai_ktp") var domisiliSesuaiKtp: Boolean = false,
+    @ColumnInfo(name = "alamat_domisili_jalan") var jalanDomisili: String = "",
 //    @ColumnInfo(name = "alamat_domisili_nomer") var nomorDomisili : String = "",
 //    @ColumnInfo(name = "alamat_domisili_rt") var rtDomisili : String = "",
 //    @ColumnInfo(name = "alamat_domisili_rw") var rwDomisili : String = "",
-    @ColumnInfo(name = "alamat_domisili_kelurahan_posisi") var kelurahanDomisiliPosisi : Int = -1,
-    @ColumnInfo(name = "alamat_domisili_kelurahan") var kelurahanDomisili : String = "",
-    @ColumnInfo(name = "alamat_domisili_kecamatan_posisi") var kecamatanDomisiliPosisi : Int = -1,
+    @ColumnInfo(name = "alamat_domisili_kelurahan_posisi") var kelurahanDomisiliPosisi: Int = -1,
+    @ColumnInfo(name = "alamat_domisili_kelurahan") var kelurahanDomisili: String = "",
+    @ColumnInfo(name = "alamat_domisili_kecamatan_posisi") var kecamatanDomisiliPosisi: Int = -1,
     @ColumnInfo(name = "alamat_domisili_kecamatan") var kecamatanDomisili: String = "",
     @ColumnInfo(name = "alamat_domisili_kota_posisi") var kotaDomisiliPosisi: Int = -1,
     @ColumnInfo(name = "alamat_domisili_kota") var kotaDomisili: String = "",
-    @ColumnInfo(name = "alamat_domisili_provinsi_posisi") var provinsiDomisiliPosisi : Int = -1,
-    @ColumnInfo(name = "alamat_domisili_provinsi") var provinsiDomisili : String = "",
+    @ColumnInfo(name = "alamat_domisili_provinsi_posisi") var provinsiDomisiliPosisi: Int = -1,
+    @ColumnInfo(name = "alamat_domisili_provinsi") var provinsiDomisili: String = "",
     @ColumnInfo(name = "alamat_domisili_kode_pos") var kodePosDomisili: Int = 0,
-    @ColumnInfo(name = "alamat_domisili_status_tempat_tinggal") var statusTempatTinggalDomisili : Int = -1,
-    @ColumnInfo(name = "alamat_domisili_lama_bulan_tinggal") var lamaBulanTinggalDomisili : Int = -1,
-    @ColumnInfo(name = "alamat_domisili_lama_tahun_tinggal") var lamaTahunTinggalDomisili : Int = -1,
+    @ColumnInfo(name = "alamat_domisili_status_tempat_tinggal") var statusTempatTinggalDomisili: Int = -1,
+    @ColumnInfo(name = "alamat_domisili_lama_bulan_tinggal") var lamaBulanTinggalDomisili: Int = -1,
+    @ColumnInfo(name = "alamat_domisili_lama_tahun_tinggal") var lamaTahunTinggalDomisili: Int = -1,
 
     /*occupation*/
-    @ColumnInfo(name = "memiliki_npwp") var memilikiNpwp : Int = -1,
-    @ColumnInfo(name = "nomer_npwp") var nomorNpwp : String = "",
-    @ColumnInfo(name = "pekerja_usaha") var pekerjaan : Int = -1,
+    @ColumnInfo(name = "memiliki_npwp") var memilikiNpwp: Int = -1,
+    @ColumnInfo(name = "nomer_npwp") var nomorNpwp: String = "",
+    @ColumnInfo(name = "pekerja_usaha") var pekerjaan: Int = -1,
 //    @ColumnInfo(name = "bidang_pekerja") var bidangPekerjaan : String = "",
 //    @ColumnInfo(name = "posisi_jabatan") var posisiPekerjaan : String = "",
     @ColumnInfo(name = "jenis_umkm") var jenisUmkm: String = "",
-    @ColumnInfo(name = "nama_perusahaan") var namaPerusahaan : String = "",
-    @ColumnInfo(name = "lama_bulan_bekerja") var lamaBulanBekerja : Int = -1,
-    @ColumnInfo(name = "lama_tahun_bekerja") var lamaTahunBekerja : Int = -1,
+    @ColumnInfo(name = "nama_perusahaan") var namaPerusahaan: String = "",
+    @ColumnInfo(name = "lama_bulan_bekerja") var lamaBulanBekerja: Int = -1,
+    @ColumnInfo(name = "lama_tahun_bekerja") var lamaTahunBekerja: Int = -1,
     @ColumnInfo(name = "penghasilan_omset") var penghasilan: Long = 0,
-    @ColumnInfo(name = "alamat_kantor_jalan") var jalanKantor : String = "",
+    @ColumnInfo(name = "alamat_kantor_jalan") var jalanKantor: String = "",
 //    @ColumnInfo(name = "alamat_kantor_nomer") var nomorKantor : String = "",
 //    @ColumnInfo(name = "alamat_kantor_rt") var rtKantor : String = "",
 //    @ColumnInfo(name = "alamat_kantor_rw") var rwKantor : String = "",
-    @ColumnInfo(name = "alamat_kantor_kelurahan_posisi") var kelurahanKantorPosisi : Int = -1,
-    @ColumnInfo(name = "alamat_kantor_kelurahan") var kelurahanKantor : String = "",
-    @ColumnInfo(name = "alamat_kantor_kecamatan_posisi") var kecamatanKantorPosisi : Int = -1,
+    @ColumnInfo(name = "alamat_kantor_kelurahan_posisi") var kelurahanKantorPosisi: Int = -1,
+    @ColumnInfo(name = "alamat_kantor_kelurahan") var kelurahanKantor: String = "",
+    @ColumnInfo(name = "alamat_kantor_kecamatan_posisi") var kecamatanKantorPosisi: Int = -1,
     @ColumnInfo(name = "alamat_kantor_kecamatan") var kecamatanKantor: String = "",
     @ColumnInfo(name = "alamat_kantor_kota_posisi") var kotaKantorPosisi: Int = -1,
     @ColumnInfo(name = "alamat_kantor_kota") var kotaKantor: String = "",
-    @ColumnInfo(name = "alamat_kantor_provinsi_posisi") var provinsiKantorPosisi : Int = -1,
-    @ColumnInfo(name = "alamat_kantor_provinsi") var provinsiKantor : String = "",
+    @ColumnInfo(name = "alamat_kantor_provinsi_posisi") var provinsiKantorPosisi: Int = -1,
+    @ColumnInfo(name = "alamat_kantor_provinsi") var provinsiKantor: String = "",
     @ColumnInfo(name = "alamat_kantor_kode_pos") var kodePosKantor: Int = 0,
 
     /*emergency contact*/
-    @ColumnInfo(name = "nama") var namaEmergency : String = "",
-    @ColumnInfo(name = "no_hp") var noHpEmergency : String = "",
-    @ColumnInfo(name = "hubungan") var hubunganEmergency : Int = -1,
+    @ColumnInfo(name = "nama") var namaEmergency: String = "",
+    @ColumnInfo(name = "no_hp") var noHpEmergency: String = "",
+    @ColumnInfo(name = "hubungan") var hubunganEmergency: Int = -1,
 
     /*pasangan*/
     @ColumnInfo(name = "nama_pasangan") var namaPasangan: String = "",
@@ -162,7 +167,7 @@ data class Member constructor (
     @ColumnInfo(name = "survey_perkembangan_usaha") var surveyPerkembanganUsaha: Int = -1,
 
     /*verified*/
-    @ColumnInfo(name = "is_verified") var isVerified : Boolean = false
+    @ColumnInfo(name = "is_verified") var isVerified: Boolean = false
 
 ): Parcelable {
 //    fun memberJenisIdentitasString() : String {
@@ -194,7 +199,9 @@ data class Member constructor (
     fun setMemberJenisKelamin(str: String) {
         jenisKelamin = when (str) {
             "Pria" -> 0
+            "Laki-laki" -> 0
             "Wanita" -> 1
+            "Perempuan" -> 1
             else -> -1
         }
     }
@@ -212,6 +219,7 @@ data class Member constructor (
         statusPerkawinan = when (str) {
             "Kawin" -> 0
             "Belum Kawin" -> 1
+            "Tidak Kawin" -> 1
             "Cerai" -> 2
             else -> -1
         }
@@ -219,8 +227,8 @@ data class Member constructor (
 
     fun pendidikanTerakhirString() : String {
         return when (pendidikanTerakhir) {
-            0 ->"SD"
-            1 ->"SMP"
+            0 -> "SD"
+            1 -> "SMP"
             2 -> "SMA"
             3 -> "D3"
             4 -> "S1"
@@ -615,163 +623,156 @@ data class Member constructor (
 //        val id = 4
             url += id
 
-            val jsonObjectRequest = object: JsonObjectRequest(
-                Method.GET, url, null,
-                Response.Listener { response ->
-                    val strResp = response.toString()
-                    val jsonObj = JSONObject(strResp)
-                    val status = jsonObj.getString("status")
-                    Log.d("getConfig", strResp)
-//                if (loginStatus.toInt() == 400 || loginStatus.toInt() == 401) {
-//                    popUpSnack(view, "Login Failed!")
-//                } else if (loginStatus.toInt() == 201) {
-//                }
-                    if (status.toInt() == 200) {
-                        val config = MemberAcquisitionConfig(email = 0, usia = 1)
-                        val data = jsonObj.getJSONArray("data")
-                        if (data.length() > 0) {
-                            val firstObj = data.getJSONObject(0)
-                            val idKoperasi = firstObj.getInt("koperasi_id")
-//                            config.jenisIdentitas = firstObj.getInt("jenis_identitas")
-                            config.noIdentitas = firstObj.getInt("no_identitas")
-                            config.memberHandphone = firstObj.getInt("member_handphone")
-                            config.email = firstObj.getInt("email")
-                            config.namaLengkap = firstObj.getInt("nama_lengkap")
-                            config.tanggalLahir = firstObj.getInt("tanggal_lahir")
-                            config.usia = firstObj.getInt("usia")
-                            config.tempatLahir = firstObj.getInt("tempat_lahir")
-                            config.jenisKelamin = firstObj.getInt("jenis_kelamin")
-                            config.statusPerkawinan = firstObj.getInt("status_perkawinan")
-                            config.pendidikanTerakhir = firstObj.getInt("pendidikan_terakhir")
-                            config.namaGadisIbu = firstObj.getInt("nama_gadis_ibu")
-                            config.alamatKtpJalan = firstObj.getInt("alamat_ktp_jalan")
-//                            config.alamatKtpNo = firstObj.getInt("alamat_ktp_nomer")
-//                            config.alamatKtpRt = firstObj.getInt("alamat_ktp_rt")
-//                            config.alamatKtpRw = firstObj.getInt("alamat_ktp_rw")
-                            config.alamatKtpKelurahan = firstObj.getInt("alamat_ktp_kelurahan")
-                            config.alamatKtpKecamatan = firstObj.getInt("alamat_ktp_kecamatan")
-                            config.alamatKtpKota = firstObj.getInt("alamat_ktp_kota")
-                            config.alamatKtpProvinsi = firstObj.getInt("alamat_ktp_provinsi")
-                            config.alamatKtpKodePos = firstObj.getInt("alamat_ktp_kode_pos")
-                            config.alamatKtpStatusTempatTinggal = firstObj.getInt("alamat_ktp_status_tempat_tinggal")
-                            config.alamatKtpLamaTinggal = firstObj.getInt("alamat_ktp_lama_tinggal")
-                            config.domisiliSesuaiKtp = firstObj.getInt("domisili_sesuai_ktp")
-                            config.alamatDomisiliJalan = firstObj.getInt("alamat_domisili_jalan")
-//                            config.alamatDomisiliNo = firstObj.getInt("alamat_domisili_nomer")
-//                            config.alamatDomisiliRt = firstObj.getInt("alamat_domisili_rt")
-//                            config.alamatDomisiliRw = firstObj.getInt("alamat_domisili_rw")
-                            config.alamatDomisiliKelurahan = firstObj.getInt("alamat_domisili_kelurahan")
-                            config.alamatDomisiliKecamatan = firstObj.getInt("alamat_domisili_kecamatan")
-//                    config.alamatDomisiliKotaProvinsi = firstObj.getInt("alamat_domisili_kota_provinsi")
-                            config.alamatDomisiliKota = firstObj.getInt("alamat_domisili_kota")
-                            config.alamatDomisiliProvinsi = firstObj.getInt("alamat_domisili_provinsi")
-                            config.alamatDomisiliKodePos = firstObj.getInt("alamat_domisili_kode_pos")
-                            config.alamatDomisiliStatusTempatTinggal = firstObj.getInt("alamat_domisili_status_tempat_tinggal")
-                            config.alamatDomisiliLamaTempatTinggal = firstObj.getInt("alamat_domisili_lama_tempat_tinggal")
-                            config.memilikiNpwp = firstObj.getInt("memiliki_npwp")
-                            config.nomerNpwp = firstObj.getInt("nomer_npwp")
-                            config.pekerjaUsaha = firstObj.getInt("pekerja_usaha")
-                            config.jenisUmkm = firstObj.getInt("jenis_umkm")
-//                            config.bidangPekerja = firstObj.getInt("bidang_pekerja")
-//                            config.posisiJabatan = firstObj.getInt("posisi_jabatan")
-                            config.namaPerusahaan = firstObj.getInt("nama_perusahaan")
-                            config.lamaBekerja = firstObj.getInt("lama_bekerja")
-                            config.penghasilanOmset = firstObj.getInt("penghasilan_omset")
-                            config.alamatKantorJalan = firstObj.getInt("alamat_kantor_jalan")
-//                            config.alamatKantorNo = firstObj.getInt("alamat_kantor_nomer")
-//                            config.alamatKantorRt = firstObj.getInt("alamat_kantor_rt")
-//                            config.alamatKantorRw = firstObj.getInt("alamat_kantor_rw")
-                            config.alamatKantorKelurahan = firstObj.getInt("alamat_kantor_kelurahan")
-                            config.alamatKantorKecamatan = firstObj.getInt("alamat_kantor_kecamatan")
-//                    config.alamatKantorKotaProvinsi = firstObj.getInt("alamat_kantor_kota_provinsi")
-                            config.alamatKantorKota = firstObj.getInt("alamat_kantor_kota")
-                            config.alamatKantorProvinsi = firstObj.getInt("alamat_kantor_provinsi")
-                            config.alamatKantorKodePos = firstObj.getInt("alamat_kantor_kode_pos")
+            val token = "Bearer " + preferences.getString("token", null)!!
 
-                            config.namaEmergency = firstObj.getInt("nama_kontak_darurat")
-                            config.noHpEmergency = firstObj.getInt("nomor_ponsel_darurat")
-                            config.hubungan = firstObj.getInt("hubungan_kontak_darurat")
+            val apiRepository = ApiRepository.create()
 
-                            config.namaPasangan = firstObj.getInt("nama_pasangan")
-                            config.noIdentitasPasangan = firstObj.getInt("no_identitas_pasangan")
-                            config.pekerjaanPasangan = firstObj.getInt("pekerjaan_pasangan")
-                            config.noHpPasangan = firstObj.getInt("no_hp_pasangan")
+            apiRepository.memberConfig(token, id).enqueue(object : Callback<ApiResponse> {
+                override fun onResponse(
+                    call: Call<ApiResponse>,
+                    response: retrofit2.Response<ApiResponse>
+                ) {
+                    val res = response.body()
 
-                            config.namaPenjamin = firstObj.getInt("nama_penjamin")
-                            config.noHpPenjamin = firstObj.getInt("no_hp_penjamin")
-                            config.hubunganPenjamin = firstObj.getInt("hubungan_penjamin")
+                    res.let {
+                        val status = it!!.status
+                        Log.d("getConfig", it.toString())
+                        if (status == 200) {
+                            val config = MemberAcquisitionConfig(email = 0, usia = 1)
 
-                            config.dokumenKtp = firstObj.getInt("dokumen_ktp")
-                            config.dokumenSim = firstObj.getInt("dokumen_sim")
-                            config.dokumenKk = firstObj.getInt("dokumen_kk")
-                            config.dokumenKetKerja = firstObj.getInt("dokumen_keterangan_kerja")
-                            config.dokumenSlipGaji = firstObj.getInt("dokumen_slip_gaji")
-                            config.dokumenAktaNikah = firstObj.getInt("dokumen_akta_nikah")
-                            config.dokumenBpkb = firstObj.getInt("dokumen_bpkb")
-                            config.dokumenLainnya = firstObj.getInt("dokumen_lainnya")
+                            var d = it!!.data as ArrayList<Any>
 
-                            config.surveyLuasRumah = firstObj.getInt("survey_luas_rumah")
-                            config.surveyJenisAtap = firstObj.getInt("survey_jenis_atap")
-                            config.surveyJenisDinding = firstObj.getInt("survey_jenis_dinding")
-                            config.surveyKondisiRumah = firstObj.getInt("survey_kondisi_rumah")
-                            config.surveyLetakRumah = firstObj.getInt("survey_letak_rumah")
-                            config.surveyTanggunganKeluarga = firstObj.getInt("survey_tanggungan_keluarga")
-                            config.surveyDataFisikPerabot = firstObj.getInt("survey_data_fisik_perabot")
-                            config.surveyAksesLembagaKeuangan = firstObj.getInt("survey_akses_lembaga_keuangan")
-                            config.surveyInfoTtgUsaha = firstObj.getInt("survey_info_ttg_usaha")
-                            config.surveyIndexRumah = firstObj.getInt("survey_index_rumah")
-                            config.surveyIndexAsset = firstObj.getInt("survey_index_asset")
-                            config.surveyKepemilikanAsset = firstObj.getInt("survey_kepemilikan_asset")
-                            config.surveyPendapatanLuarUsaha = firstObj.getInt("survey_pendapatan_luar_usaha")
-                            config.surveyPerkembanganAsset = firstObj.getInt("survey_perkembangan_asset")
-                            config.surveyPerkembanganUsaha = firstObj.getInt("survey_perkembangan_usaha")
-                            Log.d("getConfig", "$idKoperasi")
+                            var data = JSONArray(d)
+
+                            if (data.length() > 0) {
+                                val firstObj = data.getJSONObject(0)
+                                val idKoperasi = firstObj.getInt("koperasi_id")
+                                //                            config.jenisIdentitas = firstObj.getInt("jenis_identitas")
+                                config.noIdentitas = firstObj.getInt("no_identitas")
+                                config.memberHandphone = firstObj.getInt("member_handphone")
+                                config.email = firstObj.getInt("email")
+                                config.namaLengkap = firstObj.getInt("nama_lengkap")
+                                config.tanggalLahir = firstObj.getInt("tanggal_lahir")
+                                config.usia = firstObj.getInt("usia")
+                                config.tempatLahir = firstObj.getInt("tempat_lahir")
+                                config.jenisKelamin = firstObj.getInt("jenis_kelamin")
+                                config.statusPerkawinan = firstObj.getInt("status_perkawinan")
+                                config.pendidikanTerakhir = firstObj.getInt("pendidikan_terakhir")
+                                config.namaGadisIbu = firstObj.getInt("nama_gadis_ibu")
+                                config.alamatKtpJalan = firstObj.getInt("alamat_ktp_jalan")
+                                //                            config.alamatKtpNo = firstObj.getInt("alamat_ktp_nomer")
+                                //                            config.alamatKtpRt = firstObj.getInt("alamat_ktp_rt")
+                                //                            config.alamatKtpRw = firstObj.getInt("alamat_ktp_rw")
+                                config.alamatKtpKelurahan = firstObj.getInt("alamat_ktp_kelurahan")
+                                config.alamatKtpKecamatan = firstObj.getInt("alamat_ktp_kecamatan")
+                                config.alamatKtpKota = firstObj.getInt("alamat_ktp_kota")
+                                config.alamatKtpProvinsi = firstObj.getInt("alamat_ktp_provinsi")
+                                config.alamatKtpKodePos = firstObj.getInt("alamat_ktp_kode_pos")
+                                config.alamatKtpStatusTempatTinggal =
+                                    firstObj.getInt("alamat_ktp_status_tempat_tinggal")
+                                config.alamatKtpLamaTinggal =
+                                    firstObj.getInt("alamat_ktp_lama_tinggal")
+                                config.domisiliSesuaiKtp = firstObj.getInt("domisili_sesuai_ktp")
+                                config.alamatDomisiliJalan =
+                                    firstObj.getInt("alamat_domisili_jalan")
+                                //                            config.alamatDomisiliNo = firstObj.getInt("alamat_domisili_nomer")
+                                //                            config.alamatDomisiliRt = firstObj.getInt("alamat_domisili_rt")
+                                //                            config.alamatDomisiliRw = firstObj.getInt("alamat_domisili_rw")
+                                config.alamatDomisiliKelurahan =
+                                    firstObj.getInt("alamat_domisili_kelurahan")
+                                config.alamatDomisiliKecamatan =
+                                    firstObj.getInt("alamat_domisili_kecamatan")
+                                //                    config.alamatDomisiliKotaProvinsi = firstObj.getInt("alamat_domisili_kota_provinsi")
+                                config.alamatDomisiliKota = firstObj.getInt("alamat_domisili_kota")
+                                config.alamatDomisiliProvinsi =
+                                    firstObj.getInt("alamat_domisili_provinsi")
+                                config.alamatDomisiliKodePos =
+                                    firstObj.getInt("alamat_domisili_kode_pos")
+                                config.alamatDomisiliStatusTempatTinggal =
+                                    firstObj.getInt("alamat_domisili_status_tempat_tinggal")
+                                config.alamatDomisiliLamaTempatTinggal =
+                                    firstObj.getInt("alamat_domisili_lama_tempat_tinggal")
+                                config.memilikiNpwp = firstObj.getInt("memiliki_npwp")
+                                config.nomerNpwp = firstObj.getInt("nomer_npwp")
+                                config.pekerjaUsaha = firstObj.getInt("pekerja_usaha")
+                                config.jenisUmkm = firstObj.getInt("jenis_umkm")
+                                //                            config.bidangPekerja = firstObj.getInt("bidang_pekerja")
+                                //                            config.posisiJabatan = firstObj.getInt("posisi_jabatan")
+                                config.namaPerusahaan = firstObj.getInt("nama_perusahaan")
+                                config.lamaBekerja = firstObj.getInt("lama_bekerja")
+                                config.penghasilanOmset = firstObj.getInt("penghasilan_omset")
+                                config.alamatKantorJalan = firstObj.getInt("alamat_kantor_jalan")
+                                //                            config.alamatKantorNo = firstObj.getInt("alamat_kantor_nomer")
+                                //                            config.alamatKantorRt = firstObj.getInt("alamat_kantor_rt")
+                                //                            config.alamatKantorRw = firstObj.getInt("alamat_kantor_rw")
+                                config.alamatKantorKelurahan =
+                                    firstObj.getInt("alamat_kantor_kelurahan")
+                                config.alamatKantorKecamatan =
+                                    firstObj.getInt("alamat_kantor_kecamatan")
+                                //                    config.alamatKantorKotaProvinsi = firstObj.getInt("alamat_kantor_kota_provinsi")
+                                config.alamatKantorKota = firstObj.getInt("alamat_kantor_kota")
+                                config.alamatKantorProvinsi =
+                                    firstObj.getInt("alamat_kantor_provinsi")
+                                config.alamatKantorKodePos =
+                                    firstObj.getInt("alamat_kantor_kode_pos")
+
+                                config.namaEmergency = firstObj.getInt("nama_kontak_darurat")
+                                config.noHpEmergency = firstObj.getInt("nomor_ponsel_darurat")
+                                config.hubungan = firstObj.getInt("hubungan_kontak_darurat")
+
+                                config.namaPasangan = firstObj.getInt("nama_pasangan")
+                                config.noIdentitasPasangan =
+                                    firstObj.getInt("no_identitas_pasangan")
+                                config.pekerjaanPasangan = firstObj.getInt("pekerjaan_pasangan")
+                                config.noHpPasangan = firstObj.getInt("no_hp_pasangan")
+
+                                config.namaPenjamin = firstObj.getInt("nama_penjamin")
+                                config.noHpPenjamin = firstObj.getInt("no_hp_penjamin")
+                                config.hubunganPenjamin = firstObj.getInt("hubungan_penjamin")
+
+                                config.dokumenKtp = firstObj.getInt("dokumen_ktp")
+                                config.dokumenSim = firstObj.getInt("dokumen_sim")
+                                config.dokumenKk = firstObj.getInt("dokumen_kk")
+                                config.dokumenKetKerja = firstObj.getInt("dokumen_keterangan_kerja")
+                                config.dokumenSlipGaji = firstObj.getInt("dokumen_slip_gaji")
+                                config.dokumenAktaNikah = firstObj.getInt("dokumen_akta_nikah")
+                                config.dokumenBpkb = firstObj.getInt("dokumen_bpkb")
+                                config.dokumenLainnya = firstObj.getInt("dokumen_lainnya")
+
+                                config.surveyLuasRumah = firstObj.getInt("survey_luas_rumah")
+                                config.surveyJenisAtap = firstObj.getInt("survey_jenis_atap")
+                                config.surveyJenisDinding = firstObj.getInt("survey_jenis_dinding")
+                                config.surveyKondisiRumah = firstObj.getInt("survey_kondisi_rumah")
+                                config.surveyLetakRumah = firstObj.getInt("survey_letak_rumah")
+                                config.surveyTanggunganKeluarga =
+                                    firstObj.getInt("survey_tanggungan_keluarga")
+                                config.surveyDataFisikPerabot =
+                                    firstObj.getInt("survey_data_fisik_perabot")
+                                config.surveyAksesLembagaKeuangan =
+                                    firstObj.getInt("survey_akses_lembaga_keuangan")
+                                config.surveyInfoTtgUsaha = firstObj.getInt("survey_info_ttg_usaha")
+                                config.surveyIndexRumah = firstObj.getInt("survey_index_rumah")
+                                config.surveyIndexAsset = firstObj.getInt("survey_index_asset")
+                                config.surveyKepemilikanAsset =
+                                    firstObj.getInt("survey_kepemilikan_asset")
+                                config.surveyPendapatanLuarUsaha =
+                                    firstObj.getInt("survey_pendapatan_luar_usaha")
+                                config.surveyPerkembanganAsset =
+                                    firstObj.getInt("survey_perkembangan_asset")
+                                config.surveyPerkembanganUsaha =
+                                    firstObj.getInt("survey_perkembangan_usaha")
+                                Log.d("getConfig", "$idKoperasi")
+                            }
+                            callback.onSuccess(config)
                         }
-                        callback.onSuccess(config)
                     }
-                },
-                Response.ErrorListener { error ->
-                    //                Log.e("getConfig", error.toString())
-                    val response = error.networkResponse
-                    if (error is ServerError && response != null) {
-                        try {
-                            val res = String(
-                                response.data,
-                                Charset.forName(
-                                    HttpHeaderParser.parseCharset(
-                                        response.headers,
-                                        "utf-8"
-                                    )
-                                )
-                            )
-                            // Now you can use any deserializer to make sense of data
-//                        val obj = JSONObject(res);
-                            Log.d("getConfig", "RES : $res")
-                        } catch (e1: UnsupportedEncodingException) {
-                            // Couldn't properly decode data to string
-                            e1.printStackTrace();
-                        } catch (e2: JSONException) {
-                            // returned data is not JSONObject?
-                            e2.printStackTrace();
-                        }
+                }
 
-                    }
+                override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                    Log.e("getConfig", t.message.toString())
                 }
-            )
-            {
-                @Throws(AuthFailureError::class)
-                override fun getHeaders(): Map<String, String> {
-                    val headers = HashMap<String, String>()
-                    val container = "Bearer " + preferences.getString("token", null)!!
-                    headers["Authorization"] = container
-                    headers["Content-Type"] = "application/json"
-                    return headers
-                }
-                override fun getBodyContentType(): String {
-                    return "application/json"
-                }
-            }
-            VolleyRequestSingleton.getInstance(context).addToRequestQueue(jsonObjectRequest)
+
+            })
         }
 
         fun getMemberFromJsonObject(memberJsonObj: JSONObject): Member {
@@ -781,17 +782,38 @@ data class Member constructor (
             member.noHp = memberJsonObj.getString("member_handphone")
             member.email = memberJsonObj.getString("email")
             member.namaLengkap = memberJsonObj.getString("nama_lengkap")
-            member.tanggalLahir = memberJsonObj.getString("tanggal_lahir")
+
+            val parser = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+            val formatter = SimpleDateFormat("dd-MM-yyyy")
+
+            try{
+                var date = parser.parse(memberJsonObj.getString("tanggal_lahir"))
+
+                val output = formatter.format(date)
+                member.tanggalLahir = output
+            }catch(e:Exception){
+                member.tanggalLahir = memberJsonObj.getString("tanggal_lahir")
+            }
+
+
+            Log.d(
+                "getMemberFromJsonObject",
+                "Tanggal Lahir : ${member.tanggalLahir}"
+            )
+
             member.tempatLahir = memberJsonObj.getString("tempat_lahir")
             member.usia = memberJsonObj.getString("usia")
-            Log.d("getMember", "Jenis Kelamin : ${memberJsonObj.getString("jenis_kelamin")}")
+            Log.d(
+                "getMemberFromJsonObject",
+                "Jenis Kelamin : ${memberJsonObj.getString("jenis_kelamin")}"
+            )
             member.setMemberJenisKelamin(memberJsonObj.getString("jenis_kelamin"))
             member.setMemberStatusPerkawinan(memberJsonObj.getString("status_perkawinan"))
             member.setMemberPendidikanTerakhir(memberJsonObj.getString("pendidikan_terakhir"))
             member.namaGadisIbuKandung = memberJsonObj.getString("nama_gadis_ibu")
 
             member.jalanSesuaiKtp = memberJsonObj.getString("alamat_ktp_jalan")
-            Log.d("getMember", member.jalanSesuaiKtp)
+            Log.d("getMemberFromJsonObject", member.jalanSesuaiKtp)
 //                            member.nomorSesuaiKtp = memberJsonObj.getString("alamat_ktp_nomer")
 //                            member.rtSesuaiKtp = memberJsonObj.getString("alamat_ktp_rt")
 //                            member.rwSesuaiKtp = memberJsonObj.getString("alamat_ktp_rw")
@@ -801,12 +823,23 @@ data class Member constructor (
             member.provinsiSesuaiKtp = memberJsonObj.getString("alamat_ktp_provinsi")
             member.kodePosSesuaiKtp = memberJsonObj.getInt("alamat_ktp_kode_pos")
             member.setStatusTempatTinggalSesuaiKtp(memberJsonObj.getString("alamat_ktp_status_tempat_tinggal"))
+
             val lamaTinggalSesuaiKtp = memberJsonObj.getString("alamat_ktp_lama_tinggal").split(" ").toTypedArray()
 
-            Log.d("getMember", "Lama Tinggal KTP : ${memberJsonObj.getString("alamat_ktp_lama_tinggal")}")
+            Log.d(
+                "getMemberFromJsonObject",
+                "Lama Tinggal KTP : ${memberJsonObj.getString("alamat_ktp_lama_tinggal")}"
+            )
 
             member.lamaTahunTinggalSesuaiKtp = lamaTinggalSesuaiKtp[0].toInt()
-            member.lamaBulanTinggalSesuaiKtp = lamaTinggalSesuaiKtp[2].toInt()
+
+            if(lamaTinggalSesuaiKtp.size > 1){
+                member.lamaBulanTinggalSesuaiKtp = lamaTinggalSesuaiKtp[2].toInt()
+            }else{
+                member.lamaBulanTinggalSesuaiKtp = 0
+            }
+
+            member.domisiliSesuaiKtp = if(memberJsonObj.getInt("domisili_sesuai_ktp") == 1) true else false
 
             member.jalanDomisili = memberJsonObj.getString("alamat_domisili_jalan")
 //                            member.nomorDomisili = memberJsonObj.getString("alamat_domisili_nomer")
@@ -818,11 +851,18 @@ data class Member constructor (
             member.provinsiDomisili = memberJsonObj.getString("alamat_domisili_provinsi")
             member.kodePosDomisili = memberJsonObj.getInt("alamat_domisili_kode_pos")
             member.setStatusTempatTinggalDomisili(memberJsonObj.getString("alamat_domisili_status_tempat_tinggal"))
-            val lamaTinggalDomisili = memberJsonObj.getString("alamat_domisili_lama_tempat_tinggal").split(" ").toTypedArray()
+            val lamaTinggalDomisili = memberJsonObj.getString("alamat_domisili_lama_tempat_tinggal").split(
+                " "
+            ).toTypedArray()
             Log.d("Member", "Lama Tahun Tinggal Domisili : ${lamaTinggalDomisili[0]}")
             Log.d("Member", "Lama Bulan Tinggal Domisili : ${lamaTinggalDomisili[2]}")
             member.lamaTahunTinggalDomisili = lamaTinggalDomisili[0].toInt()
-            member.lamaBulanTinggalDomisili = lamaTinggalDomisili[2].toInt()
+
+            if(lamaTinggalDomisili.size > 1){
+                member.lamaBulanTinggalDomisili = lamaTinggalDomisili[2].toInt()
+            }else{
+                member.lamaBulanTinggalDomisili = 0
+            }
 
             member.memilikiNpwp = if(memberJsonObj.getInt("memiliki_npwp") == 0) 1 else 0
             member.nomorNpwp = memberJsonObj.getString("nomer_npwp")
@@ -834,7 +874,13 @@ data class Member constructor (
 
             val lamaBekerja = memberJsonObj.getString("lama_bekerja").split(" ").toTypedArray()
             member.lamaTahunBekerja = lamaBekerja[0].toInt()
-            member.lamaBulanBekerja = lamaBekerja[2].toInt()
+
+            if(lamaBekerja.size > 1){
+                member.lamaBulanBekerja = lamaBekerja[2].toInt()
+            }else{
+                member.lamaBulanBekerja = 0
+            }
+
             member.penghasilan = memberJsonObj.getLong("penghasilan_omset")
             member.jalanKantor = memberJsonObj.getString("alamat_kantor_jalan")
 //                            member.nomorKantor = memberJsonObj.getString("alamat_kantor_nomer")
@@ -886,83 +932,68 @@ data class Member constructor (
             return member
         }
 
-        fun getMember(preferences: SharedPreferences, context: Context, isSimpananList: Boolean,
-                      membersCallback: MembersCallback? = null, simpananItemCallback: SimpananItemCallback? = null) {
-            val url = "${API_HOSTNAME}member"
+        fun getMember(
+            preferences: SharedPreferences,
+            context: Context,
+            isSimpananList: Boolean,
+            membersCallback: MembersCallback? = null,
+            simpananItemCallback: SimpananItemCallback? = null
+        ) {
+            val token = "Bearer " + preferences.getString("token", null)!!
 
-            val jsonObjectRequest = object: JsonObjectRequest(
-                Method.GET, url, null,
-                Response.Listener { response ->
-                    val strResp = response.toString()
-                    val jsonObj = JSONObject(strResp)
-                    val status = jsonObj.getInt("status")
-                    Log.d("getMember", strResp)
-//                if (loginStatus.toInt() == 400 || loginStatus.toInt() == 401) {
-//                    popUpSnack(view, "Login Failed!")
-//                } else if (loginStatus.toInt() == 201) {
-//                }
-                    if (status == 200) {
-                        val members = ArrayList<Member>()
-                        var member: Member?
-                        val data = jsonObj.getJSONArray("data")
-                        if (data.length() > 0) {
-                            var length = data.length() - 1
-                            for (i in 0 until data.length()) {
-                                val memberJsonObj = data.getJSONObject(i)
-                                member = getMemberFromJsonObject(memberJsonObj)
-                                members.add(member)
-                                if (isSimpananList) {
-                                    length -= 1
-                                    Log.d("getMember", "MEMBER ID : ${member.memberId}, MEMBER NAME : ${member.namaLengkap}")
-                                    getSimpanan(preferences, context, member.memberId, simpananItemCallback!!, length)
+            val memberRepository = MemberRepository.create()
+
+            memberRepository.get(token).enqueue(object : Callback<ApiResponse> {
+                override fun onResponse(
+                    call: Call<ApiResponse>,
+                    response: retrofit2.Response<ApiResponse>
+                ) {
+                    val res = response.body()
+
+                    res.let {
+                        val status = it!!.status
+                        Log.d("getMember", it.toString())
+
+                        if (status == 200) {
+
+                            val members = ArrayList<Member>()
+                            var member: Member?
+
+                            val d = it!!.data as ArrayList<Any>
+                            val data = JSONArray(d)
+
+                            if (data.length() > 0) {
+                                var length = data.length() - 1
+                                for (i in 0 until data.length()) {
+                                    val memberJsonObj = data.getJSONObject(i)
+                                    member = getMemberFromJsonObject(memberJsonObj)
+                                    members.add(member)
+                                    if (isSimpananList) {
+                                        length -= 1
+                                        Log.d(
+                                            "getMember",
+                                            "MEMBER ID : ${member.memberId}, MEMBER NAME : ${member.namaLengkap}"
+                                        )
+                                        getSimpanan(
+                                            preferences,
+                                            context,
+                                            member.memberId,
+                                            simpananItemCallback!!,
+                                            length
+                                        )
+                                    }
                                 }
+                                if (!isSimpananList) membersCallback?.onSuccess(members)
                             }
-                            if (!isSimpananList) membersCallback?.onSuccess(members)
                         }
                     }
-                },
-                Response.ErrorListener { error ->
-                    //                Log.e("getConfig", error.toString())
-                    val response = error.networkResponse
-                    if (error is ServerError && response != null) {
-                        try {
-                            val res = String(
-                                response.data,
-                                Charset.forName(
-                                    HttpHeaderParser.parseCharset(
-                                        response.headers,
-                                        "utf-8"
-                                    )
-                                )
-                            )
-                            // Now you can use any deserializer to make sense of data
-//                        val obj = JSONObject(res);
-                            Log.d("getMember", "RES : $res")
-                        } catch (e1: UnsupportedEncodingException) {
-                            // Couldn't properly decode data to string
-                            e1.printStackTrace();
-                        } catch (e2: JSONException) {
-                            // returned data is not JSONObject?
-                            e2.printStackTrace();
-                        }
+                }
 
-                    }
+                override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                    Log.e("getMember", t.message.toString())
                 }
-            )
-            {
-                @Throws(AuthFailureError::class)
-                override fun getHeaders(): Map<String, String> {
-                    val headers = HashMap<String, String>()
-                    val container = "Bearer " + preferences.getString("token", null)!!
-                    headers["Authorization"] = container
-                    headers["Content-Type"] = "application/json"
-                    return headers
-                }
-                override fun getBodyContentType(): String {
-                    return "application/json"
-                }
-            }
-            VolleyRequestSingleton.getInstance(context).addToRequestQueue(jsonObjectRequest)
+
+            })
         }
 
 //        fun getMemberByPhone(preferences: SharedPreferences, context: Context, callback: MemberCallback, memberPhone: String) {
@@ -1038,75 +1069,51 @@ data class Member constructor (
 //            VolleyRequestSingleton.getInstance(context).addToRequestQueue(jsonObjectRequest)
 //        }
 
-        fun getMemberByNik(preferences: SharedPreferences, context: Context, callback: MemberCallback, nik: String) {
+        fun getMemberByNik(
+            preferences: SharedPreferences,
+            context: Context,
+            callback: MemberCallback,
+            nik: String
+        ) {
             val url = "${API_HOSTNAME}member/nik/$nik"
 
-            val jsonObjectRequest = object: JsonObjectRequest(
-                Method.GET, url, null,
-                Response.Listener { response ->
-                    val strResp = response.toString()
-                    val jsonObj = JSONObject(strResp)
-                    val status = jsonObj.getInt("status")
-                    val data = jsonObj.getJSONObject("data")
-                    val message = jsonObj.getString("message")
-                    Log.d("getMember", strResp)
-//                if (loginStatus.toInt() == 400 || loginStatus.toInt() == 401) {
-//                    popUpSnack(view, "Login Failed!")
-//                } else if (loginStatus.toInt() == 201) {
-//                }
-//                        val data = jsonObj.getJSONArray("data")
-                    val memberNikStatus = MemberNikStatus()
-                    memberNikStatus.status = status
-                    memberNikStatus.message = message
-                    val member = when (status) {
-                        203 -> getMemberFromJsonObject(data)
-                        else -> null
-                    }
-                    memberNikStatus.member = member
-                    callback.onSuccess(memberNikStatus)
-                },
-                Response.ErrorListener { error ->
-                    //                Log.e("getConfig", error.toString())
-                    val response = error.networkResponse
-                    if (error is ServerError && response != null) {
-                        try {
-                            val res = String(
-                                response.data,
-                                Charset.forName(
-                                    HttpHeaderParser.parseCharset(
-                                        response.headers,
-                                        "utf-8"
-                                    )
-                                )
-                            )
-                            // Now you can use any deserializer to make sense of data
-//                        val obj = JSONObject(res);
-                            Log.d("getMemberByNik", "RES : $res")
-                        } catch (e1: UnsupportedEncodingException) {
-                            // Couldn't properly decode data to string
-                            e1.printStackTrace();
-                        } catch (e2: JSONException) {
-                            // returned data is not JSONObject?
-                            e2.printStackTrace();
-                        }
+            val token = "Bearer " + preferences.getString("token", null)!!
 
+            val memberRepository = MemberRepository.create()
+
+            memberRepository.getByNik(token, nik.toInt()).enqueue(object : Callback<ApiResponse> {
+                override fun onResponse(
+                    call: Call<ApiResponse>,
+                    response: retrofit2.Response<ApiResponse>
+                ) {
+                    val res = response.body()
+
+                    res.let {
+                        val status = it!!.status
+
+                        val gson = Gson()
+                        val data = JSONObject(gson.toJson(it!!.data))
+                        val message = it!!.message
+
+                        Log.d("getMemberByNik", it.toString())
+
+                        val memberNikStatus = MemberNikStatus()
+                        memberNikStatus.status = status
+                        memberNikStatus.message = message
+                        val member = when (status) {
+                            203 -> getMemberFromJsonObject(data)
+                            else -> null
+                        }
+                        memberNikStatus.member = member
+                        callback.onSuccess(memberNikStatus)
                     }
                 }
-            )
-            {
-                @Throws(AuthFailureError::class)
-                override fun getHeaders(): Map<String, String> {
-                    val headers = HashMap<String, String>()
-                    val container = "Bearer " + preferences.getString("token", null)!!
-                    headers["Authorization"] = container
-                    headers["Content-Type"] = "application/json"
-                    return headers
+
+                override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                    Log.e("getMemberByNik", t.message)
                 }
-                override fun getBodyContentType(): String {
-                    return "application/json"
-                }
-            }
-            VolleyRequestSingleton.getInstance(context).addToRequestQueue(jsonObjectRequest)
+
+            })
         }
 
 //        fun postMemberAndPicturesAndLoan(member: Member, preferences: SharedPreferences, context: Context, callback: PinjamanResponseCallback, pinjaman: Pinjaman, isExisting: Boolean) {
@@ -1211,7 +1218,7 @@ data class Member constructor (
 //            }
 //        }
 
-        private fun setMemberParams(params : HashMap<String, Any>, member : Member) : HashMap<String, Any> {
+        private fun setMemberParams(params: HashMap<String, Any>, member: Member) : HashMap<String, Any> {
 //            params["token"] = preferences.getString("token", null)!!
 //            params["koperasi_id"] = preferences.getInt("koperasi_id", 0).toString()
 //            params["jenis_identitas"] = member.memberJenisIdentitasString()
@@ -1328,93 +1335,94 @@ data class Member constructor (
             return params
         }
 
-        fun postMember(member: Member, preferences: SharedPreferences, context: Context, callback : PinjamanResponseCallback, pinjaman: Pinjaman) {
+        fun postMember(
+            member: Member,
+            preferences: SharedPreferences,
+            context: Context,
+            callback: PinjamanResponseCallback,
+            pinjaman: Pinjaman
+        ) {
             val url = "${API_HOSTNAME}member"
 
             var params = HashMap<String, Any>()
             params = setMemberParams(params, member)
-            Log.d("Member", "Parameter : $params")
 
-            val parameters = JSONObject(params as Map<*, *>)
-            val jsonObjectRequest = object: JsonObjectRequest(
-                Method.POST, url, parameters,
-                Response.Listener { response ->
-                    val strResp = response.toString()
-//                    val memberPreferences = context.getSharedPreferences("member", Context.MODE_PRIVATE)
-//                    memberPreferences.edit().putString("no_hp", member.noHp).apply()
-                val jsonObj = JSONObject(strResp)
-                val loginStatus = jsonObj.getInt("status")
-                Log.d("postMember", strResp)
-                if (loginStatus == 201) {
-                    val data = jsonObj.getJSONObject("data")
-                    pinjaman.idMember = data.getInt("member_id")
-                    postPinjaman(preferences, context, callback, pinjaman)
-                }
-//                if (loginStatus.toInt() == 400 || loginStatus.toInt() == 401) {
-//                    popUpSnack(view, "Login Failed!")
-//                } else if (loginStatus.toInt() == 201) {
-//                }
+            Log.d("postMember", "Parameter : $params")
 
-                },
-                Response.ErrorListener { error ->
-                    Log.e("postMember", error.toString())
+            val token = "Bearer " + preferences.getString("token", null)!!
+
+            val memberRepository = MemberRepository.create()
+
+            memberRepository.add(token, params).enqueue(object : Callback<ApiResponse> {
+                override fun onResponse(
+                    call: Call<ApiResponse>,
+                    response: retrofit2.Response<ApiResponse>
+                ) {
+                    val res = response.body()
+
+                    res.let {
+                        val status = it!!.status
+
+                        Log.d("postMember", it.toString())
+
+                        if (status == 201) {
+                            var gson = Gson()
+
+                            val data = JSONObject(gson.toJson(it!!.data))
+                            pinjaman.idMember = data.getInt("member_id")
+                            postPinjaman(preferences, context, callback, pinjaman)
+                        }
+                    }
                 }
-            )
-            {
-                override fun getHeaders(): Map<String, String> {
-                    val headers = HashMap<String, String>()
-                    val container = "Bearer " + preferences.getString("token", null)!!
-                    headers["Authorization"] = container
-                    //..add other headers
-                    return headers
+
+                override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                    Log.e("postMember", t.message)
                 }
-            }
-            VolleyRequestSingleton.getInstance(context).addToRequestQueue(jsonObjectRequest)
+
+            })
         }
 
-        fun putMember(member : Member, preferences: SharedPreferences, context: Context, callback: PinjamanResponseCallback, pinjaman: Pinjaman) {
+        fun putMember(
+            member: Member,
+            preferences: SharedPreferences,
+            context: Context,
+            callback: PinjamanResponseCallback,
+            pinjaman: Pinjaman
+        ) {
             val url = "${API_HOSTNAME}member/${member.memberId}"
 
             var params = HashMap<String, Any>()
             params = setMemberParams(params, member)
 
-            val parameters = JSONObject(params as Map<*, *>)
-            val jsonObjectRequest = object: JsonObjectRequest(
-                Method.PUT, url, parameters,
-                Response.Listener { response ->
-                    val strResp = response.toString()
-//                    val memberPreferences = context.getSharedPreferences("member", Context.MODE_PRIVATE)
-//                    memberPreferences.edit().putString("no_hp", member.noHp).apply()
-                    val jsonObj = JSONObject(strResp)
-                    val loginStatus = jsonObj.getInt("status")
-                    Log.d("putMember", strResp)
-                    if (loginStatus == 201) {
-//                        val data = jsonObj.getJSONObject("data")
-//                        pinjaman.idMember = data.getInt("member_id")
+            val token = "Bearer " + preferences.getString("token", null)!!
 
-                        pinjaman.idMember = member.memberId
-                        postPinjaman(preferences, context, callback, pinjaman)
+            val memberRepository = MemberRepository.create()
+
+            memberRepository.update(token, member.memberId, params).enqueue(object :
+                Callback<ApiResponse> {
+                override fun onResponse(
+                    call: Call<ApiResponse>,
+                    response: retrofit2.Response<ApiResponse>
+                ) {
+                    val res = response.body()
+
+                    res.let {
+                        val status = it!!.status
+
+                        Log.d("putMember", it.toString())
+
+                        if (status == 201) {
+                            pinjaman.idMember = member.memberId
+                            postPinjaman(preferences, context, callback, pinjaman)
+                        }
                     }
-//                if (loginStatus.toInt() == 400 || loginStatus.toInt() == 401) {
-//                    popUpSnack(view, "Login Failed!")
-//                } else if (loginStatus.toInt() == 201) {
-//                }
+                }
 
-                },
-                Response.ErrorListener { error ->
-                    Log.e("putMember", error.toString())
+                override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                    Log.e("putMember", t.message)
                 }
-            )
-            {
-                override fun getHeaders(): Map<String, String> {
-                    val headers = HashMap<String, String>()
-                    val container = "Bearer " + preferences.getString("token", null)!!
-                    headers["Authorization"] = container
-                    //..add other headers
-                    return headers
-                }
-            }
-            VolleyRequestSingleton.getInstance(context).addToRequestQueue(jsonObjectRequest)
+
+            })
         }
 
 //        fun postMember(member: Member, preferences: SharedPreferences, context: Context, loan: Loan? = null) {
@@ -1570,80 +1578,149 @@ data class Member constructor (
 //            VolleyRequestSingleton.getInstance(context).addToRequestQueue(jsonObjectRequest)
 //        }
 
-        fun postMemberPicture(imageData: ByteArray, preferences: SharedPreferences, context: Context, fileName: String, callback: PostPictureCallback) {
+        fun postMemberPicture(
+            imageData: ByteArray,
+            preferences: SharedPreferences,
+            context: Context,
+            fileName: String,
+            callback: PostPictureCallback
+        ) {
             val url = "${API_HOSTNAME}member/picture"
 //        imageData?: return
 
-//        val params = HashMap<String, String>()
-//        params["image"] = String(imageData, charset = Charset.forName("utf-8"))
-            val request = object : VolleyFileUploadRequest(
-                Method.POST,
-                url,
-                Response.Listener {response ->
-//                    println("response is: $it")
-                    Log.d("postPicture", "Response : $response")
-                    val strResp = response.toString()
-                    val jsonObj = JSONObject(strResp)
-                    val status = jsonObj.getInt("status")
-                    if (status == 201) {
-                        val data = jsonObj.getJSONObject("data")
-                        val responseFileName = data.getString("file_name")
-                        callback.onPictureUploaded(responseFileName)
-                    }
-//                    val loginStatus = jsonObj.getString("status")
+            val token = "Bearer " + preferences.getString("token", null)!!
+            val memberRepository = MemberRepository.create()
 
-                },
-                Response.ErrorListener {error ->
-                    println("error is: $error")
+            val reqBody = RequestBody.create(MediaType.parse("image/*"),imageData)
+
+            val parts = MultipartBody.Part.createFormData("image",fileName,reqBody)
+
+            memberRepository.picture(token,parts).enqueue(object : Callback<ApiResponse>{
+                override fun onResponse(
+                    call: Call<ApiResponse>,
+                    response: retrofit2.Response<ApiResponse>
+                ) {
+                    val res = response.body()
+
+                    res.let{
+                        Log.d("postMemberPicture", it.toString())
+                        val status = it!!.status
+                        if (status == 201) {
+                            val gson = Gson()
+                            val data = JSONObject(gson.toJson(it!!.data))
+                            val responseFileName = data.getString("file_name")
+                            callback.onPictureUploaded(responseFileName)
+                        }
+                    }
                 }
-            ) {
-                override fun getHeaders(): MutableMap<String, String> {
-                    val headers = HashMap<String, String>()
-                    val container = "Bearer " + preferences.getString("token", null)!!
-                    headers["Authorization"] = container
-                    //..add other headers
-                    return headers
+
+                override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                    Log.e("postMemberPicture",t.message)
                 }
-                override fun getByteData(): MutableMap<String, FileDataPart> {
-                    val params = HashMap<String, FileDataPart>()
-                    params["image"] = FileDataPart(fileName, imageData, "jpeg")
-                    return params
-                }
-            }
-            Volley.newRequestQueue(context).add(request)
+
+            })
+//
+////        val params = HashMap<String, String>()
+////        params["image"] = String(imageData, charset = Charset.forName("utf-8"))
+//            val request = object : VolleyFileUploadRequest(
+//                Method.POST,
+//                url,
+//                Response.Listener { response ->
+////                    println("response is: $it")
+//                    Log.d("postPicture", "Response : $response")
+//                    val strResp = response.toString()
+//                    val jsonObj = JSONObject(strResp)
+//                    val status = jsonObj.getInt("status")
+//                    if (status == 201) {
+//                        val data = jsonObj.getJSONObject("data")
+//                        val responseFileName = data.getString("file_name")
+//                        callback.onPictureUploaded(responseFileName)
+//                    }
+////                    val loginStatus = jsonObj.getString("status")
+//
+//                },
+//                Response.ErrorListener { error ->
+//                    println("error is: $error")
+//                }
+//            ) {
+//                override fun getHeaders(): MutableMap<String, String> {
+//                    val headers = HashMap<String, String>()
+//                    val container = "Bearer " + preferences.getString("token", null)!!
+//                    headers["Authorization"] = container
+//                    //..add other headers
+//                    return headers
+//                }
+//                override fun getByteData(): MutableMap<String, FileDataPart> {
+//                    val params = HashMap<String, FileDataPart>()
+//                    params["image"] = FileDataPart(fileName, imageData, "jpeg")
+//                    return params
+//                }
+//            }
+//            Volley.newRequestQueue(context).add(request)
         }
 
-        fun postPicture(imageData: ByteArray, preferences: SharedPreferences, context: Context, memberId: Int, fileName: String) {
+        fun postPicture(
+            imageData: ByteArray,
+            preferences: SharedPreferences,
+            context: Context,
+            memberId: Int,
+            fileName: String
+        ) {
             val url = "${API_HOSTNAME}loan/member/picture/$memberId"
 //        imageData?: return
 
-//        val params = HashMap<String, String>()
-//        params["image"] = String(imageData, charset = Charset.forName("utf-8"))
-            val request = object : VolleyFileUploadRequest(
-                Method.POST,
-                url,
-                Response.Listener {
-                    println("response is: $it")
-                    Log.d("postPicture", "Response : $it")
-                },
-                Response.ErrorListener {
-                    println("error is: $it")
+            val token = "Bearer " + preferences.getString("token", null)!!
+            val loanRepository = LoanRepository.create()
+
+            val reqBody = RequestBody.create(MediaType.parse("image/*"),imageData)
+
+            val parts = MultipartBody.Part.createFormData("image",fileName,reqBody)
+
+            loanRepository.picture(token,memberId,parts).enqueue(object : Callback<ApiResponse>{
+                override fun onResponse(
+                    call: Call<ApiResponse>,
+                    response: retrofit2.Response<ApiResponse>
+                ) {
+                    val res = response.body()
+
+                    res.let{
+                        Log.d("postPicture", it.toString())
+                    }
                 }
-            ) {
-                override fun getHeaders(): MutableMap<String, String> {
-                    val headers = HashMap<String, String>()
-                    val container = "Bearer " + preferences.getString("token", null)!!
-                    headers["Authorization"] = container
-                    //..add other headers
-                    return headers
+
+                override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                    Log.e("postPicture",t.message)
                 }
-                override fun getByteData(): MutableMap<String, FileDataPart> {
-                    val params = HashMap<String, FileDataPart>()
-                    params["image"] = FileDataPart(fileName, imageData, "jpeg")
-                    return params
-                }
-            }
-            Volley.newRequestQueue(context).add(request)
+
+            })
+//
+////        val params = HashMap<String, String>()
+////        params["image"] = String(imageData, charset = Charset.forName("utf-8"))
+//            val request = object : VolleyFileUploadRequest(
+//                Method.POST,
+//                url,
+//                Response.Listener {
+//                    println("response is: $it")
+//                    Log.d("postPicture", "Response : $it")
+//                },
+//                Response.ErrorListener {
+//                    println("error is: $it")
+//                }
+//            ) {
+//                override fun getHeaders(): MutableMap<String, String> {
+//                    val headers = HashMap<String, String>()
+//                    val container = "Bearer " + preferences.getString("token", null)!!
+//                    headers["Authorization"] = container
+//                    //..add other headers
+//                    return headers
+//                }
+//                override fun getByteData(): MutableMap<String, FileDataPart> {
+//                    val params = HashMap<String, FileDataPart>()
+//                    params["image"] = FileDataPart(fileName, imageData, "jpeg")
+//                    return params
+//                }
+//            }
+//            Volley.newRequestQueue(context).add(request)
         }
 
 //        @SuppressLint("RestrictedApi")

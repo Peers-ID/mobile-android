@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import com.android.id.peers.MainActivity
 import com.android.id.peers.R
 import com.android.id.peers.anggota.StatusPinjamanAnggotaActivity
 import com.android.id.peers.util.CurrencyFormat
@@ -88,5 +89,13 @@ class PencairanDetailActivity : AppCompatActivity() {
     }
 
     private val negativeButtonClick = { _: DialogInterface, _: Int ->
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finishAffinity()
     }
 }

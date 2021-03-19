@@ -323,7 +323,6 @@ class DokumenFragment : Fragment() {
     }
 
 
-
     lateinit var currentPhotoPath: String
 
     @Throws(IOException::class)
@@ -354,7 +353,9 @@ class DokumenFragment : Fragment() {
     @SuppressLint("RestrictedApi")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         Log.d("DokumenFragment", "onActivityResult ${data.toString()}")
+
         if (resultCode == Activity.RESULT_OK/* && requestCode == REQUEST_IMAGE_CAPTURE*/) {
 //            val uri = data?.data
             var size: Long = 0
@@ -415,6 +416,7 @@ class DokumenFragment : Fragment() {
 
                     member.dokumenKtpByteArrayString = Base64.encodeToString(imageData, Base64.DEFAULT)
                     Log.d("DokumenFragment", "KTP TEXT : ${member.dokumenKtpByteArrayString}")
+
                 }
                 "SIM" -> {
                     member.dokumenSimByteArrayString = Base64.encodeToString(imageData, Base64.DEFAULT)
