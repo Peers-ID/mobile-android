@@ -26,6 +26,7 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.android.id.peers.BuildConfig
 import com.android.id.peers.R
 import com.android.id.peers.members.models.Member
 import com.android.id.peers.util.communication.MemberViewModel
@@ -311,7 +312,7 @@ class DokumenFragment : Fragment() {
                 photoFile?.also {
                     val photoURI: Uri = FileProvider.getUriForFile(
                         anggotaContext,
-                        "com.android.id.peers.file_provider",
+                        "${BuildConfig.APPLICATION_ID}.file_provider",
                         it
                     )
                     pictureUri = photoURI
