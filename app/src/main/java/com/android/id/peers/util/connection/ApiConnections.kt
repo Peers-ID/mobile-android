@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
+import com.android.id.peers.BuildConfig
 import com.android.id.peers.loans_unused.models.Loan
 import com.android.id.peers.loans_unused.models.Loan.Companion.getLoan
 import com.android.id.peers.loans_unused.models.Loan.Companion.postCollection
@@ -81,7 +82,7 @@ class ApiConnections {
         const val REQUEST_TYPE_GET_SIMPANAN = 26
         const val REQUEST_TYPE_GET_REMBUG = 27
         const val REQUEST_TYPE_GET_KELOMPOK = 28
-        const val API_HOSTNAME = "http://13.212.188.255/api/v1/"
+        const val API_HOSTNAME = BuildConfig.BASE_URL
 
         fun authenticate(preferences: SharedPreferences, context: Context, requestType: Int, mParam: Any? = null,
                                 memberId: Int = 0, loanId: Int = 0, memberPhone: String = "", listType: Int = 0, fileName: String = "", loan: Loan? = null,

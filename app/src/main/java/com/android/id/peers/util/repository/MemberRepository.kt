@@ -1,5 +1,6 @@
 package com.android.id.peers.util.repository
 
+import com.android.id.peers.BuildConfig
 import com.android.id.peers.util.service.ApiService
 import com.android.id.peers.util.service.LoanService
 import com.android.id.peers.util.service.MemberService
@@ -11,7 +12,8 @@ object MemberRepository {
     fun create(): MemberService {
         val retrofit = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://13.212.188.255/api/v1/member/")
+            .baseUrl(
+                BuildConfig.BASE_URL+"member/")
             .build()
         return retrofit.create(MemberService::class.java)
     }

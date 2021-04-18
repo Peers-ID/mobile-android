@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.android.id.peers.BuildConfig
 import com.android.id.peers.MainActivity
 import com.android.id.peers.R
 import com.android.id.peers.util.connection.VolleyRequestSingleton
@@ -50,7 +51,7 @@ class ChangePasswordActivity : AppCompatActivity() {
         }
     }
 
-    val API_HOSTNAME = "http://13.212.188.255/api/v1/"
+    val API_HOSTNAME = BuildConfig.BASE_URL
 
     private fun changePassword(view: View, password: String, newPassword: String) {
         val url = "${API_HOSTNAME}users/change_password"

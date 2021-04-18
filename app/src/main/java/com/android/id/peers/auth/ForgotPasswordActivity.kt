@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.android.id.peers.BuildConfig
 import com.android.id.peers.R
 import com.android.id.peers.util.PeersSnackbar
 import com.android.id.peers.util.connection.VolleyRequestSingleton
@@ -20,7 +21,7 @@ import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.activity_forgot_password.*
 import org.json.JSONObject
 
-const val API_HOSTNAME = "http://13.212.188.255/v1/"
+const val API_HOSTNAME = BuildConfig.BASE_URL
 
 class ForgotPasswordActivity : AppCompatActivity() {
 

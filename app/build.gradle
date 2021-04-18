@@ -22,6 +22,22 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
+
+    flavorDimensions "dev"
+
+    productFlavors{
+        dev{
+            dimension "dev"
+            applicationIdSuffix ".dev"
+            buildConfigField("String", 'BASE_URL', '"http://api.peers.id/api/v1/"')
+        }
+        prod{
+            dimension "dev"
+            applicationIdSuffix ".prod"
+            buildConfigField("String", 'BASE_URL', '"http://13.212.188.255/api/v1/"')
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
