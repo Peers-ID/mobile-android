@@ -10,7 +10,7 @@ object LoanRepository {
     fun create(): LoanService {
         val retrofit = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://api.peers.id/api/v1/loan/")
+            .baseUrl("http://13.212.188.255/api/v1/loan/")
             .build()
         return retrofit.create(LoanService::class.java)
     }

@@ -55,40 +55,45 @@ class KalkulasiPinjamanActivity : AppCompatActivity() {
         }
 
         val totalBunga : Long = (product.bunga * product.tenor * pengaliBunga / pengaliTenor * jumlahPinjaman / 100).toLong()
-        Log.d("KalkulasiPinjamanActivity", "BUNGA : ${product.bunga}, TENOR : ${product.tenor}, PENGALI BUNGA : ${pengaliBunga}, PENGALI TENOR : ${pengaliTenor}, JUMLAH PINJAMAN : $jumlahPinjaman")
+        Log.d("KalkulasiPinjamanActivity", "BUNGA : ${product.bunga},SATUAN TENOR : ${product.satuanTenor}, TENOR : ${product.tenor}, PENGALI BUNGA : ${pengaliBunga}, PENGALI TENOR : ${pengaliTenor}, JUMLAH PINJAMAN : $jumlahPinjaman")
         Log.d("KalkulasiPinjamanActivity", "TOTAL BUNGA : $totalBunga")
         val totalPinjaman = jumlahPinjaman + totalBunga
 
-        val cicilanPerTenor = totalPinjaman / product.tenor
-        var cicilanPerBulan : Long = 0
-        when {
-            product.satuanTenor.toLowerCase(Locale.ROOT) == "bulan" -> cicilanPerBulan = cicilanPerTenor
-            product.satuanTenor.toLowerCase(Locale.ROOT) == "minggu" -> cicilanPerBulan = if (product.tenor >= 4)
-                                                                            cicilanPerTenor * 4
-                                                                        else
-                                                                            cicilanPerTenor * product.tenor
-            product.satuanTenor.toLowerCase(Locale.ROOT) == "hari" -> cicilanPerBulan = if (product.tenor >= hariPerbulan)
-                                                                            cicilanPerTenor * hariPerbulan
-                                                                        else
-                                                                            cicilanPerTenor * product.tenor
-        }
+        val cicilanPerTenor = jumlahPinjaman / product.tenor
+        var bunga = totalBunga / product.tenor
+        var cicilanPerBulan : Long = cicilanPerTenor + bunga
 
-        val pokokPerTenor = jumlahPinjaman / product.tenor
-        var pokokPerBulan : Long = 0
-        when {
-            product.satuanTenor.toLowerCase(Locale.ROOT) == "bulan" -> pokokPerBulan = pokokPerTenor
-            product.satuanTenor.toLowerCase(Locale.ROOT) == "minggu" -> pokokPerBulan = if (product.tenor >= 4)
-                pokokPerTenor * 4
-            else
-                pokokPerTenor * product.tenor
-            product.satuanTenor.toLowerCase(Locale.ROOT) == "hari" -> pokokPerBulan = if (product.tenor >= hariPerbulan)
-                pokokPerTenor * hariPerbulan
-            else
-                pokokPerTenor * product.tenor
-        }
-        val bungaPerBulan = cicilanPerBulan - pokokPerBulan
-
-        Log.d("KalkulasiPinjamanActivity", "Pokok Per Bulan $bungaPerBulan, Bunga Per Bulan $bungaPerBulan")
+        Log.d("KalkulasiPinjamanActivity", "Cicilan per tenor $cicilanPerBulan, Bunga Per tenor $bunga")
+//        when {
+//            product.satuanTenor.toLowerCase(Locale.ROOT) == "bulan" -> cicilanPerBulan = cicilanPerTenor
+//            product.satuanTenor.toLowerCase(Locale.ROOT) == "minggu" -> {
+//                cicilanPerBulan = if (product.tenor >= 4)
+//                    cicilanPerTenor * 4
+//                else
+//                    cicilanPerTenor * product.tenor
+//            }
+//            product.satuanTenor.toLowerCase(Locale.ROOT) == "hari" -> cicilanPerBulan = if (product.tenor >= hariPerbulan)
+//                                                                            cicilanPerTenor * hariPerbulan
+//                                                                        else
+//                                                                            cicilanPerTenor * product.tenor
+//        }
+//
+//        val pokokPerTenor = jumlahPinjaman / product.tenor
+//        var pokokPerBulan : Long = 0
+////        when {
+////            product.satuanTenor.toLowerCase(Locale.ROOT) == "bulan" -> pokokPerBulan = pokokPerTenor
+////            product.satuanTenor.toLowerCase(Locale.ROOT) == "minggu" -> pokokPerBulan = if (product.tenor >= 4)
+////                pokokPerTenor * 4
+////            else
+////                pokokPerTenor * product.tenor
+////            product.satuanTenor.toLowerCase(Locale.ROOT) == "hari" -> pokokPerBulan = if (product.tenor >= hariPerbulan)
+////                pokokPerTenor * hariPerbulan
+////            else
+////                pokokPerTenor * product.tenor
+////        }
+//        val bungaPerBulan = cicilanPerBulan - pokokPerBulan
+//
+//        Log.d("KalkulasiPinjamanActivity", "Pokok Per Bulan $pokokPerBulan, Bunga Per Bulan $bungaPerBulan")
 
         val biayaAdmin = if (product.typeAdmin.toLowerCase(Locale.ROOT) == "fix") product.admin else product.admin * jumlahPinjaman / 100
         val adminText =  CurrencyFormat.formatRupiah.format(biayaAdmin)
@@ -100,6 +105,7 @@ class KalkulasiPinjamanActivity : AppCompatActivity() {
 
         simpanan_pokok.text = CurrencyFormat.formatRupiah.format(product.simpananPokok)
         simpanan_wajib.text = CurrencyFormat.formatRupiah.format(product.simpananWajib)
+
         val pengaliDendaKeterlambatan = if (idDasarDenda == 1) totalPinjaman else jumlahPinjaman
         val dendaKeterlambatan = if (product.typeDendaKeterlambatan.toLowerCase(Locale.ROOT) == "fix") product.dendaKeterlambatan else product.dendaKeterlambatan * pengaliDendaKeterlambatan / 100
         val dendaKeterlambatanText = CurrencyFormat.formatRupiah.format(dendaKeterlambatan)
@@ -128,8 +134,8 @@ class KalkulasiPinjamanActivity : AppCompatActivity() {
             pinjaman.jumlahPengajuan = jumlahPinjaman
             pinjaman.jumlahPencairan = jumlahPencairan
             pinjaman.jumlahCicilan = cicilanPerBulan
-            pinjaman.utangPokok = pokokPerBulan
-            pinjaman.bungaPinjaman = bungaPerBulan
+            pinjaman.utangPokok = cicilanPerTenor
+            pinjaman.bungaPinjaman = bunga.toLong()
 
             val intent = Intent(this, TermsActivity::class.java)
             intent.putExtra("member", member)

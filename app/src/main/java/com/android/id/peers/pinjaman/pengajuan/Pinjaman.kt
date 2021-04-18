@@ -243,6 +243,23 @@ data class Pinjaman (
                         detailPencairan.tenor = productJsonObject.getInt("tenor")
                         detailPencairan.satuanTenor = productJsonObject.getString("satuan_tenor")
 
+                        var asuransi = if(!productJsonObject.isNull("asuransi")) productJsonObject.getString("asuransi").replace(",", ".").toDouble() else 0.0
+                        var typeAsuransi = if(!productJsonObject.isNull("type_asuransi")) productJsonObject.getString("type_asuransi") else ""
+                        var jpk = if(!productJsonObject.isNull("dana_jpk")) productJsonObject.getString("dana_jpk").replace(",", ".").toDouble() else 0.0
+                        var typeJpk = if(!productJsonObject.isNull("type_dana_jpk")) productJsonObject.getString("type_dana_jpk") else ""
+
+                        var provisi = if(!productJsonObject.isNull("provisi")) productJsonObject.getString("provisi").replace(",", ".").toDouble() else 0.0
+                        var typeProvisi = if(!productJsonObject.isNull("type_provisi")) productJsonObject.getString("type_provisi") else ""
+
+                        val biayaAsuransi : Long = if (typeAsuransi.toLowerCase(Locale.ROOT) == "fix") asuransi.toLong() else asuransi.toLong() * detailPencairan.jumlahPinjaman / 100
+                        val danaJpk : Long = if (typeJpk.toLowerCase(Locale.ROOT) == "fix") jpk.toLong() else jpk.toLong() * detailPencairan.jumlahPinjaman / 100
+
+                        val biayaProvisi : Long = if (typeProvisi.toLowerCase(Locale.ROOT) == "fix") provisi.toLong() else provisi.toLong() * detailPencairan.jumlahPinjaman / 100
+
+                        detailPencairan.asuransi = biayaAsuransi
+                        detailPencairan.jpk = danaJpk
+                        detailPencairan.provisi = biayaProvisi
+
                         callback.onSuccess(detailPencairan)
                     }
 //                if (loginStatus.toInt() == 400 || loginStatus.toInt() == 401) {

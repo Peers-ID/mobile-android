@@ -13,4 +13,9 @@ interface ApiService {
     @GET("member_config/{id}")
     fun memberConfig(@Header("Authorization") auth: String,@Path("id") id : Int): Call<ApiResponse>
 
+    @GET("rembug/view")
+    fun getRembug(@Header("Authorization") auth: String): Call<ApiResponse>
+
+    @GET("kelompok/view/{id_rembug}")
+    fun getKelompok(@Header("Authorization") auth: String,@Path("id_rembug") id : Int): Call<ApiResponse>
 }

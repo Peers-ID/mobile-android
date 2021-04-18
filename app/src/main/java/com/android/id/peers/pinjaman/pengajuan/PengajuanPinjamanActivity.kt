@@ -31,6 +31,8 @@ class PengajuanPinjamanActivity : AppCompatActivity() {
 
         member = intent.getParcelableExtra<Member>("member")!!
 
+        Log.d("PengajuanPinjaman","selected kelompok : ${member!!.selectedKelompok}")
+
         Log.d("PengajuanPinjaman", "NO HP : ${member!!.noHp}")
 
         title = "Pengajuan Pinjaman"

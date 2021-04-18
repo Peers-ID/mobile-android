@@ -20,7 +20,7 @@ import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.activity_forgot_password.*
 import org.json.JSONObject
 
-const val API_HOSTNAME = "http://api.peers.id/api/v1/"
+const val API_HOSTNAME = "http://13.212.188.255/v1/"
 
 class ForgotPasswordActivity : AppCompatActivity() {
 

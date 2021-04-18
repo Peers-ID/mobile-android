@@ -109,6 +109,10 @@
 
     </com.facebook.shimmer.ShimmerFrameLayout>
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <LinearLayout
         android:id="@+id/pencairan_detail_container"
         android:layout_width="match_parent"
@@ -279,6 +283,60 @@
                     android:layout_margin="4dp"
                     android:textColor="@color/colorText"
                     android:textStyle="bold"
+                    android:text="@string/provisi"/>
+                <TextView
+                    android:id="@+id/provisi"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"/>
+            </TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:textColor="@color/colorText"
+                    android:textStyle="bold"
+                    android:text="@string/biaya_asuransi"/>
+                <TextView
+                    android:id="@+id/asuransi"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"/>
+            </TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:textColor="@color/colorText"
+                    android:textStyle="bold"
+                    android:text="@string/dana_jpk"/>
+                <TextView
+                    android:id="@+id/jpk"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"/>
+            </TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:textColor="@color/colorText"
+                    android:textStyle="bold"
                     android:text="@string/jumlah_pencairan"/>
                 <TextView
                     android:id="@+id/jumlah_pencairan"
@@ -360,5 +418,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
+
+    </ScrollView>S
 
 </androidx.constraintlayout.widget.ConstraintLayout>

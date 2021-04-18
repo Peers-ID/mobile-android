@@ -18,6 +18,8 @@ class MemberAcquisitionConfig(
     var statusPerkawinan: Int = 1,
     var pendidikanTerakhir: Int = 1,
     var namaGadisIbu: Int = 1,
+    var rembug: Int = 1,
+    var kelompok: Int = 1,
 
     var alamatKtpJalan: Int = 1,
 //    var alamatKtpNo: Int = 1,
@@ -116,6 +118,8 @@ class MemberAcquisitionConfig(
                 .putInt("nama_gadis_ibu", result.namaGadisIbu)
                 .putInt("status_perkawinan", result.statusPerkawinan)
                 .putInt("pendidikan_terakhir", result.pendidikanTerakhir)
+                .putInt("rembug", result.rembug)
+                .putInt("kelompok", result.kelompok)
                 .putInt("alamat_ktp_jalan", result.alamatKtpJalan)
 //                .putInt("alamat_ktp_no", result.alamatKtpNo)
 //                .putInt("alamat_ktp_rt", result.alamatKtpRt)

@@ -50,7 +50,7 @@ class ChangePasswordActivity : AppCompatActivity() {
         }
     }
 
-    val API_HOSTNAME = "http://api.peers.id/api/v1/"
+    val API_HOSTNAME = "http://13.212.188.255/api/v1/"
 
     private fun changePassword(view: View, password: String, newPassword: String) {
         val url = "${API_HOSTNAME}users/change_password"

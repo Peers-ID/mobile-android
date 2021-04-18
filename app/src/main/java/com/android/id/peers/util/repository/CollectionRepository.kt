@@ -8,7 +8,7 @@ object CollectionRepository {
     fun create(): CollectionService {
         val retrofit = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://api.peers.id/api/v1/collection/")
+            .baseUrl("http://13.212.188.255/api/v1/collection/")
             .build()
         return retrofit.create(CollectionService::class.java)
     }

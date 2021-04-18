@@ -11,7 +11,7 @@ object MemberRepository {
     fun create(): MemberService {
         val retrofit = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://api.peers.id/api/v1/member/")
+            .baseUrl("http://13.212.188.255/api/v1/member/")
             .build()
         return retrofit.create(MemberService::class.java)
     }

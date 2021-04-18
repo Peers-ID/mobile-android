@@ -112,6 +112,7 @@ class PembayaranDetailActivity : AppCompatActivity() {
         bayar.setOnClickListener {
             val cicilanBayar = calculateDetailPembayaran(pembayaranCicilan, 0)
             Log.d("PembayaranDetail", "JUMLAH SETORAN : ${cicilanBayar.jumlahSetoran}")
+            Log.d("PembayaranDetail","POKOK "+cicilanBayar.pokok.toString())
             if (validateInput()) showDialog(cicilanBayar)
         }
 
@@ -204,6 +205,8 @@ class PembayaranDetailActivity : AppCompatActivity() {
         cicilanBayar.angsuran = cicilan.angsuran
         cicilanBayar.pembayaranKe = cicilan.pembayaranKe
         cicilanBayar.totalPembayaran = cicilan.totalPembayaran
+        cicilanBayar.simpananWajib = cicilan.simpananWajib
+        cicilanBayar.pokok = cicilan.pokok
         val simpananSukarela = CurrencyFormat.removeCurrencyFormat(simpanan_sukarela.text.toString()).toLong()
         cicilanBayar.simpananSukarela = cicilanBayar.simpananSukarela + simpananSukarela
         cicilanBayar.bayarDenganSimpanan = bayarDenganSimpanan

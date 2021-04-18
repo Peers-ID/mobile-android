@@ -240,5 +240,7 @@ Ut at nulla turpis. Maecenas scelerisque felis ut gravida ornare. Integer urna l
     <string name="error_empty_data">Data tidak ditemukan\ncoba ulangi atau\nhubungi admin koperasi anda</string>
     <string name="biaya_asuransi">Biaya Asuransi</string>
     <string name="dana_jpk">Dana JPK</string>
+    <string name="rembug">Rembug</string>
+    <string name="kelompok">Kelompok</string>
     <!--    <string name="tenor">Tenor</string>-->
 </resources>

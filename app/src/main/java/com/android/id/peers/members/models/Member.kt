@@ -18,8 +18,6 @@ import com.android.id.peers.util.repository.ApiRepository
 import com.android.id.peers.util.repository.LoanRepository
 import com.android.id.peers.util.repository.MemberRepository
 import com.android.id.peers.util.response.ApiResponse
-import com.android.volley.Response
-import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import kotlinx.android.parcel.Parcelize
 import okhttp3.MediaType
@@ -54,6 +52,10 @@ data class Member constructor(
     @ColumnInfo(name = "status_perkawinan") var statusPerkawinan: Int = -1,
     @ColumnInfo(name = "pendidikan_terakhir") var pendidikanTerakhir: Int = -1,
     @ColumnInfo(name = "nama_gadis_ibu") var namaGadisIbuKandung: String = "",
+    @ColumnInfo(name = "rembug") var rembug: Int = -1,
+    @ColumnInfo(name = "selectedRembug") var selectedRembug: String = "",
+    @ColumnInfo(name = "kelompok") var kelompok: Int = -1,
+    @ColumnInfo(name = "selectedKelompok") var selectedKelompok: String = "",
 
     /*address*/
     @ColumnInfo(name = "alamat_ktp_jalan") var jalanSesuaiKtp: String = "",
@@ -659,6 +661,8 @@ data class Member constructor(
                                 config.statusPerkawinan = firstObj.getInt("status_perkawinan")
                                 config.pendidikanTerakhir = firstObj.getInt("pendidikan_terakhir")
                                 config.namaGadisIbu = firstObj.getInt("nama_gadis_ibu")
+                                config.rembug = firstObj.getInt("rembug")
+                                config.kelompok = firstObj.getInt("kelompok")
                                 config.alamatKtpJalan = firstObj.getInt("alamat_ktp_jalan")
                                 //                            config.alamatKtpNo = firstObj.getInt("alamat_ktp_nomer")
                                 //                            config.alamatKtpRt = firstObj.getInt("alamat_ktp_rt")
@@ -811,6 +815,9 @@ data class Member constructor(
             member.setMemberStatusPerkawinan(memberJsonObj.getString("status_perkawinan"))
             member.setMemberPendidikanTerakhir(memberJsonObj.getString("pendidikan_terakhir"))
             member.namaGadisIbuKandung = memberJsonObj.getString("nama_gadis_ibu")
+
+            member.selectedRembug = memberJsonObj.getString("rembug")
+            member.selectedKelompok = memberJsonObj.getString("kelompok")
 
             member.jalanSesuaiKtp = memberJsonObj.getString("alamat_ktp_jalan")
             Log.d("getMemberFromJsonObject", member.jalanSesuaiKtp)
@@ -1238,6 +1245,8 @@ data class Member constructor(
             params["usia"] = member.usia
             params["jenis_kelamin"] = member.jenisKelaminString()
             params["nama_gadis_ibu"] = member.namaGadisIbuKandung
+            params["rembug"] = member.selectedRembug
+            params["kelompok"] = member.selectedKelompok
             params["status_perkawinan"] = member.statusPerkawinanString()
             params["pendidikan_terakhir"] = member.pendidikanTerakhirString()
 

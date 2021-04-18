@@ -9,7 +9,7 @@ object ProductRepository {
     fun create(): ProductService {
         val retrofit = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://api.peers.id/api/v1/product/")
+            .baseUrl("http://13.212.188.255/api/v1/product/")
             .build()
         return retrofit.create(ProductService::class.java)
     }

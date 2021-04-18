@@ -19,6 +19,16 @@ import com.android.id.peers.util.connection.ApiConnections.Companion.REQUEST_TYP
 import com.android.id.peers.util.connection.ApiConnections.Companion.authenticate
 import com.android.id.peers.util.connection.NetworkConnectivity.Companion.connected
 import kotlinx.android.synthetic.main.activity_pencairan_detail.*
+import kotlinx.android.synthetic.main.activity_pencairan_detail.admin
+import kotlinx.android.synthetic.main.activity_pencairan_detail.asuransi
+import kotlinx.android.synthetic.main.activity_pencairan_detail.cicilan
+import kotlinx.android.synthetic.main.activity_pencairan_detail.jpk
+import kotlinx.android.synthetic.main.activity_pencairan_detail.jumlah_pencairan
+import kotlinx.android.synthetic.main.activity_pencairan_detail.jumlah_pinjaman
+import kotlinx.android.synthetic.main.activity_pencairan_detail.nama_product
+import kotlinx.android.synthetic.main.activity_pencairan_detail.simpanan_pokok
+import kotlinx.android.synthetic.main.activity_pencairan_detail.tenor
+import java.util.*
 
 class PencairanDetailActivity : AppCompatActivity() {
     var idMember = 0
@@ -54,8 +64,13 @@ class PencairanDetailActivity : AppCompatActivity() {
                     admin.text = CurrencyFormat.formatRupiah.format(result.biayaAdmin)
                     Log.d("PencairanDetail", "BIAYA ADMIN : ${result.biayaAdmin}")
                     jumlah_pencairan.text = CurrencyFormat.formatRupiah.format(result.jumlahPencairan)
-                    val cicilanText = "${CurrencyFormat.formatRupiah.format(result.cicilan)} / bulan"
+                    val cicilanText = "${CurrencyFormat.formatRupiah.format(result.cicilan)} / ${result.satuanTenor}"
                     cicilan.text = cicilanText
+
+                    asuransi.text = CurrencyFormat.formatRupiah.format(result.asuransi)
+                    jpk.text = CurrencyFormat.formatRupiah.format(result.jpk)
+                    provisi.text = CurrencyFormat.formatRupiah.format(result.provisi)
+
                     val tenorText = "${result.tenor} ${result.satuanTenor}"
                     tenor.text = tenorText
                     shimmer_view_container.visibility = View.GONE
