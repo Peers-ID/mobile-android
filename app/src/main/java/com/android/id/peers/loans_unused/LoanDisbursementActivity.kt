@@ -22,6 +22,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.*
+import com.android.id.peers.BuildConfig
 import com.android.id.peers.R
 import com.android.id.peers.loans_unused.adapters.LoansAdapter
 import com.android.id.peers.loans_unused.models.Loan
@@ -180,7 +181,7 @@ class LoanDisbursementActivity : AppCompatActivity() {
                 photoFile?.also {
                     val photoURI: Uri = FileProvider.getUriForFile(
                         this,
-                        "com.android.id.peers.file_provider",
+                        "${BuildConfig.APPLICATION_ID}.file_provider",
                         it
                     )
                     pictureUri = photoURI

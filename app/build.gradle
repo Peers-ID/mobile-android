@@ -30,13 +30,11 @@ android {
             dimension "dev"
             applicationIdSuffix ".dev"
             buildConfigField("String", 'BASE_URL', '"http://api.peers.id/api/v1/"')
-            resValue 'string', 'images_file_path', "Android/data/" + applicationId + "/files/Pictures"
         }
         prod{
             dimension "dev"
             applicationIdSuffix ".prod"
             buildConfigField("String", 'BASE_URL', '"http://13.212.188.255/api/v1/"')
-            resValue 'string', 'images_file_path', "Android/data/" + applicationId + "/files/Pictures"
         }
     }
 
