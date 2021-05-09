@@ -101,7 +101,7 @@ class PengajuanPinjamanActivity : AppCompatActivity() {
 
                 val asuransiText = if (selectedProduct.typeAsuransi.toLowerCase(Locale.ROOT) == "fix") CurrencyFormat.formatRupiah.format(selectedProduct.asuransi) else "${selectedProduct.asuransi}%"
                 asuransi.text = asuransiText
-
+//
                 val jpkText = if (selectedProduct.typeJpk.toLowerCase(Locale.ROOT) == "fix") CurrencyFormat.formatRupiah.format(selectedProduct.jpk) else "${selectedProduct.jpk}%"
                 jpk.text = jpkText
 

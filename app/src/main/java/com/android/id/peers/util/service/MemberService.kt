@@ -13,7 +13,7 @@ interface MemberService {
     fun get(@Header("Authorization") auth: String): Call<ApiResponse>
 
     @GET("nik/{nik}")
-    fun getByNik(@Header("Authorization") auth: String,@Path("nik") nik : Int): Call<ApiResponse>
+    fun getByNik(@Header("Authorization") auth: String,@Path("nik") nik : String): Call<ApiResponse>
 
     @POST(".")
     fun add(@Header("Authorization") auth: String,@Body body: HashMap<String, Any>): Call<ApiResponse>

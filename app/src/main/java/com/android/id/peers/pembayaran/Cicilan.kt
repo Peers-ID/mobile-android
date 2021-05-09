@@ -32,6 +32,7 @@ class Cicilan {
     var pembayaranKe : Int = 0
     var totalTagihan : Long = 0
     var simpananWajib : Long = 0
+    var jpk : Long = 0
     var simpananSukarela : Long = 0
     var denda : Long = 0
     var totalPembayaran : Long = 0
@@ -85,6 +86,7 @@ class Cicilan {
                             cicilan.jatuhTempo = date
                             cicilan.totalTagihan = cicilanJsonObject.getLong("total_tagihan")
                             cicilan.simpananWajib = cicilanJsonObject.getLong("simpanan_wajib")
+                            cicilan.jpk = cicilanJsonObject.getLong("dana_jpk")
                             cicilan.denda = cicilanJsonObject.getLong("denda")
                             cicilan.pokok = cicilanJsonObject.getLong("pokok")
                             cicilan.bunga = cicilanJsonObject.getLong("bunga")
@@ -115,6 +117,7 @@ class Cicilan {
             params["utang_pokok"] = cicilan.pokok
             params["bunga_pinjaman"] = cicilan.bunga
             params["simpanan_wajib"] = cicilan.simpananWajib
+            params["dana_jpk"] = cicilan.jpk
             params["simpanan_sukarela"] = cicilan.simpananSukarela
             params["denda"] = cicilan.denda
             params["setoran"] = cicilan.jumlahSetoran

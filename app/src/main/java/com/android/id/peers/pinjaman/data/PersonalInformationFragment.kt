@@ -124,70 +124,77 @@ class PersonalInformationFragment : Fragment() {
                 identity_no_container.error = "No Identitas tidak boleh kosong"
             } else {
                 val nik = identity_no.text.toString()
-                progress_bar_holder.visibility = View.VISIBLE
-                authenticate(preferences, context!!, REQUEST_TYPE_GET_CHECK_MEMBER_BY_NIK,
-                    object: MemberCallback {
-                        override fun onSuccess(result: MemberNikStatus) {
 
-                            progress_bar_holder.visibility = View.GONE
-                            when (result.status) {
-                                /**
-                                 * Continue to show the empty form
-                                 */
-                                200 -> {
-                                    periksa_container.visibility = View.GONE
-                                    periksa.visibility = View.GONE
-                                    form_container.visibility = View.VISIBLE
-                                    identity_no.isEnabled = false
-                                    val memberPreferences = context!!.getSharedPreferences("member_mode", Context.MODE_PRIVATE)
-                                    memberPreferences.edit().putBoolean("existing_member", false).apply()
-                                }
-                                /**
-                                 * Continue to show the pre-filled form
-                                 */
-                                203 -> {
-                                    memberViewModel.setMember(result.member!!)
-                                    presetText(result.member!!)
-                                    Log.d("PersonalInfo", result.member!!.noHp)
-                                    periksa_container.visibility = View.GONE
-                                    periksa.visibility = View.GONE
-                                    form_container.visibility = View.VISIBLE
-                                    identity_no.isEnabled = false
+                if(nik.length < 16){
+                    identity_no_container.error = "No Identitas tidak boleh kurang dari 16 digit"
+                }else{
+                    identity_no_container.error = null
+                    progress_bar_holder.visibility = View.VISIBLE
+                    authenticate(preferences, context!!, REQUEST_TYPE_GET_CHECK_MEMBER_BY_NIK,
+                        object: MemberCallback {
+                            override fun onSuccess(result: MemberNikStatus) {
 
-                                    val builder = AlertDialog.Builder(context!!)
-
-                                    with(builder)
-                                    {
-                                        setTitle("Pemberitahuan")
-                                        setMessage(result.message)
-                                        setNeutralButton("OK", neutralButtonClick)
-//                                        setNegativeButton("No", negativeButtonClick)
-                                        show()
+                                progress_bar_holder.visibility = View.GONE
+                                when (result.status) {
+                                    /**
+                                     * Continue to show the empty form
+                                     */
+                                    200 -> {
+                                        periksa_container.visibility = View.GONE
+                                        periksa.visibility = View.GONE
+                                        form_container.visibility = View.VISIBLE
+                                        identity_no.isEnabled = false
+                                        val memberPreferences = context!!.getSharedPreferences("member_mode", Context.MODE_PRIVATE)
+                                        memberPreferences.edit().putBoolean("existing_member", false).apply()
                                     }
+                                    /**
+                                     * Continue to show the pre-filled form
+                                     */
+                                    203 -> {
+                                        memberViewModel.setMember(result.member!!)
+                                        presetText(result.member!!)
+                                        Log.d("PersonalInfo", result.member!!.noHp)
+                                        periksa_container.visibility = View.GONE
+                                        periksa.visibility = View.GONE
+                                        form_container.visibility = View.VISIBLE
+                                        identity_no.isEnabled = false
 
-                                    val memberPreferences = context!!.getSharedPreferences("member_mode", Context.MODE_PRIVATE)
-                                    memberPreferences.edit().putBoolean("existing_member", true).apply()
-                                }
-                                /**
-                                 * There is an existing loan, the progress is halted
-                                 * Showing []
-                                 */
-                                else -> {
-                                    val builder = AlertDialog.Builder(context!!)
+                                        val builder = AlertDialog.Builder(context!!)
 
-                                    with(builder)
-                                    {
-                                        setTitle("Pemberitahuan")
-                                        setMessage(result.message)
-                                        setNeutralButton("OK", neutralButtonClick)
-//                                        setNegativeButton("No", negativeButtonClick)
-                                        show()
+                                        with(builder)
+                                        {
+                                            setTitle("Pemberitahuan")
+                                            setMessage(result.message)
+                                            setNeutralButton("OK", neutralButtonClick)
+    //                                        setNegativeButton("No", negativeButtonClick)
+                                            show()
+                                        }
+
+                                        val memberPreferences = context!!.getSharedPreferences("member_mode", Context.MODE_PRIVATE)
+                                        memberPreferences.edit().putBoolean("existing_member", true).apply()
+                                    }
+                                    /**
+                                     * There is an existing loan, the progress is halted
+                                     * Showing []
+                                     */
+                                    else -> {
+                                        val builder = AlertDialog.Builder(context!!)
+
+                                        with(builder)
+                                        {
+                                            setTitle("Pemberitahuan")
+                                            setMessage(result.message)
+                                            setNeutralButton("OK", neutralButtonClick)
+    //                                        setNegativeButton("No", negativeButtonClick)
+                                            show()
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                }, nik = nik)
+                    }, nik = nik)
+                }
+
             }
         }
 

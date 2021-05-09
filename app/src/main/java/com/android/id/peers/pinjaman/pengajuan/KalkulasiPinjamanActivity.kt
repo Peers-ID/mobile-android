@@ -115,14 +115,15 @@ class KalkulasiPinjamanActivity : AppCompatActivity() {
         val dendaPelunasanDipercepat = if (typePelunasanDipercepat!!.toLowerCase(Locale.ROOT) == "fix") product.pelunasanDipercepat else product.pelunasanDipercepat * pengaliPelunasanDipercepat / 100
         val dendaPelunasanDipercepatText = CurrencyFormat.formatRupiah.format(dendaPelunasanDipercepat)
         denda_pelunasan_dipercepat.text = dendaPelunasanDipercepatText
-
+//
         val biayaAsuransi = if (product.typeAsuransi.toLowerCase(Locale.ROOT) == "fix") product.asuransi else product.asuransi * jumlahPinjaman / 100
         val danaJpk = if (product.typeJpk.toLowerCase(Locale.ROOT) == "fix") product.jpk else product.jpk * jumlahPinjaman / 100
-
+//
         asuransi.text = CurrencyFormat.formatRupiah.format(biayaAsuransi)
         jpk.text = CurrencyFormat.formatRupiah.format(danaJpk)
 
-        val pengurang = (biayaAdmin + biayaProvisi + product.simpananPokok + biayaAsuransi + danaJpk).toLong()
+//        val pengurang = (biayaAdmin + biayaProvisi + product.simpananPokok + biayaAsuransi + danaJpk).toLong()
+        val pengurang = (biayaAdmin + biayaProvisi + product.simpananPokok + biayaAsuransi).toLong()
 
         val jumlahPencairan = jumlahPinjaman - pengurang
         jumlah_pencairan.text = CurrencyFormat.formatRupiah.format(jumlahPencairan)

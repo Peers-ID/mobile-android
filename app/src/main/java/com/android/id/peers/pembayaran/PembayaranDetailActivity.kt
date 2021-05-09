@@ -140,6 +140,7 @@ class PembayaranDetailActivity : AppCompatActivity() {
                     tanggal.text = result.jatuhTempo
                     angsuran.text = CurrencyFormat.formatRupiah.format(result.pokok + result.bunga)
                     simpanan_wajib.text = CurrencyFormat.formatRupiah.format(result.simpananWajib)
+                    jpk.text = CurrencyFormat.formatRupiah.format(result.jpk)
                     denda.text = CurrencyFormat.formatRupiah.format(result.denda)
                     total_pembayaran.text = CurrencyFormat.formatRupiah.format(result.totalPembayaran)
                     shimmer_view_container.visibility = View.GONE
@@ -172,6 +173,7 @@ class PembayaranDetailActivity : AppCompatActivity() {
         dialogView.findViewById<TextView>(R.id.bunga)?.text = CurrencyFormat.formatRupiah.format(cicilanBayar.bunga)
         dialogView.findViewById<TextView>(R.id.denda2)?.text = CurrencyFormat.formatRupiah.format(cicilanBayar.denda)
         dialogView.findViewById<TextView>(R.id.simpanan_wajib2)?.text = CurrencyFormat.formatRupiah.format(cicilanBayar.simpananWajib)
+        dialogView.findViewById<TextView>(R.id.jpk)?.text = CurrencyFormat.formatRupiah.format(cicilanBayar.jpk)
         dialogView.findViewById<TextView>(R.id.simpanan_sukarela2)?.text = CurrencyFormat.formatRupiah.format(cicilanBayar.simpananSukarela)
         dialogView.findViewById<TextView>(R.id.total_pembayaran2)?.text = CurrencyFormat.formatRupiah.format(cicilanBayar.totalPembayaran)
         dialogView.findViewById<TextView>(R.id.jumlah_setoran2)?.text = CurrencyFormat.formatRupiah.format(cicilanBayar.jumlahSetoran)
@@ -206,6 +208,7 @@ class PembayaranDetailActivity : AppCompatActivity() {
         cicilanBayar.pembayaranKe = cicilan.pembayaranKe
         cicilanBayar.totalPembayaran = cicilan.totalPembayaran
         cicilanBayar.simpananWajib = cicilan.simpananWajib
+        cicilanBayar.jpk = cicilan.jpk
         cicilanBayar.pokok = cicilan.pokok
         val simpananSukarela = CurrencyFormat.removeCurrencyFormat(simpanan_sukarela.text.toString()).toLong()
         cicilanBayar.simpananSukarela = cicilanBayar.simpananSukarela + simpananSukarela
@@ -249,6 +252,7 @@ class PembayaranDetailActivity : AppCompatActivity() {
                         cicilanBayar.bunga = cicilan.bunga
                         cicilanBayar.denda = cicilan.denda
                         cicilanBayar.simpananWajib = cicilan.simpananWajib
+                        cicilanBayar.jpk = cicilan.jpk
                         cicilanBayar.simpananSukarela = cicilan.jumlahSetoran - cicilan.pokok - cicilan.bunga - cicilan.denda - cicilan.simpananWajib
                     }
                 }
@@ -278,6 +282,7 @@ class PembayaranDetailActivity : AppCompatActivity() {
                         cicilanBayar.bunga = cicilan.bunga
                         cicilanBayar.denda = cicilan.denda
                         cicilanBayar.simpananWajib = cicilan.simpananWajib
+                        cicilanBayar.jpk = cicilan.jpk
                         cicilanBayar.simpananSukarela = cicilan.jumlahSetoran - cicilan.pokok - cicilan.bunga - cicilan.denda - cicilan.simpananWajib
                     }
                 }

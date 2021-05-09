@@ -20,9 +20,7 @@ import com.android.id.peers.util.connection.ApiConnections.Companion.authenticat
 import com.android.id.peers.util.connection.NetworkConnectivity.Companion.connected
 import kotlinx.android.synthetic.main.activity_pencairan_detail.*
 import kotlinx.android.synthetic.main.activity_pencairan_detail.admin
-import kotlinx.android.synthetic.main.activity_pencairan_detail.asuransi
 import kotlinx.android.synthetic.main.activity_pencairan_detail.cicilan
-import kotlinx.android.synthetic.main.activity_pencairan_detail.jpk
 import kotlinx.android.synthetic.main.activity_pencairan_detail.jumlah_pencairan
 import kotlinx.android.synthetic.main.activity_pencairan_detail.jumlah_pinjaman
 import kotlinx.android.synthetic.main.activity_pencairan_detail.nama_product
@@ -68,7 +66,7 @@ class PencairanDetailActivity : AppCompatActivity() {
                     cicilan.text = cicilanText
 
                     asuransi.text = CurrencyFormat.formatRupiah.format(result.asuransi)
-                    jpk.text = CurrencyFormat.formatRupiah.format(result.jpk)
+//                    jpk.text = CurrencyFormat.formatRupiah.format(result.jpk)
                     provisi.text = CurrencyFormat.formatRupiah.format(result.provisi)
 
                     val tenorText = "${result.tenor} ${result.satuanTenor}"

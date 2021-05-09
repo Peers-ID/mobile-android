@@ -67,6 +67,7 @@
                     android:id="@+id/identity_no"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:maxLength="16"
                     android:hint="@string/identity_no"
                     android:inputType="number"
                     android:selectAllOnFocus="true" />

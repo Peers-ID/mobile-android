@@ -1088,7 +1088,7 @@ data class Member constructor(
 
             val memberRepository = MemberRepository.create()
 
-            memberRepository.getByNik(token, nik.toInt()).enqueue(object : Callback<ApiResponse> {
+            memberRepository.getByNik(token, nik).enqueue(object : Callback<ApiResponse> {
                 override fun onResponse(
                     call: Call<ApiResponse>,
                     response: retrofit2.Response<ApiResponse>
