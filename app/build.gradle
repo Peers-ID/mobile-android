@@ -29,7 +29,8 @@ android {
         dev{
             dimension "dev"
             applicationIdSuffix ".dev"
-            buildConfigField("String", 'BASE_URL', '"http://api.peers.id/api/v1/"')
+            buildConfigField("String", 'BASE_URL', '"http://10.0.2.2:3001/api/v1/"')
+//            buildConfigField("String", 'BASE_URL', '"http://api.peers.id/api/v1/"')
         }
         prod{
             dimension "dev"

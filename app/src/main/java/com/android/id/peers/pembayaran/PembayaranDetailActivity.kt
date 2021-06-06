@@ -22,6 +22,7 @@ import com.android.id.peers.util.connection.ApiConnections.Companion.REQUEST_TYP
 import com.android.id.peers.util.connection.ApiConnections.Companion.authenticate
 import com.android.id.peers.util.connection.NetworkConnectivity
 import kotlinx.android.synthetic.main.activity_pembayaran_detail.*
+import kotlinx.android.synthetic.main.activity_transition.*
 import kotlinx.android.synthetic.main.layout_empty_data.*
 
 class PembayaranDetailActivity : AppCompatActivity() {
@@ -199,7 +200,7 @@ class PembayaranDetailActivity : AppCompatActivity() {
 
     private fun calculateDetailPembayaran(cicilan: Cicilan, bayarDenganSimpanan: Int) : Cicilan {
         cicilan.jumlahSetoran = CurrencyFormat.removeCurrencyFormat(jumlah_setoran.text.toString()).toLong()
-        cicilan.totalPembayaran = cicilan.pokok + cicilan.bunga + cicilan.simpananWajib + cicilan.denda
+        cicilan.totalPembayaran = cicilan.pokok + cicilan.bunga + cicilan.simpananWajib + cicilan.denda + cicilan.jpk
 
         val cicilanBayar = bayar(cicilan)
         cicilanBayar.idAnggota = cicilan.idAnggota
@@ -215,6 +216,7 @@ class PembayaranDetailActivity : AppCompatActivity() {
         cicilanBayar.bayarDenganSimpanan = bayarDenganSimpanan
 
         Log.d("calculateDetail", "SUKARELA : ${cicilanBayar.simpananSukarela}")
+        Log.d("totalPembayaran",cicilan.totalPembayaran.toString())
 
         return cicilanBayar
     }
@@ -247,13 +249,19 @@ class PembayaranDetailActivity : AppCompatActivity() {
                         cicilanBayar.denda = cicilan.denda
                         cicilanBayar.simpananSukarela = cicilan.jumlahSetoran - cicilan.pokok - cicilan.bunga - cicilan.denda
                     }
+                    cicilanBayar.jumlahSetoran < cicilan.bunga + cicilan.pokok + cicilan.denda + cicilan.simpananWajib + cicilan.jpk -> {
+                        cicilanBayar.pokok = cicilan.pokok
+                        cicilanBayar.bunga = cicilan.bunga
+                        cicilanBayar.denda = cicilan.denda
+                        cicilanBayar.simpananSukarela = cicilan.jumlahSetoran - cicilan.pokok - cicilan.bunga - cicilan.denda - cicilan.jpk
+                    }
                     else -> {
                         cicilanBayar.pokok = cicilan.pokok
                         cicilanBayar.bunga = cicilan.bunga
                         cicilanBayar.denda = cicilan.denda
                         cicilanBayar.simpananWajib = cicilan.simpananWajib
                         cicilanBayar.jpk = cicilan.jpk
-                        cicilanBayar.simpananSukarela = cicilan.jumlahSetoran - cicilan.pokok - cicilan.bunga - cicilan.denda - cicilan.simpananWajib
+                        cicilanBayar.simpananSukarela = cicilan.jumlahSetoran - cicilan.pokok - cicilan.bunga - cicilan.denda - cicilan.simpananWajib - cicilan.jpk
                     }
                 }
             }
@@ -277,13 +285,19 @@ class PembayaranDetailActivity : AppCompatActivity() {
                         cicilanBayar.denda = cicilan.denda
                         cicilanBayar.simpananSukarela = cicilan.jumlahSetoran - cicilan.pokok - cicilan.bunga - cicilan.denda
                     }
+                    cicilanBayar.jumlahSetoran < cicilan.bunga + cicilan.pokok + cicilan.denda + cicilan.simpananWajib + cicilan.jpk -> {
+                        cicilanBayar.pokok = cicilan.pokok
+                        cicilanBayar.bunga = cicilan.bunga
+                        cicilanBayar.denda = cicilan.denda
+                        cicilanBayar.simpananSukarela = cicilan.jumlahSetoran - cicilan.pokok - cicilan.bunga - cicilan.denda - cicilan.jpk
+                    }
                     else -> {
                         cicilanBayar.pokok = cicilan.pokok
                         cicilanBayar.bunga = cicilan.bunga
                         cicilanBayar.denda = cicilan.denda
                         cicilanBayar.simpananWajib = cicilan.simpananWajib
                         cicilanBayar.jpk = cicilan.jpk
-                        cicilanBayar.simpananSukarela = cicilan.jumlahSetoran - cicilan.pokok - cicilan.bunga - cicilan.denda - cicilan.simpananWajib
+                        cicilanBayar.simpananSukarela = cicilan.jumlahSetoran - cicilan.pokok - cicilan.bunga - cicilan.denda - cicilan.simpananWajib - cicilan.jpk
                     }
                 }
             }
