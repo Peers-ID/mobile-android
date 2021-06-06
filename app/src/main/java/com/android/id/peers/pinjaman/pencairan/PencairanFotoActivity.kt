@@ -20,6 +20,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import com.android.id.peers.BuildConfig
 import com.android.id.peers.MainActivity
 import com.android.id.peers.R
 import com.android.id.peers.util.callback.PostPictureCallback
@@ -125,7 +126,7 @@ class PencairanFotoActivity : AppCompatActivity() {
                 photoFile?.also {
                     val photoURI: Uri = FileProvider.getUriForFile(
                         this,
-                        "com.android.id.peers.file_provider",
+                        "${BuildConfig.APPLICATION_ID}.file_provider",
                         it
                     )
                     pictureUri = photoURI

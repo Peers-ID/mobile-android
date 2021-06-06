@@ -87,6 +87,8 @@ class AddressFragment : Fragment(), CoroutineScope {
         offlineViewModel = ViewModelProvider(activity!!).get(OfflineViewModel::class.java)
     }
 
+    private val b = false
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -205,6 +207,15 @@ class AddressFragment : Fragment(), CoroutineScope {
         address_kelurahan.adapter = kelurahanAdapter
         address_kelurahan_domisili.adapter = kelurahanDomisiliAdapter
 
+        address_city.visibility = View.GONE
+        address_city_domisili.visibility = View.GONE
+
+        address_kecamatan.visibility = View.GONE
+        address_kecamatan_domisili.visibility = View.GONE
+
+        address_kelurahan.visibility = View.GONE
+        address_kelurahan_domisili.visibility = View.GONE
+
         offlineViewModel.allProvince.observe(viewLifecycleOwner, Observer {provinces ->
             this.provinces = provinces
             Log.d("AddressFragment", provinces.size.toString())
@@ -234,9 +245,12 @@ class AddressFragment : Fragment(), CoroutineScope {
                             cityAdapter.clear()
                             cityAdapter.addAll(kabupatens)
                             cityAdapter.notifyDataSetChanged()
-                            val kabupaten = offlineViewModel.getKabupatenByNameAndProvinceId(member.kotaSesuaiKtp, selectedProvince.id)
+                            val kabupaten = offlineViewModel.getKabupatenByNameAndProvinceId(member.kotaSesuaiKtp.toUpperCase(), selectedProvince.id)
                             val pos = cityAdapter.getPosition(kabupaten)
-                            address_city.selection = if (member.kotaSesuaiKtpPosisi >= 0) member.kotaSesuaiKtpPosisi else if (pos >= 0) pos else -1
+                            if(pos != null){
+                                address_city.selection = if (member.kotaSesuaiKtpPosisi >= 0) member.kotaSesuaiKtpPosisi else if (pos >= 0) pos else -1
+                                address_city.visibility = View.VISIBLE
+                            }
                         }
                     }
                 })
@@ -265,10 +279,14 @@ class AddressFragment : Fragment(), CoroutineScope {
                             kecamatanAdapter.clear()
                             kecamatanAdapter.addAll(kecamatans)
                             kecamatanAdapter.notifyDataSetChanged()
-                            val kecamatan = offlineViewModel.getKecamatanByNameAndKabupatenId(member.kecamatanSesuaiKtp, selectedKabupaten.id)
+                            val kecamatan = offlineViewModel.getKecamatanByNameAndKabupatenId(member.kecamatanSesuaiKtp.toUpperCase(), selectedKabupaten.id)
                             val pos = kecamatanAdapter.getPosition(kecamatan)
 
-                            address_kecamatan.selection = if (member.kecamatanSesuaiKtpPosisi >= 0) member.kecamatanSesuaiKtpPosisi else if (pos >= 0) pos else -1
+                            if(pos != null){
+                                address_kecamatan.selection = if (member.kecamatanSesuaiKtpPosisi >= 0) member.kecamatanSesuaiKtpPosisi else if (pos >= 0) pos else -1
+                                address_kecamatan.visibility = View.VISIBLE
+                            }
+
                         }
                     }
                 })
@@ -296,9 +314,13 @@ class AddressFragment : Fragment(), CoroutineScope {
                             kelurahanAdapter.addAll(kelurahans)
                             kelurahanAdapter.notifyDataSetChanged()
 
-                            val kelurahan = offlineViewModel.getDesaByNameAndKecamatanId(member.kelurahanSesuaiKtp, selectedKecamatan.id)
+                            val kelurahan = offlineViewModel.getDesaByNameAndKecamatanId(member.kelurahanSesuaiKtp.toUpperCase(), selectedKecamatan.id)
                             val pos = kelurahanAdapter.getPosition(kelurahan)
-                            address_kelurahan.selection = if (member.kelurahanSesuaiKtpPosisi >= 0) member.kelurahanSesuaiKtpPosisi else if (pos >= 0) pos else -1
+
+                            if(pos != null){
+                                address_kelurahan.selection = if (member.kelurahanSesuaiKtpPosisi >= 0) member.kelurahanSesuaiKtpPosisi else if (pos >= 0) pos else -1
+                                address_kelurahan.visibility = View.VISIBLE
+                            }
                         }
                     }
                 })
@@ -344,9 +366,12 @@ class AddressFragment : Fragment(), CoroutineScope {
                             cityDomisiliAdapter.clear()
                             cityDomisiliAdapter.addAll(kabupatensDomisili)
                             cityDomisiliAdapter.notifyDataSetChanged()
-                            val kabupaten = offlineViewModel.getKabupatenByNameAndProvinceId(member.kotaDomisili, selectedProvince.id)
+                            val kabupaten = offlineViewModel.getKabupatenByNameAndProvinceId(member.kotaDomisili.toUpperCase(), selectedProvince.id)
                             val pos = cityDomisiliAdapter.getPosition(kabupaten)
-                            address_city_domisili.selection = if (member.kotaDomisiliPosisi >= 0) member.kotaDomisiliPosisi else if (pos >= 0) pos else if (address_domisili_equal_ktp.isChecked) address_city.selection else -1
+                            if(pos != null){
+                                address_city_domisili.selection = if (member.kotaDomisiliPosisi >= 0) member.kotaDomisiliPosisi else if (pos >= 0) pos else if (address_domisili_equal_ktp.isChecked) address_city.selection else -1
+                                address_city_domisili.visibility = View.VISIBLE
+                            }
                         }
                     }
                 })
@@ -375,10 +400,12 @@ class AddressFragment : Fragment(), CoroutineScope {
                             kecamatanDomisiliAdapter.clear()
                             kecamatanDomisiliAdapter.addAll(kecamatansDomisili)
                             kecamatanDomisiliAdapter.notifyDataSetChanged()
-                            val kecamatan = offlineViewModel.getKecamatanByNameAndKabupatenId(member.kecamatanDomisili, selectedKabupaten.id)
+                            val kecamatan = offlineViewModel.getKecamatanByNameAndKabupatenId(member.kecamatanDomisili.toUpperCase(), selectedKabupaten.id)
                             val pos = kecamatanDomisiliAdapter.getPosition(kecamatan)
-
-                            address_kecamatan_domisili.selection = if (member.kecamatanDomisiliPosisi >= 0) member.kecamatanDomisiliPosisi else if (pos >= 0) pos else if (address_domisili_equal_ktp.isChecked) address_kecamatan.selection else -1
+                            if(pos != null){
+                                address_kecamatan_domisili.selection = if (member.kecamatanDomisiliPosisi >= 0) member.kecamatanDomisiliPosisi else if (pos >= 0) pos else if (address_domisili_equal_ktp.isChecked) address_kecamatan.selection else -1
+                                address_kecamatan_domisili.visibility = View.VISIBLE
+                            }
                         }
                     }
                 })
@@ -407,9 +434,12 @@ class AddressFragment : Fragment(), CoroutineScope {
                             kelurahanDomisiliAdapter.addAll(kelurahansDomisili)
                             kelurahanDomisiliAdapter.notifyDataSetChanged()
 
-                            val kelurahan = offlineViewModel.getDesaByNameAndKecamatanId(member.kelurahanDomisili, selectedKecamatan.id)
+                            val kelurahan = offlineViewModel.getDesaByNameAndKecamatanId(member.kelurahanDomisili.toUpperCase(), selectedKecamatan.id)
                             val pos = kelurahanDomisiliAdapter.getPosition(kelurahan)
-                            address_kelurahan_domisili.selection = if (member.kelurahanDomisiliPosisi >= 0) member.kelurahanDomisiliPosisi else if (pos >= 0) pos  else if (address_domisili_equal_ktp.isChecked) address_kelurahan.selection else -1
+                            if(pos != null){
+                                address_kelurahan_domisili.selection = if (member.kelurahanDomisiliPosisi >= 0) member.kelurahanDomisiliPosisi else if (pos >= 0) pos  else if (address_domisili_equal_ktp.isChecked) address_kelurahan.selection else -1
+                                address_kelurahan_domisili.visibility = View.VISIBLE
+                            }
                         }
                     }
                 })
@@ -422,6 +452,9 @@ class AddressFragment : Fragment(), CoroutineScope {
 
         memberViewModel.member.observe(viewLifecycleOwner, Observer<Member> {
                 member ->
+
+            Log.d("MEMBEER",member.domisiliSesuaiKtp.toString())
+
             address_street.setText(member.jalanSesuaiKtp)
 //            address_no.setText(member.nomorSesuaiKtp)
 //            address_rt.setText(member.rtSesuaiKtp)
@@ -429,14 +462,14 @@ class AddressFragment : Fragment(), CoroutineScope {
             var province: Province
 //            var kabupaten: Kabupaten
             coroutineScope.launch(Dispatchers.Main) {
-                province = offlineViewModel.getProvinceByName(member.provinsiSesuaiKtp)
+                province = offlineViewModel.getProvinceByName(member.provinsiSesuaiKtp.toUpperCase())
                 var position = provinceAdapter.getPosition(province)
                 Log.d("AddressFragment", "Posisi Spinner Provinsi KTP : ${member.provinsiSesuaiKtpPosisi}")
                 Log.d("AddressFragment", "Provinsi KTP : ${member.provinsiSesuaiKtp}")
                 Log.d("AddressFragment", "Posisi Provinsi KTP : $position")
                 address_province.selection = if (member.provinsiSesuaiKtpPosisi >= 0) member.provinsiSesuaiKtpPosisi else if (position >= 0) position else -1
 
-                province = offlineViewModel.getProvinceByName(member.provinsiDomisili)
+                province = offlineViewModel.getProvinceByName(member.provinsiDomisili.toUpperCase())
                 position = provinceAdapter.getPosition(province)
                 Log.d("AddressFragment", "Posisi Spinner Provinsi Domisili : ${member.provinsiDomisiliPosisi}")
                 Log.d("AddressFragment", "Provinsi Domisili : ${member.provinsiDomisili}")
@@ -504,6 +537,7 @@ class AddressFragment : Fragment(), CoroutineScope {
     }
 
     private fun setMember(member: Member) {
+
         member.jalanSesuaiKtp = address_street.text.toString()
 //        member.nomorSesuaiKtp = address_no.text.toString()
 //        member.rtSesuaiKtp = address_rt.text.toString()
@@ -756,19 +790,43 @@ class AddressFragment : Fragment(), CoroutineScope {
             address_status_domisili.selection = address_status.selection
             address_how_long_domisili_month.setSelection(address_how_long_month.selectedItemPosition)
             address_how_long_domisili_year.setSelection(address_how_long_year.selectedItemPosition)
+
+            address_street_domisili.isEnabled = false
+            address_province_domisili.isEnabled = false
+            address_city_domisili.isEnabled = false
+            address_kecamatan_domisili.isEnabled = false
+            address_kelurahan_domisili.isEnabled = false
+            address_kode_pos_domisili.isEnabled = false
+            address_status_domisili.isEnabled = false
+            address_how_long_domisili_month.isEnabled = false
+            address_how_long_domisili_year.isEnabled = false
         }else{
             address_street_domisili.setText("")
 //            address_no_domisili.setText("")
 //            address_rt_domisili.setText("")
 //            address_rw_domisili.setText("")
-            address_province_domisili.selection = 0
-            address_city_domisili.selection = 0
-            address_kecamatan_domisili.selection = 0
-            address_kelurahan_domisili.selection = 0
+            address_province_domisili.selection = -1
+            address_city_domisili.selection = -1
+            address_kecamatan_domisili.selection = -1
+            address_kelurahan_domisili.selection = -1
             address_kode_pos_domisili.setText("")
-            address_status_domisili.selection = 0
-            address_how_long_domisili_month.setSelection(0)
-            address_how_long_domisili_year.setSelection(0)
+            address_status_domisili.selection = -1
+            address_how_long_domisili_month.setSelection(-1)
+            address_how_long_domisili_year.setSelection(-1)
+
+            address_city_domisili.visibility = View.GONE
+            address_kecamatan_domisili.visibility = View.GONE
+            address_kelurahan_domisili.visibility = View.GONE
+
+            address_street_domisili.isEnabled = true
+            address_province_domisili.isEnabled = true
+            address_city_domisili.isEnabled = true
+            address_kecamatan_domisili.isEnabled = true
+            address_kelurahan_domisili.isEnabled = true
+            address_kode_pos_domisili.isEnabled = true
+            address_status_domisili.isEnabled = true
+            address_how_long_domisili_month.isEnabled = true
+            address_how_long_domisili_year.isEnabled = true
         }
     }
 

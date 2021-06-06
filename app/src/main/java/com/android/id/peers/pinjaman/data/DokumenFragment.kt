@@ -26,6 +26,7 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.android.id.peers.BuildConfig
 import com.android.id.peers.R
 import com.android.id.peers.members.models.Member
 import com.android.id.peers.util.communication.MemberViewModel
@@ -311,7 +312,7 @@ class DokumenFragment : Fragment() {
                 photoFile?.also {
                     val photoURI: Uri = FileProvider.getUriForFile(
                         anggotaContext,
-                        "com.android.id.peers.file_provider",
+                        "${BuildConfig.APPLICATION_ID}.file_provider",
                         it
                     )
                     pictureUri = photoURI
@@ -321,7 +322,6 @@ class DokumenFragment : Fragment() {
             }
         }
     }
-
 
 
     lateinit var currentPhotoPath: String
@@ -354,7 +354,9 @@ class DokumenFragment : Fragment() {
     @SuppressLint("RestrictedApi")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         Log.d("DokumenFragment", "onActivityResult ${data.toString()}")
+
         if (resultCode == Activity.RESULT_OK/* && requestCode == REQUEST_IMAGE_CAPTURE*/) {
 //            val uri = data?.data
             var size: Long = 0
@@ -415,6 +417,7 @@ class DokumenFragment : Fragment() {
 
                     member.dokumenKtpByteArrayString = Base64.encodeToString(imageData, Base64.DEFAULT)
                     Log.d("DokumenFragment", "KTP TEXT : ${member.dokumenKtpByteArrayString}")
+
                 }
                 "SIM" -> {
                     member.dokumenSimByteArrayString = Base64.encodeToString(imageData, Base64.DEFAULT)

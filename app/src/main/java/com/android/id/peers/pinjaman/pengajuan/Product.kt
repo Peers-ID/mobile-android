@@ -30,6 +30,10 @@ data class Product(
     var typeAdmin: String = "Fix",
     var provisi: Double = 0.0,
     var typeProvisi: String = "Fix",
+    var asuransi: Double = 0.0,
+    var typeAsuransi: String = "Fix",
+    var jpk: Double = 0.0,
+    var typeJpk: String = "Fix",
     var simpananPokok: Double = 0.0,
     var typeSimpananPokok: String = "Fix",
     var simpananWajib: Long = 0,
@@ -54,7 +58,7 @@ data class Product(
                     val strResp = response.toString()
                     val jsonObj = JSONObject(strResp)
                     val status = jsonObj.getInt("status")
-                    Log.d("getMember", strResp)
+                    Log.d("getActiveProducts", strResp)
 //                if (loginStatus.toInt() == 400 || loginStatus.toInt() == 401) {
 //                    popUpSnack(view, "Login Failed!")
 //                } else if (loginStatus.toInt() == 201) {
@@ -62,7 +66,7 @@ data class Product(
                     if (status == 200) {
                         val products = ArrayList<Product>()
                         val data = jsonObj.getJSONArray("data")
-                        Log.d("ActiveProduct", "JUMLAH PRODUK : ${data.length()}")
+                        Log.d("getActiveProducts", "JUMLAH PRODUK : ${data.length()}")
                         for (idx in 0 until data.length()) {
                             val productJson = data.getJSONObject(idx)
                             val product = Product()
@@ -76,6 +80,12 @@ data class Product(
                             product.typeAdmin = productJson.getString("type_admin")
                             product.provisi = productJson.getString("provisi").replace(",", ".").toDouble()
                             product.typeProvisi = productJson.getString("type_provisi")
+
+                            product.asuransi = if(!productJson.isNull("asuransi")) productJson.getString("asuransi").replace(",", ".").toDouble() else 0.0
+                            product.typeAsuransi = if(!productJson.isNull("type_asuransi")) productJson.getString("type_asuransi") else ""
+                            product.jpk = if(!productJson.isNull("dana_jpk")) productJson.getString("dana_jpk").replace(",", ".").toDouble() else 0.0
+                            product.typeJpk = if(!productJson.isNull("type_dana_jpk")) productJson.getString("type_dana_jpk") else ""
+
                             product.simpananPokok = productJson.getString("simpanan_pokok").replace(",", ".").toDouble()
                             product.typeSimpananPokok = productJson.getString("type_simpanan_pokok")
                             product.simpananWajib = productJson.getLong("simpanan_wajib")

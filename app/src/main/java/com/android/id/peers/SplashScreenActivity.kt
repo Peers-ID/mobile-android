@@ -22,8 +22,10 @@ import com.android.id.peers.util.connection.ApiConnections.Companion.authenticat
 import com.android.id.peers.util.connection.ConnectionStateMonitor
 import com.android.id.peers.util.connection.NetworkConnectivity
 import com.android.id.peers.util.database.OfflineViewModel
+import com.android.id.peers.util.response.ApiResponse
 import kotlinx.android.synthetic.main.activity_splash_screen.*
 import kotlinx.coroutines.*
+import org.json.JSONArray
 import kotlin.coroutines.CoroutineContext
 import kotlin.properties.Delegates
 

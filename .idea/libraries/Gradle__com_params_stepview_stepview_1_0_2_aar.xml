@@ -3,6 +3,18 @@
     <CLASSES>
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/fa9aa64272d106dfcd1f6dc6f88969ba/jetified-stepview-1.0.2/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/fa9aa64272d106dfcd1f6dc6f88969ba/jetified-stepview-1.0.2/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/197118b65dcab33dfde524d530b91c44/jetified-stepview-1.0.2/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/197118b65dcab33dfde524d530b91c44/jetified-stepview-1.0.2/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/197118b65dcab33dfde524d530b91c44/jetified-stepview-1.0.2/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/0c02a72a21f2d22c703114654c78bd1d/jetified-stepview-1.0.2/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/0c02a72a21f2d22c703114654c78bd1d/jetified-stepview-1.0.2/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/0c02a72a21f2d22c703114654c78bd1d/jetified-stepview-1.0.2/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/892b8a40bb5da39c8b2e8b76d0ba0860/jetified-stepview-1.0.2/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/892b8a40bb5da39c8b2e8b76d0ba0860/jetified-stepview-1.0.2/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/892b8a40bb5da39c8b2e8b76d0ba0860/jetified-stepview-1.0.2/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/3a41d23249d281938e8f31903ac4025b/jetified-stepview-1.0.2/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/3a41d23249d281938e8f31903ac4025b/jetified-stepview-1.0.2/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/3a41d23249d281938e8f31903ac4025b/jetified-stepview-1.0.2/res" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.params.stepview/stepview/1.0.2/b7dabc3a5d7a43f50937833b3929b4ddd45b38a2/stepview-1.0.2-javadoc.jar!/" />

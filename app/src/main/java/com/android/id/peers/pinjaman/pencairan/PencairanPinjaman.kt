@@ -14,4 +14,7 @@ class PencairanPinjaman {
     var cicilan : Long = 0
     var tenor : Int = 0
     var satuanTenor : String = ""
+    var provisi : Long = 0
+    var asuransi : Long = 0
+    var jpk : Long = 0
 }

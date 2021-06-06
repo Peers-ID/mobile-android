@@ -62,6 +62,7 @@ class VerificationActivity : AppCompatActivity() {
 
         if (intent.getParcelableExtra<Member>("member") != null) {
              member = intent.getParcelableExtra("member")!!
+            Log.d("VerificationActivity", member.toString())
         }
 //        noHP = (intent.getStringExtra("hand_phone"))!!
         if (intent.getParcelableExtra<Pinjaman>("pinjaman") != null) {
@@ -243,7 +244,7 @@ class VerificationActivity : AppCompatActivity() {
     }
 
     private fun postMemberAndPicturesAndLoan(member : Member, preferences : SharedPreferences) {
-        if (member.dokumenKtp.isNotEmpty()) {
+        if (member.dokumenKtp.isNotEmpty() && member.dokumenKtpByteArrayString.isNotEmpty()) {
             threshold++
             authenticate(preferences, this, REQUEST_TYPE_POST_MEMBER_PICTURE, object : PostPictureCallback {
                 override fun onPictureUploaded(fileName: String) {
@@ -254,103 +255,112 @@ class VerificationActivity : AppCompatActivity() {
 
             }, imageData = Base64.decode(member.dokumenKtpByteArrayString, Base64.DEFAULT), fileName = member.dokumenKtp)
         }
-        if (member.dokumenSim.isNotEmpty()) {
+        if (member.dokumenSim.isNotEmpty()&& member.dokumenSimByteArrayString.isNotEmpty()) {
             threshold++
             authenticate(preferences, context, REQUEST_TYPE_POST_MEMBER_PICTURE, object : PostPictureCallback {
                 override fun onPictureUploaded(fileName: String) {
                     member.dokumenSim = fileName
                     done++
-                    Log.d("Verification", "DONE VALUE : $done")
+                    Log.d("Verification", "DONE VALUE SIM : $done")
                 }
 
             }, imageData = Base64.decode(member.dokumenSimByteArrayString, Base64.DEFAULT), fileName = member.dokumenSim)
         }
-        if (member.dokumenKk.isNotEmpty()) {
+        if (member.dokumenKk.isNotEmpty()&& member.dokumenKkByteArrayString.isNotEmpty()) {
             threshold++
             authenticate(preferences, context, REQUEST_TYPE_POST_MEMBER_PICTURE, object : PostPictureCallback {
                 override fun onPictureUploaded(fileName: String) {
                     member.dokumenKk = fileName
                     done++
-                    Log.d("Verification", "DONE VALUE : $done")
+                    Log.d("Verification", "DONE VALUE KK : $done")
                 }
 
             }, imageData = Base64.decode(member.dokumenKkByteArrayString, Base64.DEFAULT), fileName = member.dokumenKk)
         }
-        if (member.dokumenBpkb.isNotEmpty()) {
+        if (member.dokumenBpkb.isNotEmpty() && member.dokumenBpkbByteArrayString.isNotEmpty()) {
             threshold++
             authenticate(preferences, context, REQUEST_TYPE_POST_MEMBER_PICTURE, object : PostPictureCallback {
                 override fun onPictureUploaded(fileName: String) {
                     member.dokumenBpkb = fileName
                     done++
-                    Log.d("Verification", "DONE VALUE : $done")
+                    Log.d("Verification", "DONE VALUE BPKB : $done")
                 }
 
             }, imageData = Base64.decode(member.dokumenBpkbByteArrayString, Base64.DEFAULT), fileName = member.dokumenBpkb)
         }
-        if (member.dokumenAktaNikah.isNotEmpty()) {
+        if (member.dokumenAktaNikah.isNotEmpty() && member.dokumenAktaNikahByteArrayString.isNotEmpty()) {
             threshold++
             authenticate(preferences, context, REQUEST_TYPE_POST_MEMBER_PICTURE, object : PostPictureCallback {
                 override fun onPictureUploaded(fileName: String) {
                     member.dokumenAktaNikah = fileName
                     done++
-                    Log.d("Verification", "DONE VALUE : $done")
+                    Log.d("Verification", "DONE VALUE AKTA NIKAH : $done")
                 }
 
             }, imageData = Base64.decode(member.dokumenAktaNikahByteArrayString, Base64.DEFAULT), fileName = member.dokumenAktaNikah)
         }
-        if (member.dokumenSlipGaji.isNotEmpty()) {
+        if (member.dokumenSlipGaji.isNotEmpty() && member.dokumenSlipGajiByteArrayString.isNotEmpty()) {
             threshold++
             authenticate(preferences, context, REQUEST_TYPE_POST_MEMBER_PICTURE, object : PostPictureCallback {
                 override fun onPictureUploaded(fileName: String) {
                     member.dokumenSlipGaji = fileName
                     done++
-                    Log.d("Verification", "DONE VALUE : $done")
+                    Log.d("Verification", "DONE VALUE SLIP GAJI : $done")
                 }
 
             }, imageData = Base64.decode(member.dokumenSlipGajiByteArrayString, Base64.DEFAULT), fileName = member.dokumenSlipGaji)
         }
-        if (member.dokumenKetKerja.isNotEmpty()) {
+        if (member.dokumenKetKerja.isNotEmpty() && member.dokumenKetKerjaByteArrayString.isNotEmpty()) {
             threshold++
             authenticate(preferences, context, REQUEST_TYPE_POST_MEMBER_PICTURE, object : PostPictureCallback {
                 override fun onPictureUploaded(fileName: String) {
                     member.dokumenKetKerja = fileName
                     done++
-                    Log.d("Verification", "DONE VALUE : $done")
+                    Log.d("Verification", "DONE VALUE KET KERJA : $done")
                 }
 
             }, imageData = Base64.decode(member.dokumenKetKerjaByteArrayString, Base64.DEFAULT), fileName = member.dokumenKetKerja)
         }
-        if (member.dokumenLainnya.isNotEmpty()) {
+        if (member.dokumenLainnya.isNotEmpty() && member.dokumenLainnyaByteArrayString.isNotEmpty()) {
             threshold++
             authenticate(preferences, context, REQUEST_TYPE_POST_MEMBER_PICTURE, object : PostPictureCallback {
                 override fun onPictureUploaded(fileName: String) {
                     member.dokumenLainnya = fileName
                     done++
-                    Log.d("Verification", "DONE VALUE : $done")
+                    Log.d("Verification", "DONE VALUE LAINNYA : $done")
                 }
 
             }, imageData = Base64.decode(member.dokumenLainnyaByteArrayString, Base64.DEFAULT), fileName = member.dokumenLainnya)
         }
         Log.d("Verification", "THRESHOLD VALUE : $threshold")
+
+        if(threshold == 0){
+            requestMemberAndLoan()
+        }
     }
 
     private var threshold = 0
 
+    fun requestMemberAndLoan(){
+        if (isExistingMember)
+            authenticate(preferences, context, REQUEST_TYPE_PUT_MEMBER_AND_LOAN, object : PinjamanResponseCallback {
+                override fun onSuccess(result: PinjamanResponse) {
+                    responseHandling(result)
+                }
+
+            }, member = member, pinjaman = pinjaman)
+        else
+            authenticate(preferences, context, REQUEST_TYPE_POST_MEMBER_AND_LOAN, object : PinjamanResponseCallback {
+                override fun onSuccess(result: PinjamanResponse) {
+                    responseHandling(result)
+                }
+
+            }, member = member, pinjaman = pinjaman)
+    }
+
+
     var done: Int by Delegates.observable(0) { _, _, newValue ->
         if (newValue == threshold)
-            if (isExistingMember)
-                authenticate(preferences, context, REQUEST_TYPE_PUT_MEMBER_AND_LOAN, object : PinjamanResponseCallback {
-                    override fun onSuccess(result: PinjamanResponse) {
-                        responseHandling(result)
-                    }
-
-                }, member = member, pinjaman = pinjaman)
-            else
-                authenticate(preferences, context, REQUEST_TYPE_POST_MEMBER_AND_LOAN, object : PinjamanResponseCallback {
-                    override fun onSuccess(result: PinjamanResponse) {
-                        responseHandling(result)
-                    }
-
-                }, member = member, pinjaman = pinjaman)
+            requestMemberAndLoan()
     }
 }

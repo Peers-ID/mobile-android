@@ -17,16 +17,23 @@ import androidx.lifecycle.ViewModelProvider
 import com.android.id.peers.R
 import com.android.id.peers.members.models.Member
 import com.android.id.peers.members.models.MemberNikStatus
+import com.android.id.peers.util.callback.ApiCallback
 import com.android.id.peers.util.callback.MemberCallback
 import com.android.id.peers.util.communication.MemberViewModel
+import com.android.id.peers.util.connection.ApiConnections
 import com.android.id.peers.util.connection.ApiConnections.Companion.REQUEST_TYPE_GET_CHECK_MEMBER_BY_NIK
 import com.android.id.peers.util.connection.ApiConnections.Companion.authenticate
 import com.android.id.peers.util.connection.ConnectionStateMonitor
+import com.android.id.peers.util.response.ApiResponse
 import com.shuhart.stepview.StepView
+import com.tiper.MaterialSpinner
 import kotlinx.android.synthetic.main.button_bottom.*
+import kotlinx.android.synthetic.main.fragment_occupation.*
 import kotlinx.android.synthetic.main.fragment_personal_information.*
+import org.json.JSONArray
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -51,6 +58,13 @@ class PersonalInformationFragment : Fragment() {
 //    private var listener: OnFragmentInteractionListener? = null
 
     var connected: Boolean = true
+
+    lateinit var preferences: SharedPreferences
+    var rembugIds: ArrayList<Int> = ArrayList()
+    var rembugData: ArrayList<String> = ArrayList()
+    var kelompokData: ArrayList<String> = ArrayList()
+    lateinit var kelompokAdapter: ArrayAdapter<String>
+    lateinit var rembugAdapter: ArrayAdapter<String>
 
     override fun onDetach() {
         super.onDetach()
@@ -83,6 +97,8 @@ class PersonalInformationFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
 
+        preferences = context!!.getSharedPreferences("login_data", Context.MODE_PRIVATE)
+
         return inflater!!.inflate(R.layout.fragment_personal_information, container, false)
     }
 
@@ -97,6 +113,8 @@ class PersonalInformationFragment : Fragment() {
 
         checkConfig()
 
+        rembugAndKelompok(view)
+
         periksa.setOnClickListener {
             /**
              * Call API to check whether the member is new or registered based on the [identity_no] field
@@ -106,71 +124,77 @@ class PersonalInformationFragment : Fragment() {
                 identity_no_container.error = "No Identitas tidak boleh kosong"
             } else {
                 val nik = identity_no.text.toString()
-                val preferences = context!!.getSharedPreferences("login_data", Context.MODE_PRIVATE)
-                progress_bar_holder.visibility = View.VISIBLE
-                authenticate(preferences, context!!, REQUEST_TYPE_GET_CHECK_MEMBER_BY_NIK,
-                    object: MemberCallback {
-                        override fun onSuccess(result: MemberNikStatus) {
 
-                            progress_bar_holder.visibility = View.GONE
-                            when (result.status) {
-                                /**
-                                 * Continue to show the empty form
-                                 */
-                                200 -> {
-                                    periksa_container.visibility = View.GONE
-                                    periksa.visibility = View.GONE
-                                    form_container.visibility = View.VISIBLE
-                                    identity_no.isEnabled = false
-                                    val memberPreferences = context!!.getSharedPreferences("member_mode", Context.MODE_PRIVATE)
-                                    memberPreferences.edit().putBoolean("existing_member", false).apply()
-                                }
-                                /**
-                                 * Continue to show the pre-filled form
-                                 */
-                                203 -> {
-                                    memberViewModel.setMember(result.member!!)
-                                    presetText(result.member!!)
-                                    Log.d("PersonalInfo", result.member!!.noHp)
-                                    periksa_container.visibility = View.GONE
-                                    periksa.visibility = View.GONE
-                                    form_container.visibility = View.VISIBLE
-                                    identity_no.isEnabled = false
+                if(nik.length < 16){
+                    identity_no_container.error = "No Identitas tidak boleh kurang dari 16 digit"
+                }else{
+                    identity_no_container.error = null
+                    progress_bar_holder.visibility = View.VISIBLE
+                    authenticate(preferences, context!!, REQUEST_TYPE_GET_CHECK_MEMBER_BY_NIK,
+                        object: MemberCallback {
+                            override fun onSuccess(result: MemberNikStatus) {
 
-                                    val builder = AlertDialog.Builder(context!!)
-
-                                    with(builder)
-                                    {
-                                        setTitle("Pemberitahuan")
-                                        setMessage(result.message)
-                                        setNeutralButton("OK", neutralButtonClick)
-//                                        setNegativeButton("No", negativeButtonClick)
-                                        show()
+                                progress_bar_holder.visibility = View.GONE
+                                when (result.status) {
+                                    /**
+                                     * Continue to show the empty form
+                                     */
+                                    200 -> {
+                                        periksa_container.visibility = View.GONE
+                                        periksa.visibility = View.GONE
+                                        form_container.visibility = View.VISIBLE
+                                        identity_no.isEnabled = false
+                                        val memberPreferences = context!!.getSharedPreferences("member_mode", Context.MODE_PRIVATE)
+                                        memberPreferences.edit().putBoolean("existing_member", false).apply()
                                     }
+                                    /**
+                                     * Continue to show the pre-filled form
+                                     */
+                                    203 -> {
+                                        memberViewModel.setMember(result.member!!)
+                                        presetText(result.member!!)
+                                        Log.d("PersonalInfo", result.member!!.noHp)
+                                        periksa_container.visibility = View.GONE
+                                        periksa.visibility = View.GONE
+                                        form_container.visibility = View.VISIBLE
+                                        identity_no.isEnabled = false
 
-                                    val memberPreferences = context!!.getSharedPreferences("member_mode", Context.MODE_PRIVATE)
-                                    memberPreferences.edit().putBoolean("existing_member", true).apply()
-                                }
-                                /**
-                                 * There is an existing loan, the progress is halted
-                                 * Showing []
-                                 */
-                                else -> {
-                                    val builder = AlertDialog.Builder(context!!)
+                                        val builder = AlertDialog.Builder(context!!)
 
-                                    with(builder)
-                                    {
-                                        setTitle("Pemberitahuan")
-                                        setMessage(result.message)
-                                        setNeutralButton("OK", neutralButtonClick)
-//                                        setNegativeButton("No", negativeButtonClick)
-                                        show()
+                                        with(builder)
+                                        {
+                                            setTitle("Pemberitahuan")
+                                            setMessage(result.message)
+                                            setNeutralButton("OK", neutralButtonClick)
+    //                                        setNegativeButton("No", negativeButtonClick)
+                                            show()
+                                        }
+
+                                        val memberPreferences = context!!.getSharedPreferences("member_mode", Context.MODE_PRIVATE)
+                                        memberPreferences.edit().putBoolean("existing_member", true).apply()
+                                    }
+                                    /**
+                                     * There is an existing loan, the progress is halted
+                                     * Showing []
+                                     */
+                                    else -> {
+                                        val builder = AlertDialog.Builder(context!!)
+
+                                        with(builder)
+                                        {
+                                            setTitle("Pemberitahuan")
+                                            setMessage(result.message)
+                                            setNeutralButton("OK", neutralButtonClick)
+    //                                        setNegativeButton("No", negativeButtonClick)
+                                            show()
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                }, nik = nik)
+                    }, nik = nik)
+                }
+
             }
         }
 
@@ -222,6 +246,73 @@ class PersonalInformationFragment : Fragment() {
         mother_name.setText(member.namaGadisIbuKandung)
         marital_status.selection = member.statusPerkawinan
         last_education.selection = member.pendidikanTerakhir
+
+        rembug.selection = rembugAdapter.getPosition(member.selectedRembug)
+        kelompok.selection = kelompokAdapter.getPosition(member.selectedKelompok)
+    }
+
+    fun rembugAndKelompok(view: View){
+        authenticate(preferences, context!!, ApiConnections.REQUEST_TYPE_GET_REMBUG,
+            object : ApiCallback {
+                override fun onSuccess(result: Any) {
+                    var data = result as ApiResponse
+                    val d = data!!.data as ArrayList<Any>
+                    var newData = JSONArray(d)
+                    rembugData.clear()
+                    rembugIds.clear()
+                    for (idx in 0 until newData.length()) {
+                        val rembugObject = newData.getJSONObject(idx)
+                        val rembugObjectText = rembugObject.getString("nama_ketua")+" - "+rembugObject.getString("nama_rembug")
+                        rembugData.add(rembugObjectText)
+                        rembugIds.add(rembugObject.getInt("id"))
+                    }
+
+                }
+            })
+
+        rembugAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, rembugData)
+        rembugAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        rembug.adapter = rembugAdapter
+
+        rembug.onItemSelectedListener = object : MaterialSpinner.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: MaterialSpinner,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                getKelompok(rembugIds.get(position))
+            }
+
+            override fun onNothingSelected(parent: MaterialSpinner) {
+//                TODO("Not yet implemented")
+            }
+
+        }
+
+        kelompokAdapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item, kelompokData)
+        kelompokAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        kelompok.adapter = kelompokAdapter
+    }
+
+    fun getKelompok(idRembug : Int){
+        authenticate(preferences, context!!, ApiConnections.REQUEST_TYPE_GET_KELOMPOK,
+            object : ApiCallback {
+                override fun onSuccess(result: Any) {
+                    var data = result as ApiResponse
+                    val d = data!!.data as ArrayList<Any>
+                    var newData = JSONArray(d)
+                    kelompokData.clear()
+                    for (idx in 0 until newData.length()) {
+                        val kelompokObject = newData.getJSONObject(idx)
+                        val kelompokObjectText = kelompokObject.getString("nama_ketua")+" - "+kelompokObject.getString("nama_kelompok")
+                        kelompokData.add(kelompokObjectText)
+                    }
+
+                }
+            },rembugId = idRembug)
+
+        kelompok.visibility = View.VISIBLE
     }
 
     /**
@@ -266,6 +357,9 @@ class PersonalInformationFragment : Fragment() {
         }
         if (configPreferences.getInt("status_perkawinan", 1) == 0) marital_status.visibility = View.GONE
         if (configPreferences.getInt("pendidikan_terakhir", 1) == 0) last_education.visibility = View.GONE
+
+        if (configPreferences.getInt("rembug", 1) == 0) rembug.visibility = View.GONE
+        if (configPreferences.getInt("kelompok", 1) == 0) kelompok.visibility = View.GONE
     }
 
     private  fun onBackButtonClicked() {
@@ -326,6 +420,14 @@ class PersonalInformationFragment : Fragment() {
         }
         if(configPreferences.getInt("pendidikan_terakhir", 1) == 1 && last_education.selectedItemId < 0) {
             last_education.error = "Pendidikan Terakhir tidak boleh kosong"
+            allTrue = false
+        }
+        if(configPreferences.getInt("rembug", 1) == 1 && rembug.selectedItemId < 0) {
+            rembug.error = "Rembug tidak boleh kosong"
+            allTrue = false
+        }
+        if(configPreferences.getInt("kelompok", 1) == 1 && kelompok.selectedItemId < 0) {
+            kelompok.error = "Kelompok tidak boleh kosong"
             allTrue = false
         }
         if(allTrue) {
@@ -417,6 +519,10 @@ class PersonalInformationFragment : Fragment() {
         member.namaGadisIbuKandung = mother_name.text.toString()
         member.statusPerkawinan = marital_status.selection
         member.pendidikanTerakhir = last_education.selection
+        member.rembug = rembug.selection
+        member.kelompok = kelompok.selection
+        member.selectedRembug = rembug.selectedItem.toString()
+        member.selectedKelompok = kelompok.selectedItem.toString()
 
         memberViewModel.setMember(member)
     }

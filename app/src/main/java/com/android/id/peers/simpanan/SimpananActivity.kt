@@ -48,6 +48,8 @@ class SimpananActivity : AppCompatActivity() {
         shimmer_view_container.startShimmerAnimation()
         val preferences = getSharedPreferences("login_data", Context.MODE_PRIVATE)
 
+        memberItemList.clear()
+
         ApiConnections.authenticate(
             preferences,
             this,
@@ -55,6 +57,7 @@ class SimpananActivity : AppCompatActivity() {
             object : SimpananItemCallback {
                 override fun onSuccess(result: ArrayList<Simpanan>) {
                     val simpanan = ArrayList<Simpanan>(result)
+
                     if (result.size > 0) {
                         if (result[0].namaMember.isNotEmpty()) {
                             Log.d("SimpananActivity", "SIMPANAN : ${simpanan[0].simpananPokok}")
@@ -63,9 +66,10 @@ class SimpananActivity : AppCompatActivity() {
                             Log.d("SimpananActivity", "Member LIST SIZE : ${memberItemList.size}")
                             simpananItemAdapter.notifyDataSetChanged()
                         }
-                        if (result[0].length == 0) {
+                        if (result[0].length == -1) {
                             shimmer_view_container.visibility = View.GONE
                             shimmer_view_container.stopShimmerAnimation()
+
                             if (memberItemList.isEmpty()) {
                                 simpanan_item_rv.visibility = View.GONE
                                 error_container.visibility = View.VISIBLE

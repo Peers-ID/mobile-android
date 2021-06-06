@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
+import com.android.id.peers.BuildConfig
 import com.android.id.peers.loans_unused.models.Loan
 import com.android.id.peers.loans_unused.models.Loan.Companion.getLoan
 import com.android.id.peers.loans_unused.models.Loan.Companion.postCollection
@@ -30,6 +31,7 @@ import com.android.id.peers.pinjaman.pengajuan.Pinjaman.Companion.getPencairanPi
 import com.android.id.peers.pinjaman.pengajuan.Pinjaman.Companion.getPinjamanMemberStatus
 import com.android.id.peers.pinjaman.pengajuan.Pinjaman.Companion.putStatusPencairan
 import com.android.id.peers.pinjaman.pengajuan.Product.Companion.getActiveProducts
+import com.android.id.peers.simpanan.Simpanan
 import com.android.id.peers.util.callback.*
 import com.android.id.peers.util.database.OfflineViewModel
 import com.android.volley.Request.Method
@@ -42,6 +44,11 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URL
 import com.android.id.peers.util.callback.MemberCallback
+import com.android.id.peers.util.repository.ApiRepository
+import com.android.id.peers.util.repository.MemberRepository
+import com.android.id.peers.util.response.ApiResponse
+import retrofit2.Call
+import retrofit2.Callback
 
 
 class ApiConnections {
@@ -73,11 +80,13 @@ class ApiConnections {
         const val REQUEST_TYPE_GET_DETAIL_CICILAN = 24
         const val REQUEST_TYPE_POST_PEMBAYARAN_CICILAN = 25
         const val REQUEST_TYPE_GET_SIMPANAN = 26
-        const val API_HOSTNAME = "http://api.peers.id/api/v1/"
+        const val REQUEST_TYPE_GET_REMBUG = 27
+        const val REQUEST_TYPE_GET_KELOMPOK = 28
+        const val API_HOSTNAME = BuildConfig.BASE_URL
 
         fun authenticate(preferences: SharedPreferences, context: Context, requestType: Int, mParam: Any? = null,
                                 memberId: Int = 0, loanId: Int = 0, memberPhone: String = "", listType: Int = 0, fileName: String = "", loan: Loan? = null,
-                                nik: String = "", pinjaman: Pinjaman? = null, member: Member? = null, imageData: ByteArray? = null, angsuran: Int = 0, cicilan: Cicilan? = null) {
+                                nik: String = "", pinjaman: Pinjaman? = null, member: Member? = null, imageData: ByteArray? = null, angsuran: Int = 0, cicilan: Cicilan? = null,rembugId: Int = 0) {
             val url = "${API_HOSTNAME}login"
 
             if (NetworkConnectivity.isConnectedOverWifi(context)) {
@@ -91,7 +100,7 @@ class ApiConnections {
             val parameters = JSONObject(params as Map<*, *>);
             val jsonObjectRequest = JsonObjectRequest(
                 Method.POST, url, parameters,
-                Response.Listener { response ->
+                { response ->
                     val strResp = response.toString()
                     val jsonObj = JSONObject(strResp)
                     val loginStatus = jsonObj.getString("status")
@@ -103,52 +112,208 @@ class ApiConnections {
                         Log.d("authenticate", token)
                         preferences.edit().putString("token", token).apply()
                         when (requestType) {
-                            REQUEST_TYPE_GET_CONFIG ->
-                            {
+                            REQUEST_TYPE_GET_CONFIG -> {
                                 val param = mParam as SplashScreen
                                 getConfig(preferences, context, param)
 //                                getCanApprove(preferences, context)
 //                                getLoanFormula(preferences, context, param)
                             }
-                            REQUEST_TYPE_GET_LOAN_FORMULA ->
-                            {
+                            REQUEST_TYPE_GET_LOAN_FORMULA -> {
                                 val param = mParam as LoanFormulaCallback
                                 getLoanFormula(preferences, context, param)
                             }
-                            REQUEST_TYPE_GET_MEMBER -> getMember(preferences, context, false, mParam as MembersCallback)
+                            REQUEST_TYPE_GET_MEMBER -> getMember(
+                                preferences,
+                                context,
+                                false,
+                                mParam as MembersCallback
+                            )
 //                            REQUEST_TYPE_GET_MEMBER_BY_PHONE -> getMemberByPhone(preferences, context, mParam as RepaymentCollection1, memberPhone)
-                            REQUEST_TYPE_POST_MEMBER -> postMember(member!!, preferences, context, mParam as PinjamanResponseCallback, pinjaman!!)
+                            REQUEST_TYPE_POST_MEMBER -> postMember(
+                                member!!,
+                                preferences,
+                                context,
+                                mParam as PinjamanResponseCallback,
+                                pinjaman!!
+                            )
 //                            REQUEST_TYPE_PUT_MEMBER -> putMember(member!!, preferences, context, mParam as PinjamanResponseCallback, pinjaman!!)
-                            REQUEST_TYPE_GET_LOAN -> getLoan(preferences, context, mParam as LoanDisbursement, listType)
-                            REQUEST_TYPE_POST_LOAN -> postLoan(loan!!, preferences, context, mParam as LoanApplicationCallback)
+                            REQUEST_TYPE_GET_LOAN -> getLoan(
+                                preferences,
+                                context,
+                                mParam as LoanDisbursement,
+                                listType
+                            )
+                            REQUEST_TYPE_POST_LOAN -> postLoan(
+                                loan!!,
+                                preferences,
+                                context,
+                                mParam as LoanApplicationCallback
+                            )
                             REQUEST_TYPE_POST_PICTURE -> {
 //                                getLoanApproval(preferences, context, loanId, 1)
                                 postPicture(imageData!!, preferences, context, memberId, fileName)
                             }
-                            REQUEST_TYPE_POST_MEMBER_AND_LOAN -> postMember(member!!, preferences, context, mParam as PinjamanResponseCallback, pinjaman!!)
-                            REQUEST_TYPE_PUT_MEMBER_AND_LOAN -> putMember(member!!, preferences, context, mParam as PinjamanResponseCallback, pinjaman!!)
+                            REQUEST_TYPE_POST_MEMBER_AND_LOAN -> postMember(
+                                member!!,
+                                preferences,
+                                context,
+                                mParam as PinjamanResponseCallback,
+                                pinjaman!!
+                            )
+                            REQUEST_TYPE_PUT_MEMBER_AND_LOAN -> putMember(
+                                member!!,
+                                preferences,
+                                context,
+                                mParam as PinjamanResponseCallback,
+                                pinjaman!!
+                            )
                             REQUEST_TYPE_POST_MEMBER_PICTURE -> {
-                                postMemberPicture(imageData!!, preferences, context, fileName, mParam as PostPictureCallback)
+                                postMemberPicture(
+                                    imageData!!,
+                                    preferences,
+                                    context,
+                                    fileName,
+                                    mParam as PostPictureCallback
+                                )
                             }
-                            REQUEST_TYPE_POST_COLLECTION -> postCollection(mParam as Collection, preferences, context)
-                            REQUEST_TYPE_POST_CITCALL -> postCitcall(memberPhone, preferences, context, mParam as CitcallCallback)
-                            REQUEST_TYPE_GET_CHECK_MEMBER_BY_NIK -> getMemberByNik(preferences, context, mParam as MemberCallback, nik)
-                            REQUEST_TYPE_GET_ACTIVE_PRODUCTS -> getActiveProducts(preferences, context, mParam as ProductCallback)
-                            REQUEST_TYPE_GET_PARAMETER_KOPERASI -> getParameterKoperasi(preferences, context, mParam as ParameterCallback)
-                            REQUEST_TYPE_GET_PINJAMAN_MEMBER_STATUS -> getPinjamanMemberStatus(preferences, context, mParam as StatusPinjamanCallback)
-                            REQUEST_TYPE_GET_PENCAIRAN_PINJAMAN -> getPencairanPinjaman(preferences, context, mParam as StatusPinjamanCallback)
-                            REQUEST_TYPE_GET_DETAIL_PENCAIRAN -> getDetailPencairan(preferences, context, mParam as PencairanCallback, loanId)
-                            REQUEST_TYPE_PUT_STATUS_PENCAIRAN -> putStatusPencairan(preferences, context, memberId, loanId)
-                            REQUEST_TYPE_GET_PEMBAYARAN_CICILAN -> getPembayaranCicilan(preferences, context, mParam as StatusPinjamanCallback)
-                            REQUEST_TYPE_GET_DETAIL_CICILAN -> getDetailCicilan(preferences, context, mParam as CicilanCallback, memberId, angsuran)
-                            REQUEST_TYPE_POST_PEMBAYARAN_CICILAN -> postPembayaranCicilan(preferences, context, cicilan!!)
-                            REQUEST_TYPE_GET_SIMPANAN -> getMember(preferences, context, true, simpananItemCallback = mParam as SimpananItemCallback)
+                            REQUEST_TYPE_POST_COLLECTION -> postCollection(
+                                mParam as Collection,
+                                preferences,
+                                context
+                            )
+                            REQUEST_TYPE_POST_CITCALL -> postCitcall(
+                                memberPhone,
+                                preferences,
+                                context,
+                                mParam as CitcallCallback
+                            )
+                            REQUEST_TYPE_GET_CHECK_MEMBER_BY_NIK -> getMemberByNik(
+                                preferences,
+                                context,
+                                mParam as MemberCallback,
+                                nik
+                            )
+                            REQUEST_TYPE_GET_ACTIVE_PRODUCTS -> getActiveProducts(
+                                preferences,
+                                context,
+                                mParam as ProductCallback
+                            )
+                            REQUEST_TYPE_GET_PARAMETER_KOPERASI -> getParameterKoperasi(
+                                preferences,
+                                context,
+                                mParam as ParameterCallback
+                            )
+                            REQUEST_TYPE_GET_PINJAMAN_MEMBER_STATUS -> getPinjamanMemberStatus(
+                                preferences,
+                                context,
+                                mParam as StatusPinjamanCallback
+                            )
+                            REQUEST_TYPE_GET_PENCAIRAN_PINJAMAN -> getPencairanPinjaman(
+                                preferences,
+                                context,
+                                mParam as StatusPinjamanCallback
+                            )
+                            REQUEST_TYPE_GET_DETAIL_PENCAIRAN -> getDetailPencairan(
+                                preferences,
+                                context,
+                                mParam as PencairanCallback,
+                                loanId
+                            )
+                            REQUEST_TYPE_PUT_STATUS_PENCAIRAN -> putStatusPencairan(
+                                preferences,
+                                context,
+                                memberId,
+                                loanId
+                            )
+                            REQUEST_TYPE_GET_PEMBAYARAN_CICILAN -> getPembayaranCicilan(
+                                preferences,
+                                context,
+                                mParam as StatusPinjamanCallback
+                            )
+                            REQUEST_TYPE_GET_DETAIL_CICILAN -> getDetailCicilan(
+                                preferences,
+                                context,
+                                mParam as CicilanCallback,
+                                memberId,
+                                angsuran
+                            )
+                            REQUEST_TYPE_POST_PEMBAYARAN_CICILAN -> postPembayaranCicilan(
+                                preferences,
+                                context,
+                                cicilan!!
+                            )
+                            REQUEST_TYPE_GET_SIMPANAN -> getMember(
+                                preferences,
+                                context,
+                                true,
+                                simpananItemCallback = mParam as SimpananItemCallback
+                            )
+
+                            REQUEST_TYPE_GET_REMBUG -> {
+                                val token = "Bearer " + preferences.getString("token", null)!!
+
+                                val apiResitory = ApiRepository.create()
+
+                                apiResitory.getRembug(token).enqueue(object : Callback<ApiResponse> {
+                                    override fun onResponse(
+                                        call: Call<ApiResponse>,
+                                        response: retrofit2.Response<ApiResponse>
+                                    ) {
+                                        val res = response.body()
+
+                                        res.let {
+                                            val status = it!!.status
+                                            Log.d("getRembug", it.toString())
+
+                                            if (status == 200) {
+                                                var callback = mParam as ApiCallback
+                                                callback.onSuccess(it)
+                                            }
+                                        }
+                                    }
+
+                                    override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                                        Log.e("getRembug", t.message.toString())
+                                    }
+
+                                })
+                            }
+
+                            REQUEST_TYPE_GET_KELOMPOK -> {
+                                val token = "Bearer " + preferences.getString("token", null)!!
+
+                                val apiResitory = ApiRepository.create()
+
+                                apiResitory.getKelompok(token,rembugId).enqueue(object : Callback<ApiResponse> {
+                                    override fun onResponse(
+                                        call: Call<ApiResponse>,
+                                        response: retrofit2.Response<ApiResponse>
+                                    ) {
+                                        val res = response.body()
+
+                                        res.let {
+                                            val status = it!!.status
+                                            Log.d("getKelompok", it.toString())
+
+                                            if (status == 200) {
+                                                var callback = mParam as ApiCallback
+                                                callback.onSuccess(it)
+                                            }
+                                        }
+                                    }
+
+                                    override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                                        Log.e("getKelompok", t.message.toString())
+                                    }
+
+                                })
+                            }
                         }
 
 //                    popUpSnack(view, "Login Success!")
                     }
                 },
-                Response.ErrorListener { error ->
+                { error ->
                     Log.e("authenticate", error.toString())
                 }
             )

@@ -52,11 +52,12 @@
             android:id="@+id/handphone_edit"
             android:layout_width="96dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:maxLength="4"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/handphone_no2"
-            android:layout_marginTop="@dimen/activity_vertical_margin" />
+            app:layout_constraintTop_toTopOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

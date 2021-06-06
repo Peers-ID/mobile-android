@@ -67,6 +67,7 @@
                     android:id="@+id/identity_no"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:maxLength="16"
                     android:hint="@string/identity_no"
                     android:inputType="number"
                     android:selectAllOnFocus="true" />
@@ -184,7 +185,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/birth_date_text_indo"
-
                         android:focusable="false"
                         android:inputType="date"
                         android:selectAllOnFocus="true" />
@@ -275,6 +275,65 @@
                         android:selectAllOnFocus="true" />
 
                 </com.google.android.material.textfield.TextInputLayout>
+
+                <com.tiper.MaterialSpinner
+                    android:id="@+id/rembug"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:focusable="false" android:focusableInTouchMode="false"
+                    android:hint="@string/rembug"
+                    android:prompt="@string/rembug"
+                    app:errorEnabled="true"/>
+
+                <com.tiper.MaterialSpinner
+                    android:id="@+id/kelompok"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:focusable="false" android:focusableInTouchMode="false"
+                    android:hint="@string/kelompok"
+                    android:prompt="@string/kelompok"
+                    app:errorEnabled="true"/>
+
+<!--                <com.google.android.material.textfield.TextInputLayout-->
+<!--                    android:id="@+id/rembug_container"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="@dimen/margin_between"-->
+<!--                    app:errorEnabled="true" >-->
+
+<!--                    <com.google.android.material.textfield.TextInputEditText-->
+<!--                        android:id="@+id/rembug"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:hint="@string/rembug"-->
+<!--                        android:inputType="text"-->
+<!--                        android:selectAllOnFocus="true" />-->
+
+<!--                </com.google.android.material.textfield.TextInputLayout>-->
+
+<!--                <com.google.android.material.textfield.TextInputLayout-->
+<!--                    android:id="@+id/kelompok_container"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="@dimen/margin_between"-->
+<!--                    android:visibility="gone"-->
+<!--                    app:errorEnabled="true" >-->
+
+<!--                    <com.google.android.material.textfield.TextInputEditText-->
+<!--                        android:id="@+id/kelompok"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:hint="@string/kelompok"-->
+<!--                        android:inputType="text"-->
+<!--                        android:selectAllOnFocus="true" />-->
+
+<!--                </com.google.android.material.textfield.TextInputLayout>-->
+
 
                 <!--    <Spinner-->
                 <!--        android:id="@+id/last_education"-->
